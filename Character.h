@@ -2,14 +2,13 @@
 #include "basic.h"
 
 // 기반 클래스
-class Objects {
+class Character {
 public:
 	virtual void Update_Buffer() = 0;
 	virtual void draw_shape() = 0;
-	virtual ~Objects() {}  // 반드시 virtual 소멸자
+	virtual ~Character() {}  // 반드시 virtual 소멸자
 };
-extern std::vector<Objects*> objects;
-//std::vector<Objects*> objects;
+extern std::vector<Character*> character;
 
 // 카메라
 class Camera {
@@ -36,7 +35,7 @@ extern Camera camera;
 
 
 // 파생 클래스
-class Player : public Objects {
+class Player : public Character {
 private:
 	GLuint VAO;
 	GLuint VBO_position, VBO_color;

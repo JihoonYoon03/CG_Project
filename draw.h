@@ -1,6 +1,7 @@
 #pragma once
 #include "basic.h"
 #include "Character.h"
+#include "Background.h"
 
 // 뷰 및 투영 변환
 void view_and_projection() {
@@ -28,6 +29,6 @@ GLvoid drawScene()
 	glUseProgram(shaderProgramID);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	view_and_projection();
-	objects[0]->draw_shape();
+	character[0]->draw_shape();
 	glutSwapBuffers();
 }

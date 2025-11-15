@@ -1,9 +1,8 @@
-#include "Character.h"
+#include "Background.h"
 
-std::vector<Character*> character;
-Camera camera;
+std::vector<Objects*> objects;
 
-Player::Player(glm::vec3 position, float x, float y, float z) : pos(position) {
+Background::Background(glm::vec3 position, float x, float y, float z) : pos(position) {
 	// 주인공 전용 버퍼
 	auto Make_Buffer = [&]() {
 		// 좌표 버퍼
@@ -28,7 +27,6 @@ Player::Player(glm::vec3 position, float x, float y, float z) : pos(position) {
 		glEnableVertexAttribArray(cAttribute); // cAttribute가 읽어들인 location을 가진 속성을 활성화 (즉, vColor가 활성화된다.)
 		};
 	Make_Buffer();
-	trans_mat = glm::mat4(1.0f);
 	x *= 0.5f;
 	y *= 0.5f;
 	z *= 0.5f;
@@ -81,14 +79,14 @@ Player::Player(glm::vec3 position, float x, float y, float z) : pos(position) {
 	add_triangle(2, 7, 3);
 }
 
-void Player::Update_Buffer() {
+void Background::Update_Buffer() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // 정점 버퍼로 바인딩 (아래 코드에서 바인딩된 버퍼로 데이터가 전달됨)
 	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), v.data(), GL_STATIC_DRAW); // 해당 버퍼에 소스 파일에서 선언한 정점 속성 배열 데이터 저장
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // 정점 버퍼로 바인딩 (아래 코드에서 바인딩된 버퍼로 데이터가 전달됨)
 	glBufferData(GL_ARRAY_BUFFER, c.size() * sizeof(glm::vec3), c.data(), GL_STATIC_DRAW); // 해당 버퍼에 소스 파일에서 선언한 정점 속성 배열 데이터 저장
 }
-void Player::draw_shape() {
+void Background::draw_shape() {
 	glBindVertexArray(VAO); // 그려질 도형들의 정점 정보가 저장된 VAO 바인드
 	// 셰이더 프로그램에서 model_Transform 변수 위치 model_Location으로 가져오기 (한 번만 가져오고, 각 도형에 대해서 행렬 최신화 할거라 상관 없음)
 	unsigned int model_Location = glGetUniformLocation(shaderProgramID, "model_Transform");
@@ -98,7 +96,7 @@ void Player::draw_shape() {
 	glm::mat4 T(1.0f);
 	T = glm::translate(T, pos);
 	//glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * side_rotation * up_rotation * trans_mat));
-	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * side_rotation * trans_mat));
+	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T));
 
 	count = 0; // 정점 개수 초기화
 	for (auto vt = v.begin(); vt != v.end(); ++vt) {
@@ -111,63 +109,3 @@ void Player::draw_shape() {
 		index += 3;
 	}
 }
-// 이동
-void Player::up_move() {
-	glm::vec4 R(1.0f);
-	R = side_rotation * glm::vec4(glm::vec3(0.0f, 0.0f, -speed), 1.0f);
-	pos += glm::vec3(R);
-	//if (collision()) pos -= glm::vec3(R);
-}
-void Player::down_move() {
-	glm::vec4 R(1.0f);
-	R = side_rotation * glm::vec4(glm::vec3(0.0f, 0.0f, speed), 1.0f);
-	pos += glm::vec3(R);
-	//if (collision()) pos -= glm::vec3(R);
-}
-void Player::left_move() {
-	glm::vec4 R(1.0f);
-	R = side_rotation * glm::vec4(glm::vec3(-speed, 0.0f, 0.0f), 1.0f);
-	pos += glm::vec3(R);
-	//if (collision()) pos -= glm::vec3(R);
-}
-void Player::right_move() {
-	glm::vec4 R(1.0f);
-	R = side_rotation * glm::vec4(glm::vec3(speed, 0.0f, 0.0f), 1.0f);
-	pos += glm::vec3(R);
-	//if (collision()) pos -= glm::vec3(R);
-}
-// 카메라 위치 세팅
-void Player::camera_pos_setting() {
-	// 1. 캐릭터의 전방을 side_rotation으로 돌려서 실제 전방을 구함 (어차피 방향만 주면 되기에 정면은 그냥 glm::vec3 baseFront(0.0f, 0.0f, -1.0f)로 처리)
-	glm::vec3 baseFront(0.0f, 0.0f, -1.0f);
-	glm::vec3 forward = glm::normalize(glm::vec3(side_rotation * glm::vec4(baseFront, 1.0f))); // 정면을 side_rotation만큼 회전 시킨 후 정규화 (안정성을 위한 정규화)
-	// 캐릭터 중심점 (카메라 위치 및 회전 시 몸체가 보이지 않도록 하는 높이를 고려해 조금 위쪽으로 설정)
-	glm::vec3 center = glm::vec3(pos.x, pos.y + 0.25f, pos.z);
-	// 캐릭터로부터 카메라를 둘 위치(머리)
-	camera.set_camera_Pos(center + glm::vec3(0.0f, 0.0f, -0.125f));
-	// 카메라가 정면을 바라봄
-	camera.set_camera_Pos(center + forward);
-}
-// 회전량 받아와서 저장
-void Player::rotation(glm::mat4 side, glm::mat4 up) {
-	side_rotation = side;
-	up_rotation = up;
-}
-// 히트 박스 (좌, 우, 앞, 뒤)
-glm::vec4 Player::return_hitbox() {
-	return glm::vec4(pos.x - 0.125f, pos.x + 0.125f, pos.z - 0.125f, pos.z + 0.125f);
-}
-//bool Player::collision() {
-//	Objects* P = objects[0];
-//	Player* p = dynamic_cast<Player*>(P);
-//	for (size_t i = 1; i < objects.size(); ++i) {
-//		Objects* M = objects[i];
-//		/*Maze* m = dynamic_cast<Maze*>(M);
-//		if (!m->return_state()) continue;
-//		if (p->return_hitbox()[0] <= m->return_hitbox()[1]
-//			and p->return_hitbox()[1] >= m->return_hitbox()[0]
-//			and p->return_hitbox()[2] <= m->return_hitbox()[3]
-//			and p->return_hitbox()[3] >= m->return_hitbox()[2]) return true;*/
-//	}
-//	return false;
-//}
