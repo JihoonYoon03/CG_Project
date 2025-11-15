@@ -3,7 +3,7 @@
 std::vector<Objects*> objects;
 
 Background::Background(glm::vec3 position, float x, float y, float z) : pos(position) {
-	// 주인공 전용 버퍼
+	// 객체 전용 버퍼
 	auto Make_Buffer = [&]() {
 		// 좌표 버퍼
 		glGenBuffers(1, &VBO_position); // 버퍼 ID 발급하여 VBO_position에 저장
@@ -27,58 +27,26 @@ Background::Background(glm::vec3 position, float x, float y, float z) : pos(posi
 		glEnableVertexAttribArray(cAttribute); // cAttribute가 읽어들인 location을 가진 속성을 활성화 (즉, vColor가 활성화된다.)
 		};
 	Make_Buffer();
-	x *= 0.5f;
-	y *= 0.5f;
-	z *= 0.5f;
-	glm::vec3 P[8] = {
-		// 앞면 좌상, 우상, 좌하, 우하
-		glm::vec3(-x, +y, +z), // 0
-		glm::vec3(+x, +y, +z), // 1
-		glm::vec3(-x, -y, +z), // 2
-		glm::vec3(+x, -y, +z), // 3
-		// 앞에서 봤을 때의 뒷면 좌상, 우상, 좌하, 우하
-		glm::vec3(-x, +y, -z), // 4
-		glm::vec3(+x, +y, -z), // 5
-		glm::vec3(-x, -y, -z), // 6
-		glm::vec3(+x, -y, -z)  // 7
+	glm::vec3 P[4] = {
+		glm::vec3(-x, 0.0f, -z),
+		glm::vec3(+x, 0.0f, -z),
+		glm::vec3(-x, 0.0f, +z),
+		glm::vec3(+x, 0.0f, +z),
 	};
-	std::uniform_real_distribution<float> urd(0.0f, 1.0f);
-	auto add_triangle = [&](int one, int two, int three) {
-		v.emplace_back(P[one]);
-		v.emplace_back(P[two]);
-		v.emplace_back(P[three]);
-		auto change_rgb = [](const glm::vec3& p) {
-			// 좌표값 p를 단위 벡터로 바꾸어 각 성분이 -1.0f ~ 1.0f의 범위가 되도록 설정하고, 이를 n에 저장
-			glm::vec3 n = glm::normalize(p);
-			// 0.5f에다가 -1.0f ~ 1.0f의 범위를 가진 n을 절반으로 나눈 -0.5f ~ 0.5f 더해주게 되면, 해당 값은 0.0f ~ 1.0f의 값을 가지게 되어 색상을 나타내기 좋은 값이 된다.
-			return glm::vec3(0.5f) + n * 0.5f;
-			};
-		c.emplace_back(change_rgb(P[one]));
-		c.emplace_back(change_rgb(P[two]));
-		c.emplace_back(change_rgb(P[three]));
+	auto add_triangle = [&](int i, int j, int k) {
+		v.emplace_back(P[i]);
+		v.emplace_back(P[j]);
+		v.emplace_back(P[k]);
+
+		// 초록색 바닥
+		c.emplace_back(glm::vec3(0.0f, 1.0f, 0.0f));
+		c.emplace_back(glm::vec3(0.0f, 1.0f, 0.0f));
+		c.emplace_back(glm::vec3(0.0f, 1.0f, 0.0f));
 		};
-	// 앞면
+	// 바닥 생성
 	add_triangle(0, 2, 3);
 	add_triangle(0, 3, 1);
-
-	// 뒷면
-	add_triangle(4, 7, 6);
-	add_triangle(5, 7, 4);
-
-	// 좌측면
-	add_triangle(4, 6, 2);
-	add_triangle(4, 2, 0);
-	// 우측면
-	add_triangle(1, 3, 7);
-	add_triangle(1, 7, 5);
-	// 윗면
-	add_triangle(4, 0, 1);
-	add_triangle(4, 1, 5);
-	// 밑면
-	add_triangle(2, 6, 7);
-	add_triangle(2, 7, 3);
 }
-
 void Background::Update_Buffer() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // 정점 버퍼로 바인딩 (아래 코드에서 바인딩된 버퍼로 데이터가 전달됨)
 	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), v.data(), GL_STATIC_DRAW); // 해당 버퍼에 소스 파일에서 선언한 정점 속성 배열 데이터 저장
@@ -94,8 +62,6 @@ void Background::draw_shape() {
 	int index = 0; // index 1당 정점 하나
 	int count = 0; // 해당 오브젝트의 정점 개수 세기
 	glm::mat4 T(1.0f);
-	T = glm::translate(T, pos);
-	//glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * side_rotation * up_rotation * trans_mat));
 	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T));
 
 	count = 0; // 정점 개수 초기화

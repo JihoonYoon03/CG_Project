@@ -34,7 +34,10 @@ int main(int argc, char** argv)
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // 배경 흰색
 	glEnable(GL_DEPTH_TEST); // 기본 깊이 검사 활성화
 
-	character.push_back(new Player(glm::vec3(0.0f, 0.0f, 0.0f)));
+	objects.push_back(new Background(glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f, 5.0f));
+	objects[0]->Update_Buffer();
+
+	character.push_back(new Player(glm::vec3(0.0f, 0.125f, 0.0f)));
 	character[0]->Update_Buffer();
 
 	glutMainLoop();

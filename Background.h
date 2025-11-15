@@ -20,7 +20,7 @@ private:
 	// 동적 정보 (값 변경 O)
 	glm::vec3 pos; // 이동 (현재 위치)
 public:
-	Background(glm::vec3 position = glm::vec3(0.0f, 0.5f, 0.0f), float x = 0.25f, float y = 0.25f, float z = 0.25f);
+	Background(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float x = 5.0f, float y = 5.0f, float z = 5.0f);
 	void Update_Buffer() override;
 	void draw_shape() override;
 };
