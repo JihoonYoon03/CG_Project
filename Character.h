@@ -34,7 +34,7 @@ private:
 	glm::mat4 trans_mat; // 복합 변환 행렬
 	glm::mat4 side_rotation = glm::mat4(1.0f); // 좌우 회전
 	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
-	float speed = 0.01f;
+	float speed = 0.1f;
 	float size_x, size_y, size_z;
 public:
 	// 기본 생성자
@@ -52,6 +52,8 @@ public:
 	void rotation(glm::mat4 side, glm::mat4 up);
 	// 히트 박스 (좌, 우, 앞, 뒤)
 	glm::vec4 return_hitbox();
+	// 맵 안에 있는지 구분
+	bool outside_map();
 };
 
 extern std::vector<Player*> player;
