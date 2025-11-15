@@ -37,8 +37,9 @@ int main(int argc, char** argv)
 	objects.push_back(new Background(glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f, 5.0f));
 	objects[0]->Update_Buffer();
 
-	character.push_back(new Player(glm::vec3(0.0f, 0.125f, 0.0f)));
-	character[0]->Update_Buffer();
+	player.push_back(new Player(glm::vec3(0.0f, 0.125f, 0.0f)));
+	player[0]->Update_Buffer();
+	player[0]->camera_pos_setting();
 
 	glutMainLoop();
 
@@ -46,5 +47,8 @@ int main(int argc, char** argv)
 	for (auto obj : objects)
 		delete obj;
 	objects.clear();
+	for (auto p : player)
+		delete p;
+	player.clear();
 	return 0;
 }

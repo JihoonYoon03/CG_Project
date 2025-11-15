@@ -32,6 +32,6 @@ GLvoid drawScene()
 	for (size_t i = 0; i < objects.size(); ++i) {
 		objects[i]->draw_shape();
 	}
-	character[0]->draw_shape();
+	player[0]->draw_shape();
 	glutSwapBuffers();
 }

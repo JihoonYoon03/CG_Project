@@ -1,15 +1,6 @@
 #pragma once
 #include "basic.h"
 
-// 기반 클래스
-class Character {
-public:
-	virtual void Update_Buffer() = 0;
-	virtual void draw_shape() = 0;
-	virtual ~Character() {}  // 반드시 virtual 소멸자
-};
-extern std::vector<Character*> character;
-
 // 카메라
 class Camera {
 private:
@@ -31,11 +22,8 @@ public:
 	float return_rotate() { return rotate; }
 };
 extern Camera camera;
-//Camera camera;
 
-
-// 파생 클래스
-class Player : public Character {
+class Player {
 private:
 	GLuint VAO;
 	GLuint VBO_position, VBO_color;
@@ -50,8 +38,8 @@ private:
 public:
 	// 기본 생성자
 	Player(glm::vec3 position = glm::vec3(0.0f, 0.5f, 0.0f), float x = 0.25f, float y = 0.25f, float z = 0.25f);
-	void Update_Buffer() override;
-	void draw_shape() override;
+	void Update_Buffer();
+	void draw_shape();
 	// 이동
 	void up_move();
 	void down_move();
@@ -64,3 +52,5 @@ public:
 	// 히트 박스 (좌, 우, 앞, 뒤)
 	glm::vec4 return_hitbox();
 };
+
+extern std::vector<Player*> player;

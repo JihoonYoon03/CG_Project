@@ -1,7 +1,7 @@
 #include "Character.h"
 
-std::vector<Character*> character;
 Camera camera;
+std::vector<Player*> player;
 
 Player::Player(glm::vec3 position, float x, float y, float z) : pos(position) {
 	// 주인공 전용 버퍼
@@ -140,13 +140,13 @@ void Player::right_move() {
 void Player::camera_pos_setting() {
 	// 1. 캐릭터의 전방을 side_rotation으로 돌려서 실제 전방을 구함 (어차피 방향만 주면 되기에 정면은 그냥 glm::vec3 baseFront(0.0f, 0.0f, -1.0f)로 처리)
 	glm::vec3 baseFront(0.0f, 0.0f, -1.0f);
-	glm::vec3 forward = glm::normalize(glm::vec3(side_rotation * glm::vec4(baseFront, 1.0f))); // 정면을 side_rotation만큼 회전 시킨 후 정규화 (안정성을 위한 정규화)
+	glm::vec3 forward = glm::normalize(glm::vec3(up_rotation * side_rotation * glm::vec4(baseFront, 1.0f))); // 정면을 side_rotation만큼 회전 시킨 후 정규화 (안정성을 위한 정규화)
 	// 캐릭터 중심점 (카메라 위치 및 회전 시 몸체가 보이지 않도록 하는 높이를 고려해 조금 위쪽으로 설정)
 	glm::vec3 center = glm::vec3(pos.x, pos.y + 0.25f, pos.z);
 	// 캐릭터로부터 카메라를 둘 위치(머리)
 	camera.set_camera_Pos(center + glm::vec3(0.0f, 0.0f, -0.125f));
 	// 카메라가 정면을 바라봄
-	camera.set_camera_Pos(center + forward);
+	camera.set_camera_Direction(center + forward);
 }
 // 회전량 받아와서 저장
 void Player::rotation(glm::mat4 side, glm::mat4 up) {
