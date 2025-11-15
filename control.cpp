@@ -3,6 +3,26 @@
 
 void Keyboard(unsigned char key, int x, int y) {
 	switch (key) {
+	case 'w': {
+		player[0]->up_move();
+		player[0]->camera_pos_setting();
+		break;
+	}
+	case 'a': {
+		player[0]->left_move();
+		player[0]->camera_pos_setting();
+		break;
+	}
+	case 's': {
+		player[0]->down_move();
+		player[0]->camera_pos_setting();
+		break;
+	}
+	case 'd': {
+		player[0]->right_move();
+		player[0]->camera_pos_setting();
+		break;
+	}
 	case 'q': {
 		glutLeaveMainLoop();
 		break;
