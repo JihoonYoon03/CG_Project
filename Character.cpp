@@ -32,6 +32,9 @@ Player::Player(glm::vec3 position, float x, float y, float z) : pos(position) {
 	x *= 0.5f;
 	y *= 0.5f;
 	z *= 0.5f;
+	size_x = x;
+	size_y = y;
+	size_z = z;
 	glm::vec3 P[8] = {
 		// 앞면 좌상, 우상, 좌하, 우하
 		glm::vec3(-x, +y, +z), // 0
@@ -155,7 +158,7 @@ void Player::rotation(glm::mat4 side, glm::mat4 up) {
 }
 // 히트 박스 (좌, 우, 앞, 뒤)
 glm::vec4 Player::return_hitbox() {
-	return glm::vec4(pos.x - 0.125f, pos.x + 0.125f, pos.z - 0.125f, pos.z + 0.125f);
+	return glm::vec4(pos.x - size_x, pos.x + size_x, pos.z - size_z, pos.z + size_z);
 }
 //bool Player::collision() {
 //	Objects* P = objects[0];

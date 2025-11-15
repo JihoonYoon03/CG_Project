@@ -3,6 +3,9 @@
 std::vector<Objects*> objects;
 
 Background::Background(glm::vec3 position, float x, float y, float z) : pos(position) {
+	size_x = x;
+	size_y = y;
+	size_z = z;
 	// 객체 전용 버퍼
 	auto Make_Buffer = [&]() {
 		// 좌표 버퍼
@@ -74,4 +77,8 @@ void Background::draw_shape() {
 		glDrawArrays(GL_TRIANGLES, index, 3);
 		index += 3;
 	}
+}
+glm::vec4 Background::return_hitbox() {
+	// 좌, 우, 앞, 뒤
+	return glm::vec4(pos.x - size_x, pos.x + size_x, pos.z - size_z, pos.z + size_z);
 }

@@ -3,6 +3,7 @@
 
 void Keyboard(unsigned char key, int x, int y) {
 	switch (key) {
+	// ÀÌµ¿
 	case 'w': {
 		player[0]->up_move();
 		player[0]->camera_pos_setting();
