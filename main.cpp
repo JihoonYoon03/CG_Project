@@ -9,7 +9,6 @@
 
 //--- 메인 함수
 int main(int argc, char** argv)
-//--- 윈도우출력하고콜백함수설정
 {
 	width = 800;
 	height = 600;
