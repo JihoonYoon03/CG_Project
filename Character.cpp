@@ -120,25 +120,25 @@ void Player::up_move() {
 	glm::vec4 R(1.0f);
 	R = side_rotation * glm::vec4(glm::vec3(0.0f, 0.0f, -speed), 1.0f);
 	pos += glm::vec3(R);
-	if (outside_map()) pos -= glm::vec3(R);
+	if (outside_map() or collision()) pos -= glm::vec3(R);
 }
 void Player::down_move() {
 	glm::vec4 R(1.0f);
 	R = side_rotation * glm::vec4(glm::vec3(0.0f, 0.0f, speed), 1.0f);
 	pos += glm::vec3(R);
-	if (outside_map()) pos -= glm::vec3(R);
+	if (outside_map() or collision()) pos -= glm::vec3(R);
 }
 void Player::left_move() {
 	glm::vec4 R(1.0f);
 	R = side_rotation * glm::vec4(glm::vec3(-speed, 0.0f, 0.0f), 1.0f);
 	pos += glm::vec3(R);
-	if (outside_map()) pos -= glm::vec3(R);
+	if (outside_map() or collision()) pos -= glm::vec3(R);
 }
 void Player::right_move() {
 	glm::vec4 R(1.0f);
 	R = side_rotation * glm::vec4(glm::vec3(speed, 0.0f, 0.0f), 1.0f);
 	pos += glm::vec3(R);
-	if (outside_map()) pos -= glm::vec3(R);
+	if (outside_map() or collision()) pos -= glm::vec3(R);
 }
 // 카메라 위치 세팅
 void Player::camera_pos_setting() {
@@ -166,5 +166,14 @@ bool Player::outside_map() {
 	if (return_hitbox()[1] <= objects[0]->return_hitbox()[0]) return true;
 	if (return_hitbox()[2] >= objects[0]->return_hitbox()[3]) return true;
 	if (return_hitbox()[3] <= objects[0]->return_hitbox()[2]) return true;
+	return false;
+}
+bool Player::collision() {
+	for (size_t i = 1; i < objects.size(); ++i) {
+		if (return_hitbox()[0] <= objects[i]->return_hitbox()[1]
+			and return_hitbox()[1] >= objects[i]->return_hitbox()[0]
+			and return_hitbox()[2] <= objects[i]->return_hitbox()[3]
+			and return_hitbox()[3] >= objects[i]->return_hitbox()[2]) return true;
+	}
 	return false;
 }

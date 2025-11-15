@@ -54,6 +54,7 @@ public:
 	glm::vec4 return_hitbox();
 	// 맵 안에 있는지 구분
 	bool outside_map();
+	bool collision();
 };
 
 extern std::vector<Player*> player;
