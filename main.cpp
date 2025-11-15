@@ -36,6 +36,7 @@ int main(int argc, char** argv)
 
 	objects.push_back(new Player(glm::vec3(0.0f, 0.0f, 0.0f)));
 	objects[0]->Update_Buffer();
+
 	glutMainLoop();
 
 	// new로 만든 오브젝트 delete로 초기화

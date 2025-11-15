@@ -24,10 +24,28 @@
     <ClCompile Include="tools.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="basic.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.h">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="control.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tools.h">
       <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="basic.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="draw.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -37,10 +55,7 @@
     <None Include="vertex.glsl">
       <Filter>소스 파일\Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="test.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
+    <None Include="basic_fragment.glsl" />
+    <None Include="basic_vertex.glsl" />
   </ItemGroup>
 </Project>

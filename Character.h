@@ -8,17 +8,35 @@ public:
 	virtual void draw_shape() = 0;
 	virtual ~Objects() {}  // 반드시 virtual 소멸자
 };
-extern std::vector<Objects*> objects;
+//extern std::vector<Objects*> objects;
+std::vector<Objects*> objects;
 
 // 카메라
-struct Camera {
-	glm::vec3 camera_Pos = glm::vec3(0.0f, 0.0f, 10.0f); // EYE (카메라 위치)
-	glm::vec3 camera_Direction = glm::vec3(0.0f, 0.0f, 0.0f); // AT (카메라가 바라보는 방향)
-	glm::vec3 camera_Up = glm::vec3(0.0f, 1.0f, 0.0f); // UP (카메라의 위쪽)
+class Camera {
+private:
+	glm::vec3 camera_Pos; // EYE (카메라 위치)
+	glm::vec3 camera_Direction; // AT (카메라가 바라보는 방향)
+	glm::vec3 camera_Up; // UP (카메라의 위쪽)
 	float rotate = 0.0f; // 공전 회전량
-	glm::vec3 back_up_pos = glm::vec3(0.0f, 0.0f, 0.0f); // 위치 백업
+public:
+	Camera() {
+		camera_Pos = glm::vec3(0.0f, 0.0f, 2.0f);
+		camera_Direction = glm::vec3(0.0f, 0.0f, 0.0f);
+		camera_Up = glm::vec3(0.0f, 1.0f, 0.0f);
+	}
+	void set_camera_Pos(glm::vec3 p) {
+		camera_Pos = p;
+	}
+	void set_camera_Direction(glm::vec3 p) {
+		camera_Direction = p;
+	}
+	glm::vec3 return_eye() { return camera_Pos; }
+	glm::vec3 return_at() { return camera_Direction; }
+	glm::vec3 return_up() { return camera_Up; }
+	float return_rotate() { return rotate; }
 };
-extern Camera camera;
+//extern Camera camera;
+Camera camera;
 
 
 // 파생 클래스
@@ -148,25 +166,25 @@ public:
 		glm::vec4 R(1.0f);
 		R = side_rotation * glm::vec4(glm::vec3(0.0f, 0.0f, -speed), 1.0f);
 		pos += glm::vec3(R);
-		if (collision()) pos -= glm::vec3(R);
+		//if (collision()) pos -= glm::vec3(R);
 	}
 	void down_move() {
 		glm::vec4 R(1.0f);
 		R = side_rotation * glm::vec4(glm::vec3(0.0f, 0.0f, speed), 1.0f);
 		pos += glm::vec3(R);
-		if (collision()) pos -= glm::vec3(R);
+		//if (collision()) pos -= glm::vec3(R);
 	}
 	void left_move() {
 		glm::vec4 R(1.0f);
 		R = side_rotation * glm::vec4(glm::vec3(-speed, 0.0f, 0.0f), 1.0f);
 		pos += glm::vec3(R);
-		if (collision()) pos -= glm::vec3(R);
+		//if (collision()) pos -= glm::vec3(R);
 	}
 	void right_move() {
 		glm::vec4 R(1.0f);
 		R = side_rotation * glm::vec4(glm::vec3(speed, 0.0f, 0.0f), 1.0f);
 		pos += glm::vec3(R);
-		if (collision()) pos -= glm::vec3(R);
+		//if (collision()) pos -= glm::vec3(R);
 	}
 	// 카메라 위치 세팅
 	void camera_pos_setting() {
@@ -176,9 +194,9 @@ public:
 		// 캐릭터 중심점 (카메라 위치 및 회전 시 몸체가 보이지 않도록 하는 높이를 고려해 조금 위쪽으로 설정)
 		glm::vec3 center = glm::vec3(pos.x, pos.y + 0.25f, pos.z);
 		// 캐릭터로부터 카메라를 둘 위치(머리)
-		camera.camera_Pos = center + glm::vec3(0.0f, 0.0f, -0.125f);
+		camera.set_camera_Pos(center + glm::vec3(0.0f, 0.0f, -0.125f));
 		// 카메라가 정면을 바라봄
-		camera.camera_Direction = center + forward;
+		camera.set_camera_Pos(center + forward);
 	}
 	// 회전량 받아와서 저장
 	void rotation(glm::mat4 side, glm::mat4 up) {
@@ -189,18 +207,18 @@ public:
 	glm::vec4 return_hitbox() {
 		return glm::vec4(pos.x - 0.125f, pos.x + 0.125f, pos.z - 0.125f, pos.z + 0.125f);
 	}
-	bool collision() {
-		Objects* P = objects[0];
-		Player* p = dynamic_cast<Player*>(P);
-		for (size_t i = 1; i < objects.size(); ++i) {
-			Objects* M = objects[i];
-			/*Maze* m = dynamic_cast<Maze*>(M);
-			if (!m->return_state()) continue;
-			if (p->return_hitbox()[0] <= m->return_hitbox()[1]
-				and p->return_hitbox()[1] >= m->return_hitbox()[0]
-				and p->return_hitbox()[2] <= m->return_hitbox()[3]
-				and p->return_hitbox()[3] >= m->return_hitbox()[2]) return true;*/
-		}
-		return false;
-	}
+	//bool collision() {
+	//	Objects* P = objects[0];
+	//	Player* p = dynamic_cast<Player*>(P);
+	//	for (size_t i = 1; i < objects.size(); ++i) {
+	//		Objects* M = objects[i];
+	//		/*Maze* m = dynamic_cast<Maze*>(M);
+	//		if (!m->return_state()) continue;
+	//		if (p->return_hitbox()[0] <= m->return_hitbox()[1]
+	//			and p->return_hitbox()[1] >= m->return_hitbox()[0]
+	//			and p->return_hitbox()[2] <= m->return_hitbox()[3]
+	//			and p->return_hitbox()[3] >= m->return_hitbox()[2]) return true;*/
+	//	}
+	//	return false;
+	//}
 };
