@@ -4,6 +4,12 @@
 Camera camera;
 std::vector<Player*> player;
 
+float PIXEL_PER_METER = (0.1f);
+float RUN_SPEED_KMPH = 20.0f; // Km / Hour(여기서 현실적인 속도를 결정) (km / h)
+float RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0f / 60.0f); // Meter / Minute
+float RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0f); // Meter / Second
+float RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER); // 초당 몇 픽셀을 이동할지 결졍(PPS) (이것이 속도가 됨)
+
 Player::Player(glm::vec3 position, float x, float y, float z) : pos(position) {
 	// 주인공 전용 버퍼
 	auto Make_Buffer = [&]() {
@@ -118,25 +124,25 @@ void Player::draw_shape() {
 // 이동
 void Player::up_move() {
 	glm::vec4 R(1.0f);
-	R = side_rotation * glm::vec4(glm::vec3(0.0f, 0.0f, -speed), 1.0f);
+	R = side_rotation * glm::vec4(glm::vec3(0.0f, 0.0f, -speed * frame_time), 1.0f);
 	pos += glm::vec3(R);
 	if (outside_map() or collision()) pos -= glm::vec3(R);
 }
 void Player::down_move() {
 	glm::vec4 R(1.0f);
-	R = side_rotation * glm::vec4(glm::vec3(0.0f, 0.0f, speed), 1.0f);
+	R = side_rotation * glm::vec4(glm::vec3(0.0f, 0.0f, speed * frame_time), 1.0f);
 	pos += glm::vec3(R);
 	if (outside_map() or collision()) pos -= glm::vec3(R);
 }
 void Player::left_move() {
 	glm::vec4 R(1.0f);
-	R = side_rotation * glm::vec4(glm::vec3(-speed, 0.0f, 0.0f), 1.0f);
+	R = side_rotation * glm::vec4(glm::vec3(-speed * frame_time, 0.0f, 0.0f), 1.0f);
 	pos += glm::vec3(R);
 	if (outside_map() or collision()) pos -= glm::vec3(R);
 }
 void Player::right_move() {
 	glm::vec4 R(1.0f);
-	R = side_rotation * glm::vec4(glm::vec3(speed, 0.0f, 0.0f), 1.0f);
+	R = side_rotation * glm::vec4(glm::vec3(speed * frame_time, 0.0f, 0.0f), 1.0f);
 	pos += glm::vec3(R);
 	if (outside_map() or collision()) pos -= glm::vec3(R);
 }

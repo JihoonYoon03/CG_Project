@@ -23,6 +23,12 @@ public:
 };
 extern Camera camera;
 
+extern float PIXEL_PER_METER; // 10 pixel 30 cm.즉, 1 meter 당 몇 픽셀인지 계산. 10pixel을 0.3(m)으로 나누어 1미터 당 픽셀 수를 구함
+extern float RUN_SPEED_KMPH; // Km / Hour(여기서 현실적인 속도를 결정) (km / h)
+extern float RUN_SPEED_MPM; // Meter / Minute
+extern float RUN_SPEED_MPS; // Meter / Second
+extern float RUN_SPEED_PPS; // 초당 몇 픽셀을 이동할지 결졍(PPS) (이것이 속도가 됨)
+
 class Player {
 private:
 	GLuint VAO;
@@ -34,7 +40,7 @@ private:
 	glm::mat4 trans_mat; // 복합 변환 행렬
 	glm::mat4 side_rotation = glm::mat4(1.0f); // 좌우 회전
 	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
-	float speed = 0.1f;
+	float speed = RUN_SPEED_PPS;
 	float size_x, size_y, size_z;
 public:
 	// 기본 생성자
