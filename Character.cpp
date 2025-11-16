@@ -4,6 +4,141 @@
 Camera camera;
 std::vector<Player*> player;
 
+Gun::Gun() {
+	// 1. VAO/VBO 생성 & 속성 연결
+	auto Make_Buffer = [&]() {
+		glGenBuffers(1, &VBO_position);
+		glGenBuffers(1, &VBO_color);
+		glGenVertexArrays(1, &VAO);
+
+		glBindVertexArray(VAO);
+
+		// 위치
+		GLint pAttribute = glGetAttribLocation(shaderProgramID, "vPos");
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_position);
+		glVertexAttribPointer(pAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
+		glEnableVertexAttribArray(pAttribute);
+
+		// 색
+		GLint cAttribute = glGetAttribLocation(shaderProgramID, "vColor");
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_color);
+		glVertexAttribPointer(cAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
+		glEnableVertexAttribArray(cAttribute);
+		};
+	Make_Buffer();
+
+	// 2. OBJ에서 총 메쉬 읽어오기
+	loadFromOBJ("Pistol.obj");
+}
+void Gun::Update_Buffer() {
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // 정점 버퍼로 바인딩 (아래 코드에서 바인딩된 버퍼로 데이터가 전달됨)
+	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), v.data(), GL_STATIC_DRAW); // 해당 버퍼에 소스 파일에서 선언한 정점 속성 배열 데이터 저장
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // 정점 버퍼로 바인딩 (아래 코드에서 바인딩된 버퍼로 데이터가 전달됨)
+	glBufferData(GL_ARRAY_BUFFER, c.size() * sizeof(glm::vec3), c.data(), GL_STATIC_DRAW); // 해당 버퍼에 소스 파일에서 선언한 정점 속성 배열 데이터 저장
+}
+void Gun::draw_shape() {
+	glBindVertexArray(VAO); // 그려질 도형들의 정점 정보가 저장된 VAO 바인드
+	// 셰이더 프로그램에서 model_Transform 변수 위치 model_Location으로 가져오기 (한 번만 가져오고, 각 도형에 대해서 행렬 최신화 할거라 상관 없음)
+	unsigned int model_Location = glGetUniformLocation(shaderProgramID, "model_Transform");
+	// 현재 존재하는 도형 모두 그리기
+	int index = 0; // index 1당 정점 하나
+	int count = 0; // 해당 오브젝트의 정점 개수 세기
+	glm::mat4 T(1.0f);
+	T = glm::translate(T, pos);
+	glm::mat4 S(1.0f);
+	S = glm::scale(S, glm::vec3(0.00025f, 0.00025f, 0.00025f));
+	//glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * side_rotation * up_rotation * trans_mat));
+	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * up_rotation * side_rotation * S));
+
+	count = 0; // 정점 개수 초기화
+	for (auto vt = v.begin(); vt != v.end(); ++vt) {
+		count++; // 정점의 개수 세기
+	}
+	count /= 3; // 삼각형 개수 세기
+	// 삼각형의 개수만큼 반복
+	for (int i = 0; i < count; i++) {
+		glDrawArrays(GL_TRIANGLES, index, 3);
+		index += 3;
+	}
+}
+bool Gun::loadFromOBJ(const std::string& filename) {
+	std::string full_name = "models/" + filename;
+	std::ifstream in(full_name);
+	if (!in.is_open()) {
+		std::cerr << "Failed to open OBJ file: " << full_name << std::endl;
+		return false;
+	}
+
+	std::vector<glm::vec3> temp_pos;  // OBJ의 v 리스트
+	v.clear();
+	c.clear();
+
+	std::string line;
+	while (std::getline(in, line)) {
+		if (line.empty() || line[0] == '#') continue;
+
+		std::istringstream iss(line);
+		std::string type;
+		iss >> type;
+
+		if (type == "v") {
+			// 정점 좌표
+			float x, y, z;
+			iss >> x >> y >> z;
+			temp_pos.emplace_back(x, y, z);
+		}
+		else if (type == "f") {
+			// 면(삼각형) - 인덱스 파싱
+			std::string s1, s2, s3;
+			iss >> s1 >> s2 >> s3;
+			if (s1.empty() || s2.empty() || s3.empty()) continue;
+
+			auto parseIndex = [](const std::string& s) -> int {
+				// "3", "3/1/2" 같은 것에서 앞의 숫자만 뽑기
+				std::istringstream ss(s);
+				std::string idxStr;
+				std::getline(ss, idxStr, '/');   // '/' 전까지
+				int idx = std::stoi(idxStr);
+				return idx - 1; // OBJ는 1-based, 우리는 0-based
+				};
+
+			int i1 = parseIndex(s1);
+			int i2 = parseIndex(s2);
+			int i3 = parseIndex(s3);
+
+			if (i1 < 0 || i2 < 0 || i3 < 0) continue;
+			if (i1 >= (int)temp_pos.size() ||
+				i2 >= (int)temp_pos.size() ||
+				i3 >= (int)temp_pos.size()) continue;
+
+			// 삼각형 정점 좌표를 그대로 v에 push
+			v.push_back(temp_pos[i1]);
+			v.push_back(temp_pos[i2]);
+			v.push_back(temp_pos[i3]);
+		}
+		// (필요하면 나중에 'vn', 'vt' 등도 처리 가능)
+	}
+
+	// 색깔은 일단 Player에서 쓰는 방식처럼 좌표 기반으로 만들기
+	c.reserve(v.size());
+	for (const auto& p : v) {
+		glm::vec3 n = glm::normalize(p);
+		glm::vec3 col = glm::vec3(0.5f) + 0.5f * n; // 0~1 범위 색
+		c.push_back(col);
+	}
+
+	// VBO 갱신
+	Update_Buffer();
+
+	return true;
+}
+void Gun::setting_attributes() {
+	pos = (player[0]->return_pos() + glm::vec3(0.125f, 0.0f, -0.125f)); // 플레이어의 현 위치에서 조정
+	side_rotation = player[0]->return_side_rotation();
+	up_rotation = player[0]->return_up_rotation();
+}
+
 float PIXEL_PER_METER = (5.0f);
 float RUN_SPEED_KMPH = 20.0f; // Km / Hour(여기서 현실적인 속도를 결정) (km / h)
 float RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0f / 60.0f); // Meter / Minute
@@ -89,7 +224,6 @@ Player::Player(glm::vec3 position, float x, float y, float z) : pos(position) {
 	add_triangle(2, 6, 7);
 	add_triangle(2, 7, 3);
 }
-
 void Player::Update_Buffer() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // 정점 버퍼로 바인딩 (아래 코드에서 바인딩된 버퍼로 데이터가 전달됨)
 	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), v.data(), GL_STATIC_DRAW); // 해당 버퍼에 소스 파일에서 선언한 정점 속성 배열 데이터 저장

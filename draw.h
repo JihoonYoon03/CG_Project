@@ -33,6 +33,8 @@ GLvoid drawScene()
 	for (size_t i = 0; i < objects.size(); ++i) {
 		objects[i]->draw_shape();
 	}
+	player[0]->return_gun().setting_attributes();
+	player[0]->return_gun().draw_shape();
 	player[0]->draw_shape();
 	glutSwapBuffers();
 }

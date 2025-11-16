@@ -23,6 +23,23 @@ public:
 };
 extern Camera camera;
 
+class Gun {
+	GLuint VAO;
+	GLuint VBO_position, VBO_color;
+	std::vector<glm::vec3> v; // 각 Shape의 정점 좌표들을 저장할 벡터 자료구조
+	std::vector<glm::vec3> c; // 각 Shape의 정점 색들을 저장할 벡터 자료구조
+	// 동적 정보 (값 변경 O)
+	glm::vec3 pos; // 이동 (현재 위치)
+	glm::mat4 side_rotation = glm::mat4(1.0f); // 좌우 회전
+	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
+public:
+	Gun();
+	void Update_Buffer();
+	void draw_shape();
+	bool loadFromOBJ(const std::string& filename);
+	void setting_attributes(); // 위치, 각도 최신화
+};
+
 extern float PIXEL_PER_METER; // 10 pixel 30 cm.즉, 1 meter 당 몇 픽셀인지 계산. 10pixel을 0.3(m)으로 나누어 1미터 당 픽셀 수를 구함
 extern float RUN_SPEED_KMPH; // Km / Hour(여기서 현실적인 속도를 결정) (km / h)
 extern float RUN_SPEED_MPM; // Meter / Minute
@@ -41,6 +58,8 @@ private:
 	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
 	float speed = RUN_SPEED_PPS;
 	float size_x, size_y, size_z;
+
+	Gun gun; // 플레이어에 총 클래스 포함시키기
 public:
 	// 기본 생성자
 	Player(glm::vec3 position = glm::vec3(0.0f, 0.5f, 0.0f), float x = 0.25f, float y = 0.25f, float z = 0.25f);
@@ -60,18 +79,9 @@ public:
 	// 맵 안에 있는지 구분
 	bool outside_map();
 	bool collision();
+	glm::vec3 return_pos() { return pos; }
+	glm::mat4 return_side_rotation() { return side_rotation; }
+	glm::mat4 return_up_rotation() { return up_rotation; }
+	Gun& return_gun() { return gun; }
 };
-
 extern std::vector<Player*> player;
-
-class Gun {
-	GLuint VAO;
-	GLuint VBO_position, VBO_color;
-	std::vector<glm::vec3> v; // 각 Shape의 정점 좌표들을 저장할 벡터 자료구조
-	std::vector<glm::vec3> c; // 각 Shape의 정점 색들을 저장할 벡터 자료구조
-	// 동적 정보 (값 변경 O)
-	glm::vec3 pos; // 이동 (현재 위치)
-	glm::mat4 trans_mat; // 복합 변환 행렬
-	glm::mat4 side_rotation = glm::mat4(1.0f); // 좌우 회전
-	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
-};
