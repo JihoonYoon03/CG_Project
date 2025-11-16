@@ -150,11 +150,11 @@ void Player::right_move() {
 void Player::camera_pos_setting() {
 	// 1. 캐릭터의 전방을 side_rotation으로 돌려서 실제 전방을 구함 (어차피 방향만 주면 되기에 정면은 그냥 glm::vec3 baseFront(0.0f, 0.0f, -1.0f)로 처리)
 	glm::vec3 baseFront(0.0f, 0.0f, -1.0f);
-	glm::vec3 forward = glm::normalize(glm::vec3(up_rotation * side_rotation * glm::vec4(baseFront, 1.0f))); // 정면을 side_rotation만큼 회전 시킨 후 정규화 (안정성을 위한 정규화)
+	glm::vec3 forward = glm::normalize(glm::vec3(up_rotation * side_rotation * glm::vec4(baseFront, 0.0f))); // 정면을 side_rotation만큼 회전 시킨 후 정규화 (안정성을 위한 정규화) (방향만 쓰고 이동은 고려하지 않는 방향 벡터이기에 동차좌표 0.0f로 사용)
 	// 캐릭터 중심점 (카메라 위치 및 회전 시 몸체가 보이지 않도록 하는 높이를 고려해 조금 위쪽으로 설정)
 	glm::vec3 center = glm::vec3(pos.x, pos.y + 0.25f, pos.z);
 	// 캐릭터로부터 카메라를 둘 위치(머리)
-	camera.set_camera_Pos(center + glm::vec3(0.0f, 0.0f, -0.125f));
+	camera.set_camera_Pos(center + forward * 0.125f);
 	// 카메라가 정면을 바라봄
 	camera.set_camera_Direction(center + forward);
 }
