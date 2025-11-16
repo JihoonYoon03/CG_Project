@@ -4,7 +4,7 @@
 Camera camera;
 std::vector<Player*> player;
 
-float PIXEL_PER_METER = (0.1f);
+float PIXEL_PER_METER = (5.0f);
 float RUN_SPEED_KMPH = 20.0f; // Km / Hour(여기서 현실적인 속도를 결정) (km / h)
 float RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0f / 60.0f); // Meter / Minute
 float RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0f); // Meter / Second

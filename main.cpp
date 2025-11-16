@@ -33,6 +33,7 @@ int main(int argc, char** argv)
 	glutPassiveMotionFunc(Passive);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // 배경 흰색
 	glEnable(GL_DEPTH_TEST); // 기본 깊이 검사 활성화
+	glutIdleFunc(frame_work); // 시간 계산 (아무런 이벤트도 없는 상황일 때 수행) (아무런 동작이 없을 때 생기는 drawScene에서의 시간 계산 공백 부분 보완)
 
 	// 바닥
 	objects.push_back(new Background(glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f, 5.0f));

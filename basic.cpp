@@ -114,4 +114,5 @@ void frame_work() {
 	std::chrono::duration<float> dt = now - current_time;
 	frame_time = dt.count();
 	current_time = now;
+	glutPostRedisplay(); // 렌더링 수행 요청
 }
