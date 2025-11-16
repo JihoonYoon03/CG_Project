@@ -28,6 +28,7 @@ GLvoid drawScene()
 {
 	glUseProgram(shaderProgramID);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	frame_work();
 	view_and_projection();
 	for (size_t i = 0; i < objects.size(); ++i) {
 		objects[i]->draw_shape();

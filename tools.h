@@ -7,6 +7,7 @@
 #include <vector>
 #include <random>
 #include <queue>
+#include <chrono>
 #include <gl/glew.h>
 #include <gl/freeglut.h>
 #include <gl/freeglut_ext.h>

@@ -11,6 +11,9 @@ extern GLuint vertexShader;
 //--- 프래그먼트 세이더객체
 extern GLuint fragmentShader;
 
+extern float frame_time;
+extern std::chrono::steady_clock::time_point current_time;
+
 void Keyboard(unsigned char key, int x, int y);
 void Special(int key, int x, int y);
 void Passive(int x, int y);
@@ -24,3 +27,6 @@ void basic_make_vertexShaders();
 void basic_make_fragmentShaders();
 // 셰이더 프로그램
 GLuint basic_make_shaderProgram();
+
+// 시간 계산
+void frame_work();

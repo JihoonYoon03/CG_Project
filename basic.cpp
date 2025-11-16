@@ -10,6 +10,10 @@ GLuint vertexShader;
 //--- 프래그먼트 세이더객체
 GLuint fragmentShader;
 
+// 프레임 시간
+float frame_time = 0.0f;
+std::chrono::steady_clock::time_point current_time = std::chrono::steady_clock::now();
+
 char* filetobuf(const char* file)
 {
 	FILE* fptr;
@@ -102,4 +106,12 @@ void Reshape(int w, int h) {
 	width = w;
 	height = h;
 	glViewport(0, 0, w, h); // 전체 화면 영역 설정
+}
+
+// 시간 계산
+void frame_work() {
+	auto now = std::chrono::steady_clock::now();
+	std::chrono::duration<float> dt = now - current_time;
+	frame_time = dt.count();
+	current_time = now;
 }
