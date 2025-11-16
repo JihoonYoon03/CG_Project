@@ -40,11 +40,11 @@ int main(int argc, char** argv)
 	objects[0]->Update_Buffer();
 
 	// 박스
-	objects.push_back(new Box(glm::vec3(0.0f, 0.0625f, -2.5f), 5.0f, 0.125f, 0.1f));
+	objects.push_back(new Box(glm::vec3(0.0f, 0.0625f, 0.0f), 5.0f, 0.125f, 0.1f));
 	objects[1]->Update_Buffer();
 
 	// 플레이어
-	player.push_back(new Player(glm::vec3(0.0f, 0.125f, 0.0f)));
+	player.push_back(new Player(glm::vec3(0.0f, 0.125f, 1.0f)));
 	player[0]->Update_Buffer();
 	player[0]->camera_pos_setting(); // 카메라 조정
 

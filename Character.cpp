@@ -35,7 +35,6 @@ Player::Player(glm::vec3 position, float x, float y, float z) : pos(position) {
 		glEnableVertexAttribArray(cAttribute); // cAttribute가 읽어들인 location을 가진 속성을 활성화 (즉, vColor가 활성화된다.)
 		};
 	Make_Buffer();
-	trans_mat = glm::mat4(1.0f);
 	x *= 0.5f;
 	y *= 0.5f;
 	z *= 0.5f;
@@ -108,7 +107,7 @@ void Player::draw_shape() {
 	glm::mat4 T(1.0f);
 	T = glm::translate(T, pos);
 	//glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * side_rotation * up_rotation * trans_mat));
-	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * side_rotation * trans_mat));
+	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * side_rotation));
 
 	count = 0; // 정점 개수 초기화
 	for (auto vt = v.begin(); vt != v.end(); ++vt) {

@@ -37,7 +37,6 @@ private:
 	std::vector<glm::vec3> c; // 각 Shape의 정점 색들을 저장할 벡터 자료구조
 	// 동적 정보 (값 변경 O)
 	glm::vec3 pos; // 이동 (현재 위치)
-	glm::mat4 trans_mat; // 복합 변환 행렬
 	glm::mat4 side_rotation = glm::mat4(1.0f); // 좌우 회전
 	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
 	float speed = RUN_SPEED_PPS;
@@ -64,3 +63,15 @@ public:
 };
 
 extern std::vector<Player*> player;
+
+class Gun {
+	GLuint VAO;
+	GLuint VBO_position, VBO_color;
+	std::vector<glm::vec3> v; // 각 Shape의 정점 좌표들을 저장할 벡터 자료구조
+	std::vector<glm::vec3> c; // 각 Shape의 정점 색들을 저장할 벡터 자료구조
+	// 동적 정보 (값 변경 O)
+	glm::vec3 pos; // 이동 (현재 위치)
+	glm::mat4 trans_mat; // 복합 변환 행렬
+	glm::mat4 side_rotation = glm::mat4(1.0f); // 좌우 회전
+	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
+};
