@@ -171,6 +171,7 @@ float RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0f / 60.0f); // Meter / Minute
 float RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0f); // Meter / Second
 float RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER); // 초당 몇 픽셀을 이동할지 결졍(PPS) (이것이 속도가 됨)
 
+Player* Player::bounding_select = nullptr; // 클래스 전역 변수 초기화
 Player::Player(glm::vec3 position, float x, float y, float z) : pos(position) {
 	// 주인공 전용 버퍼
 	auto Make_Buffer = [&]() {
@@ -307,9 +308,16 @@ void Player::right_move() {
 }
 // 카메라 세팅
 void Player::camera_setting() {
+	glm::mat4 u = up_rotation;
+	if (bounding_onoff) {
+		glm::vec3 new_X = glm::normalize(glm::vec3(side_rotation * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f)));
+		glm::mat4 yR(1.0f);
+		yR = glm::rotate(yR, glm::radians(bounding_rotation), new_X);
+		u = yR * up_rotation;
+	}
 	// 1. 캐릭터의 전방을 side_rotation으로 돌려서 실제 전방을 구함 (어차피 방향만 주면 되기에 정면은 그냥 glm::vec3 baseFront(0.0f, 0.0f, -1.0f)로 처리)
 	glm::vec3 baseFront(0.0f, 0.0f, -1.0f);
-	glm::vec3 forward = glm::normalize(glm::vec3(up_rotation * side_rotation * glm::vec4(baseFront, 0.0f))); // 정면을 side_rotation만큼 회전 시킨 후 정규화 (안정성을 위한 정규화) (방향만 쓰고 이동은 고려하지 않는 방향 벡터이기에 동차좌표 0.0f로 사용)
+	glm::vec3 forward = glm::normalize(glm::vec3(u * side_rotation * glm::vec4(baseFront, 0.0f))); // 정면을 side_rotation만큼 회전 시킨 후 정규화 (안정성을 위한 정규화) (방향만 쓰고 이동은 고려하지 않는 방향 벡터이기에 동차좌표 0.0f로 사용)
 	// 캐릭터 중심점 (카메라 위치 및 회전 시 몸체가 보이지 않도록 하는 높이를 고려해 조금 위쪽으로 설정)
 	glm::vec3 center = glm::vec3(pos.x, pos.y + 0.25f, pos.z);
 	// 캐릭터로부터 카메라를 둘 위치(머리)
@@ -341,4 +349,29 @@ bool Player::collision() {
 			and return_hitbox()[3] >= objects[i]->return_hitbox()[2]) return true;
 	}
 	return false;
+}
+// 반동
+void Player::bounding_on() { 
+	if (bounding_onoff) return; // 이미 반동 중이면 종료
+	bounding_onoff = true; 
+	bounding_rotation = -10.0f;
+	bounding_select = this; // 현재 플레이어가 반동 중임을 알림
+	glutTimerFunc(100, bounding_callback, 1);
+}
+void Player::bounding(int t) {
+	if (!bounding_onoff) return;
+	bounding_rotation += 2.0f; // 서서히 각도 증가
+	if (bounding_rotation >= 0.0f) {
+		bounding_rotation = 0.0f;
+		bounding_onoff = false;
+	}
+	camera_setting();
+	glutTimerFunc(100, bounding_callback, 1);
+	glutPostRedisplay();
+}
+// 타이머에 지속적으로 bounding을 호출하기 위한 방식
+// 전역 멤버 함수 내에서 bounding을 대신 호출하고, 이 함수를 타이머에서 계속 반복 호출하는 것
+void Player::bounding_callback(int value) {
+	if (bounding_select)
+		bounding_select->bounding(value);
 }

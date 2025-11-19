@@ -56,6 +56,9 @@ private:
 	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
 	float speed = RUN_SPEED_PPS;
 	float size_x, size_y, size_z;
+	bool bounding_onoff = false; // 반동 상태
+	float bounding_rotation = 0.0f; // 반동 각도
+	static Player* bounding_select; // 반동 적용 대상
 
 	Gun gun; // 플레이어에 총 클래스 포함시키기
 public:
@@ -81,6 +84,10 @@ public:
 	glm::mat4 return_side_rotation() { return side_rotation; }
 	glm::mat4 return_up_rotation() { return up_rotation; }
 	float return_size_x() { return size_x; }
+	bool return_bounding() { return bounding_onoff; }
+	void bounding_on();
+	static void bounding_callback(int value);
+	void bounding(int t);
 	Gun& return_gun() { return gun; }
 };
 extern std::vector<Player*> player;

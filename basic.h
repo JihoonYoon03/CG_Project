@@ -15,6 +15,7 @@ extern float frame_time;
 extern std::chrono::steady_clock::time_point current_time;
 
 void Keyboard(unsigned char key, int x, int y);
+void Mouse(int button, int state, int x, int y);
 void Special(int key, int x, int y);
 void Passive(int x, int y);
 void Reshape(int w, int h);

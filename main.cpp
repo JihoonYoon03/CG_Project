@@ -29,6 +29,7 @@ int main(int argc, char** argv)
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
 	glutKeyboardFunc(Keyboard);
+	glutMouseFunc(Mouse);
 	glutSpecialFunc(Special);
 	glutPassiveMotionFunc(Passive);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // 배경 흰색
