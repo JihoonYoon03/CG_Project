@@ -1,13 +1,13 @@
-#pragma once
+ï»¿#pragma once
 #include "basic.h"
 
-// Ä«¸Ş¶ó
+// ì¹´ë©”ë¼
 class Camera {
 private:
-	glm::vec3 camera_Pos; // EYE (Ä«¸Ş¶ó À§Ä¡)
-	glm::vec3 camera_Direction; // AT (Ä«¸Ş¶ó°¡ ¹Ù¶óº¸´Â ¹æÇâ)
-	glm::vec3 camera_Up; // UP (Ä«¸Ş¶óÀÇ À§ÂÊ)
-	float rotate = 0.0f; // °øÀü È¸Àü·®
+	glm::vec3 camera_Pos; // EYE (ì¹´ë©”ë¼ ìœ„ì¹˜)
+	glm::vec3 camera_Direction; // AT (ì¹´ë©”ë¼ê°€ ë°”ë¼ë³´ëŠ” ë°©í–¥)
+	glm::vec3 camera_Up; // UP (ì¹´ë©”ë¼ì˜ ìœ„ìª½)
+	float rotate = 0.0f; // ê³µì „ íšŒì „ëŸ‰
 public:
 	Camera() {
 		camera_Pos = glm::vec3(0.0f, 0.0f, 2.0f);
@@ -26,62 +26,63 @@ extern Camera camera;
 class Gun {
 	GLuint VAO;
 	GLuint VBO_position, VBO_color;
-	std::vector<glm::vec3> v; // °¢ ShapeÀÇ Á¤Á¡ ÁÂÇ¥µéÀ» ÀúÀåÇÒ º¤ÅÍ ÀÚ·á±¸Á¶
-	std::vector<glm::vec3> c; // °¢ ShapeÀÇ Á¤Á¡ »öµéÀ» ÀúÀåÇÒ º¤ÅÍ ÀÚ·á±¸Á¶
-	// µ¿Àû Á¤º¸ (°ª º¯°æ O)
-	glm::vec3 pos; // ÀÌµ¿ (ÇöÀç À§Ä¡)
-	glm::mat4 side_rotation = glm::mat4(1.0f); // ÁÂ¿ì È¸Àü
-	glm::mat4 up_rotation = glm::mat4(1.0f); // »óÇÏ È¸Àü
+	std::vector<glm::vec3> v; // ê° Shapeì˜ ì •ì  ì¢Œí‘œë“¤ì„ ì €ì¥í•  ë²¡í„° ìë£Œêµ¬ì¡°
+	std::vector<glm::vec3> c; // ê° Shapeì˜ ì •ì  ìƒ‰ë“¤ì„ ì €ì¥í•  ë²¡í„° ìë£Œêµ¬ì¡°
+	// ë™ì  ì •ë³´ (ê°’ ë³€ê²½ O)
+	glm::vec3 pos; // ì´ë™ (í˜„ì¬ ìœ„ì¹˜)
+	glm::mat4 side_rotation = glm::mat4(1.0f); // ì¢Œìš° íšŒì „
+	glm::mat4 up_rotation = glm::mat4(1.0f); // ìƒí•˜ íšŒì „
 public:
 	Gun();
 	void Update_Buffer();
 	void draw_shape();
 	bool loadFromOBJ(const std::string& filename);
-	void setting_attributes(); // À§Ä¡, °¢µµ ÃÖ½ÅÈ­
+	void setting_attributes(); // ìœ„ì¹˜, ê°ë„ ìµœì‹ í™”
 };
 
-extern float PIXEL_PER_METER; // 10 pixel 30 cm.Áï, 1 meter ´ç ¸î ÇÈ¼¿ÀÎÁö °è»ê. 10pixelÀ» 0.3(m)À¸·Î ³ª´©¾î 1¹ÌÅÍ ´ç ÇÈ¼¿ ¼ö¸¦ ±¸ÇÔ
-extern float RUN_SPEED_KMPH; // Km / Hour(¿©±â¼­ Çö½ÇÀûÀÎ ¼Óµµ¸¦ °áÁ¤) (km / h)
+extern float PIXEL_PER_METER; // 10 pixel 30 cm.ì¦‰, 1 meter ë‹¹ ëª‡ í”½ì…€ì¸ì§€ ê³„ì‚°. 10pixelì„ 0.3(m)ìœ¼ë¡œ ë‚˜ëˆ„ì–´ 1ë¯¸í„° ë‹¹ í”½ì…€ ìˆ˜ë¥¼ êµ¬í•¨
+extern float RUN_SPEED_KMPH; // Km / Hour(ì—¬ê¸°ì„œ í˜„ì‹¤ì ì¸ ì†ë„ë¥¼ ê²°ì •) (km / h)
 extern float RUN_SPEED_MPM; // Meter / Minute
 extern float RUN_SPEED_MPS; // Meter / Second
-extern float RUN_SPEED_PPS; // ÃÊ´ç ¸î ÇÈ¼¿À» ÀÌµ¿ÇÒÁö °áÁ´(PPS) (ÀÌ°ÍÀÌ ¼Óµµ°¡ µÊ)
+extern float RUN_SPEED_PPS; // ì´ˆë‹¹ ëª‡ í”½ì…€ì„ ì´ë™í• ì§€ ê²°ì¡(PPS) (ì´ê²ƒì´ ì†ë„ê°€ ë¨)
 
 class Player {
 private:
 	GLuint VAO;
 	GLuint VBO_position, VBO_color;
-	std::vector<glm::vec3> v; // °¢ ShapeÀÇ Á¤Á¡ ÁÂÇ¥µéÀ» ÀúÀåÇÒ º¤ÅÍ ÀÚ·á±¸Á¶
-	std::vector<glm::vec3> c; // °¢ ShapeÀÇ Á¤Á¡ »öµéÀ» ÀúÀåÇÒ º¤ÅÍ ÀÚ·á±¸Á¶
-	// µ¿Àû Á¤º¸ (°ª º¯°æ O)
-	glm::vec3 pos; // ÀÌµ¿ (ÇöÀç À§Ä¡)
-	glm::mat4 side_rotation = glm::mat4(1.0f); // ÁÂ¿ì È¸Àü
-	glm::mat4 up_rotation = glm::mat4(1.0f); // »óÇÏ È¸Àü
+	std::vector<glm::vec3> v; // ê° Shapeì˜ ì •ì  ì¢Œí‘œë“¤ì„ ì €ì¥í•  ë²¡í„° ìë£Œêµ¬ì¡°
+	std::vector<glm::vec3> c; // ê° Shapeì˜ ì •ì  ìƒ‰ë“¤ì„ ì €ì¥í•  ë²¡í„° ìë£Œêµ¬ì¡°
+	// ë™ì  ì •ë³´ (ê°’ ë³€ê²½ O)
+	glm::vec3 pos; // ì´ë™ (í˜„ì¬ ìœ„ì¹˜)
+	glm::mat4 side_rotation = glm::mat4(1.0f); // ì¢Œìš° íšŒì „
+	glm::mat4 up_rotation = glm::mat4(1.0f); // ìƒí•˜ íšŒì „
 	float speed = RUN_SPEED_PPS;
 	float size_x, size_y, size_z;
 
-	Gun gun; // ÇÃ·¹ÀÌ¾î¿¡ ÃÑ Å¬·¡½º Æ÷ÇÔ½ÃÅ°±â
+	Gun gun; // í”Œë ˆì´ì–´ì— ì´ í´ë˜ìŠ¤ í¬í•¨ì‹œí‚¤ê¸°
 public:
-	// ±âº» »ı¼ºÀÚ
+	// ê¸°ë³¸ ìƒì„±ì
 	Player(glm::vec3 position = glm::vec3(0.0f, 0.5f, 0.0f), float x = 0.25f, float y = 0.25f, float z = 0.25f);
 	void Update_Buffer();
 	void draw_shape();
-	// ÀÌµ¿
+	// ì´ë™
 	void up_move();
 	void down_move();
 	void left_move();
 	void right_move();
-	// Ä«¸Ş¶ó À§Ä¡ ¼¼ÆÃ
+	// ì¹´ë©”ë¼ ìœ„ì¹˜ ì„¸íŒ…
 	void camera_pos_setting();
-	// È¸Àü·® ¹Ş¾Æ¿Í¼­ ÀúÀå
+	// íšŒì „ëŸ‰ ë°›ì•„ì™€ì„œ ì €ì¥
 	void rotation(glm::mat4 side, glm::mat4 up);
-	// È÷Æ® ¹Ú½º (ÁÂ, ¿ì, ¾Õ, µÚ)
+	// íˆíŠ¸ ë°•ìŠ¤ (ì¢Œ, ìš°, ì•, ë’¤)
 	glm::vec4 return_hitbox();
-	// ¸Ê ¾È¿¡ ÀÖ´ÂÁö ±¸ºĞ
+	// ë§µ ì•ˆì— ìˆëŠ”ì§€ êµ¬ë¶„
 	bool outside_map();
 	bool collision();
 	glm::vec3 return_pos() { return pos; }
 	glm::mat4 return_side_rotation() { return side_rotation; }
 	glm::mat4 return_up_rotation() { return up_rotation; }
+	float return_size_x() { return size_x; }
 	Gun& return_gun() { return gun; }
 };
 extern std::vector<Player*> player;

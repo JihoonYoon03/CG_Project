@@ -47,9 +47,11 @@ void Gun::draw_shape() {
 	glm::mat4 T(1.0f);
 	T = glm::translate(T, pos);
 	glm::mat4 S(1.0f);
-	S = glm::scale(S, glm::vec3(0.00025f, 0.00025f, 0.00025f));
+	S = glm::scale(S, glm::vec3(0.00025f, 0.00025f, 0.00025f)); // 총 크기 감소
+	glm::mat4 ST(1.0f);
+	ST = glm::translate(ST, glm::vec3(player[0]->return_size_x() * 0.5f, 0.0f, -0.125f));
 	//glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * side_rotation * up_rotation * trans_mat));
-	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * up_rotation * side_rotation * S));
+	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * up_rotation * side_rotation * ST * S));
 
 	count = 0; // 정점 개수 초기화
 	for (auto vt = v.begin(); vt != v.end(); ++vt) {
@@ -134,7 +136,8 @@ bool Gun::loadFromOBJ(const std::string& filename) {
 	return true;
 }
 void Gun::setting_attributes() {
-	pos = (player[0]->return_pos() + glm::vec3(0.125f, 0.0f, -0.125f)); // 플레이어의 현 위치에서 조정
+	//pos = (player[0]->return_pos() + glm::vec3(0.125f, 0.0f, -0.125f)); // 플레이어의 현 위치에서 조정
+	pos = (player[0]->return_pos()); // 플레이어의 현 위치에서 조정
 	side_rotation = player[0]->return_side_rotation();
 	up_rotation = player[0]->return_up_rotation();
 }
