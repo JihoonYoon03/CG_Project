@@ -155,7 +155,7 @@ void Gun::setting_attributes() {
 	// 즉, 총의 카메라 공간 위치만큼 카메라 공간의 기저 벡터를 스케일하고 이를 모두 합하여 원하는 방향을 가리키는 하나의 벡터로 만들어주는 것
 	glm::vec3 worldOffset =
 		right_V * gunOffset.x
-		+ up * gunOffset.y
+		+ up_V * gunOffset.y
 		+ forward_V * gunOffset.z;
 
 	pos = eye + worldOffset; // 위에서 구한 벡터를 카메라 위치에 더하여 총의 최종 월드 좌표를 구함
