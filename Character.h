@@ -7,7 +7,6 @@ private:
 	glm::vec3 camera_Pos; // EYE (카메라 위치)
 	glm::vec3 camera_Direction; // AT (카메라가 바라보는 방향)
 	glm::vec3 camera_Up; // UP (카메라의 위쪽)
-	float rotate = 0.0f; // 공전 회전량
 public:
 	Camera() {
 		camera_Pos = glm::vec3(0.0f, 0.0f, 2.0f);
@@ -19,7 +18,6 @@ public:
 	glm::vec3 return_eye() { return camera_Pos; }
 	glm::vec3 return_at() { return camera_Direction; }
 	glm::vec3 return_up() { return camera_Up; }
-	float return_rotate() { return rotate; }
 };
 extern Camera camera;
 
