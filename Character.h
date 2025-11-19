@@ -68,8 +68,8 @@ public:
 	void down_move();
 	void left_move();
 	void right_move();
-	// 카메라 위치 세팅
-	void camera_pos_setting();
+	// 카메라 세팅
+	void camera_setting();
 	// 회전량 받아와서 저장
 	void rotation(glm::mat4 side, glm::mat4 up);
 	// 히트 박스 (좌, 우, 앞, 뒤)

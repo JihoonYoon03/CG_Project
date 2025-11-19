@@ -6,22 +6,22 @@ void Keyboard(unsigned char key, int x, int y) {
 	// 이동
 	case 'w': {
 		player[0]->up_move();
-		player[0]->camera_pos_setting();
+		player[0]->camera_setting();
 		break;
 	}
 	case 'a': {
 		player[0]->left_move();
-		player[0]->camera_pos_setting();
+		player[0]->camera_setting();
 		break;
 	}
 	case 's': {
 		player[0]->down_move();
-		player[0]->camera_pos_setting();
+		player[0]->camera_setting();
 		break;
 	}
 	case 'd': {
 		player[0]->right_move();
-		player[0]->camera_pos_setting();
+		player[0]->camera_setting();
 		break;
 	}
 	case 'q': {
@@ -64,7 +64,8 @@ void Passive(int x, int y) {
 
 	// 회전 정보 전달
 	player[0]->rotation(xR, yR);
-	player[0]->camera_pos_setting();
+	// 카메라 최신화
+	player[0]->camera_setting();
 
 	glutPostRedisplay();
 }

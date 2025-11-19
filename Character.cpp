@@ -144,7 +144,7 @@ void Gun::setting_attributes() {
 	glm::vec3 up = camera.return_up();
 
 	// 카메라 방향 벡터들 (u, v, n)
-	glm::vec3 forward_V = glm::normalize(at - eye);
+	glm::vec3 forward_V = glm::normalize(at - eye); // at - eye를 통해 카메라가 바라보고 있는 방향에 대한 벡터가 결정되므로, 회전이 적용되어있다 봐도 무방
 	glm::vec3 right_V = glm::normalize(glm::cross(forward_V, up));
 	glm::vec3 up_V = glm::cross(right_V, forward_V);
 
@@ -305,8 +305,8 @@ void Player::right_move() {
 	pos += glm::vec3(R);
 	if (outside_map() or collision()) pos -= glm::vec3(R);
 }
-// 카메라 위치 세팅
-void Player::camera_pos_setting() {
+// 카메라 세팅
+void Player::camera_setting() {
 	// 1. 캐릭터의 전방을 side_rotation으로 돌려서 실제 전방을 구함 (어차피 방향만 주면 되기에 정면은 그냥 glm::vec3 baseFront(0.0f, 0.0f, -1.0f)로 처리)
 	glm::vec3 baseFront(0.0f, 0.0f, -1.0f);
 	glm::vec3 forward = glm::normalize(glm::vec3(up_rotation * side_rotation * glm::vec4(baseFront, 0.0f))); // 정면을 side_rotation만큼 회전 시킨 후 정규화 (안정성을 위한 정규화) (방향만 쓰고 이동은 고려하지 않는 방향 벡터이기에 동차좌표 0.0f로 사용)
