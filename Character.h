@@ -82,7 +82,17 @@ public:
 	bool collision();
 	glm::vec3 return_pos() { return pos; }
 	glm::mat4 return_side_rotation() { return side_rotation; }
-	glm::mat4 return_up_rotation() { return up_rotation; }
+	glm::mat4 return_up_rotation() { 
+		glm::mat4 u(1.0f);
+		u = up_rotation;
+		if (bounding_onoff) { // 반동 중이면 반동이 적용된 상하 각도로 총에 전달
+			glm::vec3 new_X = glm::normalize(glm::vec3(side_rotation * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f)));
+			glm::mat4 yR(1.0f);
+			yR = glm::rotate(yR, glm::radians(bounding_rotation), new_X);
+			u = yR * up_rotation;
+		}
+		return u; 
+	}
 	float return_size_x() { return size_x; }
 	bool return_bounding() { return bounding_onoff; }
 	void bounding_on();

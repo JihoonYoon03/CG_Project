@@ -354,14 +354,14 @@ bool Player::collision() {
 void Player::bounding_on() { 
 	if (bounding_onoff) return; // 이미 반동 중이면 종료
 	bounding_onoff = true; 
-	bounding_rotation = -10.0f;
+	bounding_rotation = 10.0f;
 	bounding_select = this; // 현재 플레이어가 반동 중임을 알림
 	glutTimerFunc(100, bounding_callback, 1);
 }
 void Player::bounding(int t) {
 	if (!bounding_onoff) return;
-	bounding_rotation += 2.0f; // 서서히 각도 증가
-	if (bounding_rotation >= 0.0f) {
+	bounding_rotation -= 2.0f; // 서서히 각도 감소
+	if (bounding_rotation <= 0.0f) {
 		bounding_rotation = 0.0f;
 		bounding_onoff = false;
 	}
