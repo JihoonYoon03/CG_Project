@@ -1,14 +1,14 @@
-#pragma once
+ï»¿#pragma once
 #include "tools.h"
 extern std::default_random_engine dre;
 
-// À©µµ¿ì Å©±â
+// ìœˆë„ìš° í¬ê¸°
 extern GLint width, height;
-//--- ¼¼ÀÌ´õ ÇÁ·Î±×·¥ ÀÌ¸§
+//--- ì„¸ì´ë” í”„ë¡œê·¸ë¨ ì´ë¦„
 extern GLuint shaderProgramID;
-//--- ¹öÅØ½º¼¼ÀÌ´õ°´Ã¼
+//--- ë²„í…ìŠ¤ì„¸ì´ë”ê°ì²´
 extern GLuint vertexShader;
-//--- ÇÁ·¡±×¸ÕÆ® ¼¼ÀÌ´õ°´Ã¼
+//--- í”„ë˜ê·¸ë¨¼íŠ¸ ì„¸ì´ë”ê°ì²´
 extern GLuint fragmentShader;
 
 extern float frame_time;
@@ -21,12 +21,12 @@ void Reshape(int w, int h);
 
 char* filetobuf(const char* file);
 
-// ¹öÅØ½º ¼ÎÀÌ´õ °´Ã¼ ¸¸µé±â
+// ë²„í…ìŠ¤ ì…°ì´ë” ê°ì²´ ë§Œë“¤ê¸°
 void basic_make_vertexShaders();
-//--- ÇÁ·¡±×¸ÕÆ® ¼¼ÀÌ´õ °´Ã¼ ¸¸µé±â
+//--- í”„ë˜ê·¸ë¨¼íŠ¸ ì„¸ì´ë” ê°ì²´ ë§Œë“¤ê¸°
 void basic_make_fragmentShaders();
-// ¼ÎÀÌ´õ ÇÁ·Î±×·¥
+// ì…°ì´ë” í”„ë¡œê·¸ë¨
 GLuint basic_make_shaderProgram();
 
-// ½Ã°£ °è»ê
+// ì‹œê°„ ê³„ì‚°
 void frame_work();

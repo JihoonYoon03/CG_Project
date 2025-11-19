@@ -1,34 +1,34 @@
-#pragma once
+ï»¿#pragma once
 #include "basic.h"
 #include "Character.h"
 #include "Background.h"
 
-// ºä ¹× Åõ¿µ º¯È¯
+// ë·° ë° íˆ¬ì˜ ë³€í™˜
 void view_and_projection() {
-	// ¼ÎÀÌ´õ ÇÁ·Î±×·¥¿¡¼­ view_Transform º¯¼ö À§Ä¡ view_LocationÀ¸·Î °¡Á®¿À±â
+	// ì…°ì´ë” í”„ë¡œê·¸ë¨ì—ì„œ view_Transform ë³€ìˆ˜ ìœ„ì¹˜ view_Locationìœ¼ë¡œ ê°€ì ¸ì˜¤ê¸°
 	unsigned int view_Location = glGetUniformLocation(shaderProgramID, "view_Transform");
 	unsigned int projLoc = glGetUniformLocation(shaderProgramID, "projection_Transform");
 
-	// ºä º¯È¯ Çà·Ä ÁØºñ
+	// ë·° ë³€í™˜ í–‰ë ¬ ì¤€ë¹„
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 R(1.0f);
 	glm::mat4 xR(1.0f);
-	xR = glm::rotate(xR, glm::radians(-15.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // xÃà È¸Àü
-	R = glm::rotate(R, glm::radians(camera.return_rotate()), glm::vec3(0.0f, 1.0f, 0.0f)); // Ä«¸Ş¶ó °øÀü À§Ä¡
-	glm::vec4 dir = R * xR * glm::vec4(camera.return_eye() - camera.return_at(), 1.0f); // µ¿Â÷ ÁÂÇ¥¸¦ È°¿ëÇØ ¿øÁ¡°ú pos¿ÍÀÇ º¤ÅÍ¿¡´Ù°¡ È¸ÀüÀ» Àû¿ë
-	view = glm::lookAt(camera.return_at() + glm::vec3(dir), camera.return_at(), camera.return_up()); // lookAtÀ» ÅëÇÑ Ä«¸Ş¶ó ¼³Á¤ (ÀÎÀÚ°ªÀ» ÅëÇÑ Ä«¸Ş¶ó ÁÂÇ¥°è »ı¼º ÈÄ ÀÌ¿¡ µû¸¥ ºä º¯È¯ Çà·ÄÀ» view¿¡ ÀúÀå)
-	glUniformMatrix4fv(view_Location, 1, GL_FALSE, &view[0][0]); // &view[0][0]ÀÇ Çü½ÄÀ» ÅëÇØ mat4 ÀÚ·áÇüÀÇ view¿¡ ´ëÇÑ ½ÃÀÛ ÁÖ¼Ò°ªÀ» ³Ñ±è
+	xR = glm::rotate(xR, glm::radians(-15.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // xì¶• íšŒì „
+	R = glm::rotate(R, glm::radians(camera.return_rotate()), glm::vec3(0.0f, 1.0f, 0.0f)); // ì¹´ë©”ë¼ ê³µì „ ìœ„ì¹˜
+	glm::vec4 dir = R * xR * glm::vec4(camera.return_eye() - camera.return_at(), 1.0f); // ë™ì°¨ ì¢Œí‘œë¥¼ í™œìš©í•´ ì›ì ê³¼ posì™€ì˜ ë²¡í„°ì—ë‹¤ê°€ íšŒì „ì„ ì ìš©
+	view = glm::lookAt(camera.return_at() + glm::vec3(dir), camera.return_at(), camera.return_up()); // lookAtì„ í†µí•œ ì¹´ë©”ë¼ ì„¤ì • (ì¸ìê°’ì„ í†µí•œ ì¹´ë©”ë¼ ì¢Œí‘œê³„ ìƒì„± í›„ ì´ì— ë”°ë¥¸ ë·° ë³€í™˜ í–‰ë ¬ì„ viewì— ì €ì¥)
+	glUniformMatrix4fv(view_Location, 1, GL_FALSE, &view[0][0]); // &view[0][0]ì˜ í˜•ì‹ì„ í†µí•´ mat4 ìë£Œí˜•ì˜ viewì— ëŒ€í•œ ì‹œì‘ ì£¼ì†Œê°’ì„ ë„˜ê¹€
 
-	glm::mat4 pTransform = glm::mat4(1.0f); // Åõ¿µ º¯È¯ Çà·Ä ÁØºñ
+	glm::mat4 pTransform = glm::mat4(1.0f); // íˆ¬ì˜ ë³€í™˜ í–‰ë ¬ ì¤€ë¹„
 	pTransform = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 200.0f);
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &pTransform[0][0]); // &pTransform[0][0]ÀÇ Çü½ÄÀ» ÅëÇØ mat4 ÀÚ·áÇüÀÇ view¿¡ ´ëÇÑ ½ÃÀÛ ÁÖ¼Ò°ªÀ» ³Ñ±è
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &pTransform[0][0]); // &pTransform[0][0]ì˜ í˜•ì‹ì„ í†µí•´ mat4 ìë£Œí˜•ì˜ viewì— ëŒ€í•œ ì‹œì‘ ì£¼ì†Œê°’ì„ ë„˜ê¹€
 }
 
 GLvoid drawScene()
 {
 	glUseProgram(shaderProgramID);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	frame_work(); // ½Ã°£ °è»ê (ÀÌº¥Æ®°¡ ÀÛ¿ëÇÏ¿© ·»´õ¸µ µÇ´Â °æ¿ì ¼öÇà)
+	frame_work(); // ì‹œê°„ ê³„ì‚° (ì´ë²¤íŠ¸ê°€ ì‘ìš©í•˜ì—¬ ë Œë”ë§ ë˜ëŠ” ê²½ìš° ìˆ˜í–‰)
 	view_and_projection();
 	for (size_t i = 0; i < objects.size(); ++i) {
 		objects[i]->draw_shape();

@@ -1,13 +1,13 @@
-#pragma once
+ï»¿#pragma once
 #include "Character.h"
 
-// ±â¹İ Å¬·¡½º
+// ê¸°ë°˜ í´ë˜ìŠ¤
 class Objects {
 public:
 	virtual void Update_Buffer() = 0;
 	virtual void draw_shape() = 0;
 	virtual glm::vec4 return_hitbox() = 0;
-	virtual ~Objects() {}  // ¹İµå½Ã virtual ¼Ò¸êÀÚ
+	virtual ~Objects() {}  // ë°˜ë“œì‹œ virtual ì†Œë©¸ì
 };
 extern std::vector<Objects*> objects;
 
@@ -15,10 +15,10 @@ class Background : public Objects {
 private:
 	GLuint VAO;
 	GLuint VBO_position, VBO_color;
-	std::vector<glm::vec3> v; // °¢ ShapeÀÇ Á¤Á¡ ÁÂÇ¥µéÀ» ÀúÀåÇÒ º¤ÅÍ ÀÚ·á±¸Á¶
-	std::vector<glm::vec3> c; // °¢ ShapeÀÇ Á¤Á¡ »öµéÀ» ÀúÀåÇÒ º¤ÅÍ ÀÚ·á±¸Á¶
-	// µ¿Àû Á¤º¸ (°ª º¯°æ O)
-	glm::vec3 pos; // ÀÌµ¿ (ÇöÀç À§Ä¡)
+	std::vector<glm::vec3> v; // ê° Shapeì˜ ì •ì  ì¢Œí‘œë“¤ì„ ì €ì¥í•  ë²¡í„° ìë£Œêµ¬ì¡°
+	std::vector<glm::vec3> c; // ê° Shapeì˜ ì •ì  ìƒ‰ë“¤ì„ ì €ì¥í•  ë²¡í„° ìë£Œêµ¬ì¡°
+	// ë™ì  ì •ë³´ (ê°’ ë³€ê²½ O)
+	glm::vec3 pos; // ì´ë™ (í˜„ì¬ ìœ„ì¹˜)
 	float size_x, size_y, size_z;
 public:
 	Background(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float x = 5.0f, float y = 5.0f, float z = 5.0f);
@@ -31,10 +31,10 @@ class Box : public Objects {
 private:
 	GLuint VAO;
 	GLuint VBO_position, VBO_color;
-	std::vector<glm::vec3> v; // °¢ ShapeÀÇ Á¤Á¡ ÁÂÇ¥µéÀ» ÀúÀåÇÒ º¤ÅÍ ÀÚ·á±¸Á¶
-	std::vector<glm::vec3> c; // °¢ ShapeÀÇ Á¤Á¡ »öµéÀ» ÀúÀåÇÒ º¤ÅÍ ÀÚ·á±¸Á¶
-	// µ¿Àû Á¤º¸ (°ª º¯°æ O)
-	glm::vec3 pos; // ÀÌµ¿ (ÇöÀç À§Ä¡)
+	std::vector<glm::vec3> v; // ê° Shapeì˜ ì •ì  ì¢Œí‘œë“¤ì„ ì €ì¥í•  ë²¡í„° ìë£Œêµ¬ì¡°
+	std::vector<glm::vec3> c; // ê° Shapeì˜ ì •ì  ìƒ‰ë“¤ì„ ì €ì¥í•  ë²¡í„° ìë£Œêµ¬ì¡°
+	// ë™ì  ì •ë³´ (ê°’ ë³€ê²½ O)
+	glm::vec3 pos; // ì´ë™ (í˜„ì¬ ìœ„ì¹˜)
 	float size_x, size_y, size_z;
 public:
 	Box(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float x = 5.0f, float y = 5.0f, float z = 5.0f);

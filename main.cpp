@@ -1,4 +1,4 @@
-#include "basic.h"
+ï»¿#include "basic.h"
 #include "Character.h"
 #include "Background.h"
 #include "draw.h"
@@ -8,18 +8,18 @@
 #pragma comment(lib, "freeglut.lib")
 #pragma warning(disable: 4711 4710 4100)
 
-//--- ¸ŞÀÎ ÇÔ¼ö
+//--- ë©”ì¸ í•¨ìˆ˜
 int main(int argc, char** argv)
 {
 	width = 800;
 	height = 600;
-	//--- À©µµ¿ì»ı¼ºÇÏ±â
+	//--- ìœˆë„ìš°ìƒì„±í•˜ê¸°
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowPosition(100, 100);
 	glutInitWindowSize(width, height);
 	glutCreateWindow("Example1");
-	//--- GLEW ÃÊ±âÈ­ÇÏ±â
+	//--- GLEW ì´ˆê¸°í™”í•˜ê¸°
 	glewExperimental = GL_TRUE;
 	glewInit();
 	basic_make_vertexShaders();
@@ -31,26 +31,26 @@ int main(int argc, char** argv)
 	glutKeyboardFunc(Keyboard);
 	glutSpecialFunc(Special);
 	glutPassiveMotionFunc(Passive);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // ¹è°æ Èò»ö
-	glEnable(GL_DEPTH_TEST); // ±âº» ±íÀÌ °Ë»ç È°¼ºÈ­
-	glutIdleFunc(frame_work); // ½Ã°£ °è»ê (¾Æ¹«·± ÀÌº¥Æ®µµ ¾ø´Â »óÈ²ÀÏ ¶§ ¼öÇà) (¾Æ¹«·± µ¿ÀÛÀÌ ¾øÀ» ¶§ »ı±â´Â drawScene¿¡¼­ÀÇ ½Ã°£ °è»ê °ø¹é ºÎºĞ º¸¿Ï)
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // ë°°ê²½ í°ìƒ‰
+	glEnable(GL_DEPTH_TEST); // ê¸°ë³¸ ê¹Šì´ ê²€ì‚¬ í™œì„±í™”
+	glutIdleFunc(frame_work); // ì‹œê°„ ê³„ì‚° (ì•„ë¬´ëŸ° ì´ë²¤íŠ¸ë„ ì—†ëŠ” ìƒí™©ì¼ ë•Œ ìˆ˜í–‰) (ì•„ë¬´ëŸ° ë™ì‘ì´ ì—†ì„ ë•Œ ìƒê¸°ëŠ” drawSceneì—ì„œì˜ ì‹œê°„ ê³„ì‚° ê³µë°± ë¶€ë¶„ ë³´ì™„)
 
-	// ¹Ù´Ú
+	// ë°”ë‹¥
 	objects.push_back(new Background(glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f, 5.0f));
 	objects[0]->Update_Buffer();
 
-	// ¹Ú½º
+	// ë°•ìŠ¤
 	objects.push_back(new Box(glm::vec3(0.0f, 0.0625f, 0.0f), 5.0f, 0.125f, 0.1f));
 	objects[1]->Update_Buffer();
 
-	// ÇÃ·¹ÀÌ¾î
+	// í”Œë ˆì´ì–´
 	player.push_back(new Player(glm::vec3(0.0f, 0.125f, 1.0f)));
 	player[0]->Update_Buffer();
-	player[0]->camera_pos_setting(); // Ä«¸Ş¶ó Á¶Á¤
+	player[0]->camera_pos_setting(); // ì¹´ë©”ë¼ ì¡°ì •
 
 	glutMainLoop();
 
-	// new·Î ¸¸µç ¿ÀºêÁ§Æ® delete·Î ÃÊ±âÈ­
+	// newë¡œ ë§Œë“  ì˜¤ë¸Œì íŠ¸ deleteë¡œ ì´ˆê¸°í™”
 	for (auto obj : objects)
 		delete obj;
 	objects.clear();

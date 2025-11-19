@@ -1,4 +1,4 @@
-#include "Background.h"
+ï»¿#include "Background.h"
 
 std::vector<Objects*> objects;
 
@@ -6,28 +6,28 @@ Background::Background(glm::vec3 position, float x, float y, float z) : pos(posi
 	size_x = x;
 	size_y = y;
 	size_z = z;
-	// °´Ã¼ Àü¿ë ¹öÆÛ
+	// ê°ì²´ ì „ìš© ë²„í¼
 	auto Make_Buffer = [&]() {
-		// ÁÂÇ¥ ¹öÆÛ
-		glGenBuffers(1, &VBO_position); // ¹öÆÛ ID ¹ß±ŞÇÏ¿© VBO_position¿¡ ÀúÀå
-		// »ö ¹öÆÛ
-		glGenBuffers(1, &VBO_color); // ¹öÆÛ ID ¹ß±ŞÇÏ¿© VBO_color¿¡ ÀúÀå
+		// ì¢Œí‘œ ë²„í¼
+		glGenBuffers(1, &VBO_position); // ë²„í¼ ID ë°œê¸‰í•˜ì—¬ VBO_positionì— ì €ì¥
+		// ìƒ‰ ë²„í¼
+		glGenBuffers(1, &VBO_color); // ë²„í¼ ID ë°œê¸‰í•˜ì—¬ VBO_colorì— ì €ì¥
 
-		// VAO ¼³Á¤ (±×¸®±â Àü¿¡´Â Ç×»ó VAO¸¦ ¹ÙÀÎµù ÇÑ ´ÙÀ½¿¡ ±×¸®±â¸¦ ¼öÇàÇØÁÖ¸é µÈ´Ù.) (VAO°¡ VBOµéÀ» ´ã°í ÀÖ±â ¶§¹®)
+		// VAO ì„¤ì • (ê·¸ë¦¬ê¸° ì „ì—ëŠ” í•­ìƒ VAOë¥¼ ë°”ì¸ë”© í•œ ë‹¤ìŒì— ê·¸ë¦¬ê¸°ë¥¼ ìˆ˜í–‰í•´ì£¼ë©´ ëœë‹¤.) (VAOê°€ VBOë“¤ì„ ë‹´ê³  ìˆê¸° ë•Œë¬¸)
 		glGenVertexArrays(1, &VAO);
 
-		glBindVertexArray(VAO); // ±×·ÁÁú µµÇüµéÀÇ Á¤Á¡µéÀÌ ÀúÀåµÈ ¹öÆÛ Á¤º¸¸¦ ÇÑµ¥ ¹­Àº VAO ¹ÙÀÎµå
+		glBindVertexArray(VAO); // ê·¸ë ¤ì§ˆ ë„í˜•ë“¤ì˜ ì •ì ë“¤ì´ ì €ì¥ëœ ë²„í¼ ì •ë³´ë¥¼ í•œë° ë¬¶ì€ VAO ë°”ì¸ë“œ
 
-		// ¹öÅØ½º ¼ÎÀÌ´õ·Î °ª Àü´Ş ¹× °ª ÀĞ¾îµéÀÏ À¯Çü ¼³Á¤ (3°³¾¿ ÀĞ¾î¾ß Á¤Á¡ ÇÏ³ªÀÇ ÁÂÇ¥, Á¤Á¡ ÇÏ³ªÀÇ »ö»óÀÌ ÀĞ¾îÁü)
-		GLint pAttribute = glGetAttribLocation(shaderProgramID, "vPos"); // Vertex Shader ÇÁ·Î±×·¥¿¡ Á¸ÀçÇÏ´Â vPos¶ó´Â ÀÌ¸§ÀÇ ¼Ó¼º(º¯¼ö)°¡ °¡Áø location°ªÀ» °¡Á®¿Í pAttribute º¯¼ö¿¡ ÀúÀåÇÑ´Ù.
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // Á¤Á¡ À§Ä¡ ¹öÆÛ ¹ÙÀÎµå (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ¸¦ ´ë»óÀ¸·Î ÇÑ ÀĞ¾îµéÀÌ±â À¯ÇüÀÌ Àü´ŞµÊ)
-		glVertexAttribPointer(pAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0); // pAttribute¿¡¼­ ÀĞ¾î¿Â locationÀ» °¡Áø ¼Ó¼º vPos°¡ µ¥ÀÌÅÍ¸¦ ÀĞ¾îµéÀÏ À¯ÇüÀ» ÁöÁ¤ (glm::vec3·Î Á¤Á¡ Á¤º¸¸¦ ÀúÀåÇß±â¿¡, glm::vec3¾¿ ÀĞ¾îµéÀÌµµ·Ï ÇØ¾ß ÇÔ. ±×·¡¾ß ÇÑ ¹ø ÀĞÀ» ¶§ Á¤Á¡ ÇÏ³ª ¸¸Å­À» ÀĞ¾îµéÀÏ ¼ö ÀÖ°Ô µÊ)
-		glEnableVertexAttribArray(pAttribute); // pAttribute°¡ ÀĞ¾îµéÀÎ locationÀ» °¡Áø ¼Ó¼ºÀ» È°¼ºÈ­ (Áï, vPos°¡ È°¼ºÈ­µÈ´Ù.)
+		// ë²„í…ìŠ¤ ì…°ì´ë”ë¡œ ê°’ ì „ë‹¬ ë° ê°’ ì½ì–´ë“¤ì¼ ìœ í˜• ì„¤ì • (3ê°œì”© ì½ì–´ì•¼ ì •ì  í•˜ë‚˜ì˜ ì¢Œí‘œ, ì •ì  í•˜ë‚˜ì˜ ìƒ‰ìƒì´ ì½ì–´ì§)
+		GLint pAttribute = glGetAttribLocation(shaderProgramID, "vPos"); // Vertex Shader í”„ë¡œê·¸ë¨ì— ì¡´ì¬í•˜ëŠ” vPosë¼ëŠ” ì´ë¦„ì˜ ì†ì„±(ë³€ìˆ˜)ê°€ ê°€ì§„ locationê°’ì„ ê°€ì ¸ì™€ pAttribute ë³€ìˆ˜ì— ì €ì¥í•œë‹¤.
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // ì •ì  ìœ„ì¹˜ ë²„í¼ ë°”ì¸ë“œ (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¥¼ ëŒ€ìƒìœ¼ë¡œ í•œ ì½ì–´ë“¤ì´ê¸° ìœ í˜•ì´ ì „ë‹¬ë¨)
+		glVertexAttribPointer(pAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0); // pAttributeì—ì„œ ì½ì–´ì˜¨ locationì„ ê°€ì§„ ì†ì„± vPosê°€ ë°ì´í„°ë¥¼ ì½ì–´ë“¤ì¼ ìœ í˜•ì„ ì§€ì • (glm::vec3ë¡œ ì •ì  ì •ë³´ë¥¼ ì €ì¥í–ˆê¸°ì—, glm::vec3ì”© ì½ì–´ë“¤ì´ë„ë¡ í•´ì•¼ í•¨. ê·¸ë˜ì•¼ í•œ ë²ˆ ì½ì„ ë•Œ ì •ì  í•˜ë‚˜ ë§Œí¼ì„ ì½ì–´ë“¤ì¼ ìˆ˜ ìˆê²Œ ë¨)
+		glEnableVertexAttribArray(pAttribute); // pAttributeê°€ ì½ì–´ë“¤ì¸ locationì„ ê°€ì§„ ì†ì„±ì„ í™œì„±í™” (ì¦‰, vPosê°€ í™œì„±í™”ëœë‹¤.)
 
-		GLint cAttribute = glGetAttribLocation(shaderProgramID, "vColor"); // Vertex Shader ÇÁ·Î±×·¥¿¡ Á¸ÀçÇÏ´Â vColor¶ó´Â ÀÌ¸§ÀÇ ¼Ó¼º(º¯¼ö)°¡ °¡Áø location°ªÀ» °¡Á®¿Í cAttribute º¯¼ö¿¡ ÀúÀåÇÑ´Ù.
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // »ö ¹öÆÛ ¹ÙÀÎµå (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ¸¦ ´ë»óÀ¸·Î ÇÑ ÀĞ¾îµéÀÌ±â À¯ÇüÀÌ Àü´ŞµÊ)
-		glVertexAttribPointer(cAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0); // cAttribute¿¡¼­ ÀĞ¾î¿Â locationÀ» °¡Áø ¼Ó¼º vColor°¡ µ¥ÀÌÅÍ¸¦ ÀĞ¾îµéÀÏ À¯ÇüÀ» ÁöÁ¤
-		glEnableVertexAttribArray(cAttribute); // cAttribute°¡ ÀĞ¾îµéÀÎ locationÀ» °¡Áø ¼Ó¼ºÀ» È°¼ºÈ­ (Áï, vColor°¡ È°¼ºÈ­µÈ´Ù.)
+		GLint cAttribute = glGetAttribLocation(shaderProgramID, "vColor"); // Vertex Shader í”„ë¡œê·¸ë¨ì— ì¡´ì¬í•˜ëŠ” vColorë¼ëŠ” ì´ë¦„ì˜ ì†ì„±(ë³€ìˆ˜)ê°€ ê°€ì§„ locationê°’ì„ ê°€ì ¸ì™€ cAttribute ë³€ìˆ˜ì— ì €ì¥í•œë‹¤.
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // ìƒ‰ ë²„í¼ ë°”ì¸ë“œ (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¥¼ ëŒ€ìƒìœ¼ë¡œ í•œ ì½ì–´ë“¤ì´ê¸° ìœ í˜•ì´ ì „ë‹¬ë¨)
+		glVertexAttribPointer(cAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0); // cAttributeì—ì„œ ì½ì–´ì˜¨ locationì„ ê°€ì§„ ì†ì„± vColorê°€ ë°ì´í„°ë¥¼ ì½ì–´ë“¤ì¼ ìœ í˜•ì„ ì§€ì •
+		glEnableVertexAttribArray(cAttribute); // cAttributeê°€ ì½ì–´ë“¤ì¸ locationì„ ê°€ì§„ ì†ì„±ì„ í™œì„±í™” (ì¦‰, vColorê°€ í™œì„±í™”ëœë‹¤.)
 		};
 	Make_Buffer();
 	glm::vec3 P[4] = {
@@ -41,45 +41,45 @@ Background::Background(glm::vec3 position, float x, float y, float z) : pos(posi
 		v.emplace_back(P[j]);
 		v.emplace_back(P[k]);
 
-		// ÃÊ·Ï»ö ¹Ù´Ú
+		// ì´ˆë¡ìƒ‰ ë°”ë‹¥
 		c.emplace_back(glm::vec3(0.0f, 1.0f, 0.0f));
 		c.emplace_back(glm::vec3(0.0f, 1.0f, 0.0f));
 		c.emplace_back(glm::vec3(0.0f, 1.0f, 0.0f));
 		};
-	// ¹Ù´Ú »ı¼º
+	// ë°”ë‹¥ ìƒì„±
 	add_triangle(0, 2, 3);
 	add_triangle(0, 3, 1);
 }
 void Background::Update_Buffer() {
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // Á¤Á¡ ¹öÆÛ·Î ¹ÙÀÎµù (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ·Î µ¥ÀÌÅÍ°¡ Àü´ŞµÊ)
-	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), v.data(), GL_STATIC_DRAW); // ÇØ´ç ¹öÆÛ¿¡ ¼Ò½º ÆÄÀÏ¿¡¼­ ¼±¾ğÇÑ Á¤Á¡ ¼Ó¼º ¹è¿­ µ¥ÀÌÅÍ ÀúÀå
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // ì •ì  ë²„í¼ë¡œ ë°”ì¸ë”© (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¡œ ë°ì´í„°ê°€ ì „ë‹¬ë¨)
+	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), v.data(), GL_STATIC_DRAW); // í•´ë‹¹ ë²„í¼ì— ì†ŒìŠ¤ íŒŒì¼ì—ì„œ ì„ ì–¸í•œ ì •ì  ì†ì„± ë°°ì—´ ë°ì´í„° ì €ì¥
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // Á¤Á¡ ¹öÆÛ·Î ¹ÙÀÎµù (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ·Î µ¥ÀÌÅÍ°¡ Àü´ŞµÊ)
-	glBufferData(GL_ARRAY_BUFFER, c.size() * sizeof(glm::vec3), c.data(), GL_STATIC_DRAW); // ÇØ´ç ¹öÆÛ¿¡ ¼Ò½º ÆÄÀÏ¿¡¼­ ¼±¾ğÇÑ Á¤Á¡ ¼Ó¼º ¹è¿­ µ¥ÀÌÅÍ ÀúÀå
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // ì •ì  ë²„í¼ë¡œ ë°”ì¸ë”© (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¡œ ë°ì´í„°ê°€ ì „ë‹¬ë¨)
+	glBufferData(GL_ARRAY_BUFFER, c.size() * sizeof(glm::vec3), c.data(), GL_STATIC_DRAW); // í•´ë‹¹ ë²„í¼ì— ì†ŒìŠ¤ íŒŒì¼ì—ì„œ ì„ ì–¸í•œ ì •ì  ì†ì„± ë°°ì—´ ë°ì´í„° ì €ì¥
 }
 void Background::draw_shape() {
-	glBindVertexArray(VAO); // ±×·ÁÁú µµÇüµéÀÇ Á¤Á¡ Á¤º¸°¡ ÀúÀåµÈ VAO ¹ÙÀÎµå
-	// ¼ÎÀÌ´õ ÇÁ·Î±×·¥¿¡¼­ model_Transform º¯¼ö À§Ä¡ model_LocationÀ¸·Î °¡Á®¿À±â (ÇÑ ¹ø¸¸ °¡Á®¿À°í, °¢ µµÇü¿¡ ´ëÇØ¼­ Çà·Ä ÃÖ½ÅÈ­ ÇÒ°Å¶ó »ó°ü ¾øÀ½)
+	glBindVertexArray(VAO); // ê·¸ë ¤ì§ˆ ë„í˜•ë“¤ì˜ ì •ì  ì •ë³´ê°€ ì €ì¥ëœ VAO ë°”ì¸ë“œ
+	// ì…°ì´ë” í”„ë¡œê·¸ë¨ì—ì„œ model_Transform ë³€ìˆ˜ ìœ„ì¹˜ model_Locationìœ¼ë¡œ ê°€ì ¸ì˜¤ê¸° (í•œ ë²ˆë§Œ ê°€ì ¸ì˜¤ê³ , ê° ë„í˜•ì— ëŒ€í•´ì„œ í–‰ë ¬ ìµœì‹ í™” í• ê±°ë¼ ìƒê´€ ì—†ìŒ)
 	unsigned int model_Location = glGetUniformLocation(shaderProgramID, "model_Transform");
-	// ÇöÀç Á¸ÀçÇÏ´Â µµÇü ¸ğµÎ ±×¸®±â
-	int index = 0; // index 1´ç Á¤Á¡ ÇÏ³ª
-	int count = 0; // ÇØ´ç ¿ÀºêÁ§Æ®ÀÇ Á¤Á¡ °³¼ö ¼¼±â
+	// í˜„ì¬ ì¡´ì¬í•˜ëŠ” ë„í˜• ëª¨ë‘ ê·¸ë¦¬ê¸°
+	int index = 0; // index 1ë‹¹ ì •ì  í•˜ë‚˜
+	int count = 0; // í•´ë‹¹ ì˜¤ë¸Œì íŠ¸ì˜ ì •ì  ê°œìˆ˜ ì„¸ê¸°
 	glm::mat4 T(1.0f);
 	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T));
 
-	count = 0; // Á¤Á¡ °³¼ö ÃÊ±âÈ­
+	count = 0; // ì •ì  ê°œìˆ˜ ì´ˆê¸°í™”
 	for (auto vt = v.begin(); vt != v.end(); ++vt) {
-		count++; // Á¤Á¡ÀÇ °³¼ö ¼¼±â
+		count++; // ì •ì ì˜ ê°œìˆ˜ ì„¸ê¸°
 	}
-	count /= 3; // »ï°¢Çü °³¼ö ¼¼±â
-	// »ï°¢ÇüÀÇ °³¼ö¸¸Å­ ¹İº¹
+	count /= 3; // ì‚¼ê°í˜• ê°œìˆ˜ ì„¸ê¸°
+	// ì‚¼ê°í˜•ì˜ ê°œìˆ˜ë§Œí¼ ë°˜ë³µ
 	for (int i = 0; i < count; i++) {
 		glDrawArrays(GL_TRIANGLES, index, 3);
 		index += 3;
 	}
 }
 glm::vec4 Background::return_hitbox() {
-	// ÁÂ, ¿ì, ¾Õ, µÚ
+	// ì¢Œ, ìš°, ì•, ë’¤
 	return glm::vec4(pos.x - size_x, pos.x + size_x, pos.z - size_z, pos.z + size_z);
 }
 
@@ -87,37 +87,37 @@ Box::Box(glm::vec3 position, float x, float y, float z) : pos(position) {
 	size_x = x;
 	size_y = y;
 	size_z = z;
-	// °´Ã¼ Àü¿ë ¹öÆÛ
+	// ê°ì²´ ì „ìš© ë²„í¼
 	auto Make_Buffer = [&]() {
-		// ÁÂÇ¥ ¹öÆÛ
-		glGenBuffers(1, &VBO_position); // ¹öÆÛ ID ¹ß±ŞÇÏ¿© VBO_position¿¡ ÀúÀå
-		// »ö ¹öÆÛ
-		glGenBuffers(1, &VBO_color); // ¹öÆÛ ID ¹ß±ŞÇÏ¿© VBO_color¿¡ ÀúÀå
+		// ì¢Œí‘œ ë²„í¼
+		glGenBuffers(1, &VBO_position); // ë²„í¼ ID ë°œê¸‰í•˜ì—¬ VBO_positionì— ì €ì¥
+		// ìƒ‰ ë²„í¼
+		glGenBuffers(1, &VBO_color); // ë²„í¼ ID ë°œê¸‰í•˜ì—¬ VBO_colorì— ì €ì¥
 
-		// VAO ¼³Á¤ (±×¸®±â Àü¿¡´Â Ç×»ó VAO¸¦ ¹ÙÀÎµù ÇÑ ´ÙÀ½¿¡ ±×¸®±â¸¦ ¼öÇàÇØÁÖ¸é µÈ´Ù.) (VAO°¡ VBOµéÀ» ´ã°í ÀÖ±â ¶§¹®)
+		// VAO ì„¤ì • (ê·¸ë¦¬ê¸° ì „ì—ëŠ” í•­ìƒ VAOë¥¼ ë°”ì¸ë”© í•œ ë‹¤ìŒì— ê·¸ë¦¬ê¸°ë¥¼ ìˆ˜í–‰í•´ì£¼ë©´ ëœë‹¤.) (VAOê°€ VBOë“¤ì„ ë‹´ê³  ìˆê¸° ë•Œë¬¸)
 		glGenVertexArrays(1, &VAO);
 
-		glBindVertexArray(VAO); // ±×·ÁÁú µµÇüµéÀÇ Á¤Á¡µéÀÌ ÀúÀåµÈ ¹öÆÛ Á¤º¸¸¦ ÇÑµ¥ ¹­Àº VAO ¹ÙÀÎµå
+		glBindVertexArray(VAO); // ê·¸ë ¤ì§ˆ ë„í˜•ë“¤ì˜ ì •ì ë“¤ì´ ì €ì¥ëœ ë²„í¼ ì •ë³´ë¥¼ í•œë° ë¬¶ì€ VAO ë°”ì¸ë“œ
 
-		// ¹öÅØ½º ¼ÎÀÌ´õ·Î °ª Àü´Ş ¹× °ª ÀĞ¾îµéÀÏ À¯Çü ¼³Á¤ (3°³¾¿ ÀĞ¾î¾ß Á¤Á¡ ÇÏ³ªÀÇ ÁÂÇ¥, Á¤Á¡ ÇÏ³ªÀÇ »ö»óÀÌ ÀĞ¾îÁü)
-		GLint pAttribute = glGetAttribLocation(shaderProgramID, "vPos"); // Vertex Shader ÇÁ·Î±×·¥¿¡ Á¸ÀçÇÏ´Â vPos¶ó´Â ÀÌ¸§ÀÇ ¼Ó¼º(º¯¼ö)°¡ °¡Áø location°ªÀ» °¡Á®¿Í pAttribute º¯¼ö¿¡ ÀúÀåÇÑ´Ù.
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // Á¤Á¡ À§Ä¡ ¹öÆÛ ¹ÙÀÎµå (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ¸¦ ´ë»óÀ¸·Î ÇÑ ÀĞ¾îµéÀÌ±â À¯ÇüÀÌ Àü´ŞµÊ)
-		glVertexAttribPointer(pAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0); // pAttribute¿¡¼­ ÀĞ¾î¿Â locationÀ» °¡Áø ¼Ó¼º vPos°¡ µ¥ÀÌÅÍ¸¦ ÀĞ¾îµéÀÏ À¯ÇüÀ» ÁöÁ¤ (glm::vec3·Î Á¤Á¡ Á¤º¸¸¦ ÀúÀåÇß±â¿¡, glm::vec3¾¿ ÀĞ¾îµéÀÌµµ·Ï ÇØ¾ß ÇÔ. ±×·¡¾ß ÇÑ ¹ø ÀĞÀ» ¶§ Á¤Á¡ ÇÏ³ª ¸¸Å­À» ÀĞ¾îµéÀÏ ¼ö ÀÖ°Ô µÊ)
-		glEnableVertexAttribArray(pAttribute); // pAttribute°¡ ÀĞ¾îµéÀÎ locationÀ» °¡Áø ¼Ó¼ºÀ» È°¼ºÈ­ (Áï, vPos°¡ È°¼ºÈ­µÈ´Ù.)
+		// ë²„í…ìŠ¤ ì…°ì´ë”ë¡œ ê°’ ì „ë‹¬ ë° ê°’ ì½ì–´ë“¤ì¼ ìœ í˜• ì„¤ì • (3ê°œì”© ì½ì–´ì•¼ ì •ì  í•˜ë‚˜ì˜ ì¢Œí‘œ, ì •ì  í•˜ë‚˜ì˜ ìƒ‰ìƒì´ ì½ì–´ì§)
+		GLint pAttribute = glGetAttribLocation(shaderProgramID, "vPos"); // Vertex Shader í”„ë¡œê·¸ë¨ì— ì¡´ì¬í•˜ëŠ” vPosë¼ëŠ” ì´ë¦„ì˜ ì†ì„±(ë³€ìˆ˜)ê°€ ê°€ì§„ locationê°’ì„ ê°€ì ¸ì™€ pAttribute ë³€ìˆ˜ì— ì €ì¥í•œë‹¤.
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // ì •ì  ìœ„ì¹˜ ë²„í¼ ë°”ì¸ë“œ (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¥¼ ëŒ€ìƒìœ¼ë¡œ í•œ ì½ì–´ë“¤ì´ê¸° ìœ í˜•ì´ ì „ë‹¬ë¨)
+		glVertexAttribPointer(pAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0); // pAttributeì—ì„œ ì½ì–´ì˜¨ locationì„ ê°€ì§„ ì†ì„± vPosê°€ ë°ì´í„°ë¥¼ ì½ì–´ë“¤ì¼ ìœ í˜•ì„ ì§€ì • (glm::vec3ë¡œ ì •ì  ì •ë³´ë¥¼ ì €ì¥í–ˆê¸°ì—, glm::vec3ì”© ì½ì–´ë“¤ì´ë„ë¡ í•´ì•¼ í•¨. ê·¸ë˜ì•¼ í•œ ë²ˆ ì½ì„ ë•Œ ì •ì  í•˜ë‚˜ ë§Œí¼ì„ ì½ì–´ë“¤ì¼ ìˆ˜ ìˆê²Œ ë¨)
+		glEnableVertexAttribArray(pAttribute); // pAttributeê°€ ì½ì–´ë“¤ì¸ locationì„ ê°€ì§„ ì†ì„±ì„ í™œì„±í™” (ì¦‰, vPosê°€ í™œì„±í™”ëœë‹¤.)
 
-		GLint cAttribute = glGetAttribLocation(shaderProgramID, "vColor"); // Vertex Shader ÇÁ·Î±×·¥¿¡ Á¸ÀçÇÏ´Â vColor¶ó´Â ÀÌ¸§ÀÇ ¼Ó¼º(º¯¼ö)°¡ °¡Áø location°ªÀ» °¡Á®¿Í cAttribute º¯¼ö¿¡ ÀúÀåÇÑ´Ù.
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // »ö ¹öÆÛ ¹ÙÀÎµå (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ¸¦ ´ë»óÀ¸·Î ÇÑ ÀĞ¾îµéÀÌ±â À¯ÇüÀÌ Àü´ŞµÊ)
-		glVertexAttribPointer(cAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0); // cAttribute¿¡¼­ ÀĞ¾î¿Â locationÀ» °¡Áø ¼Ó¼º vColor°¡ µ¥ÀÌÅÍ¸¦ ÀĞ¾îµéÀÏ À¯ÇüÀ» ÁöÁ¤
-		glEnableVertexAttribArray(cAttribute); // cAttribute°¡ ÀĞ¾îµéÀÎ locationÀ» °¡Áø ¼Ó¼ºÀ» È°¼ºÈ­ (Áï, vColor°¡ È°¼ºÈ­µÈ´Ù.)
+		GLint cAttribute = glGetAttribLocation(shaderProgramID, "vColor"); // Vertex Shader í”„ë¡œê·¸ë¨ì— ì¡´ì¬í•˜ëŠ” vColorë¼ëŠ” ì´ë¦„ì˜ ì†ì„±(ë³€ìˆ˜)ê°€ ê°€ì§„ locationê°’ì„ ê°€ì ¸ì™€ cAttribute ë³€ìˆ˜ì— ì €ì¥í•œë‹¤.
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // ìƒ‰ ë²„í¼ ë°”ì¸ë“œ (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¥¼ ëŒ€ìƒìœ¼ë¡œ í•œ ì½ì–´ë“¤ì´ê¸° ìœ í˜•ì´ ì „ë‹¬ë¨)
+		glVertexAttribPointer(cAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0); // cAttributeì—ì„œ ì½ì–´ì˜¨ locationì„ ê°€ì§„ ì†ì„± vColorê°€ ë°ì´í„°ë¥¼ ì½ì–´ë“¤ì¼ ìœ í˜•ì„ ì§€ì •
+		glEnableVertexAttribArray(cAttribute); // cAttributeê°€ ì½ì–´ë“¤ì¸ locationì„ ê°€ì§„ ì†ì„±ì„ í™œì„±í™” (ì¦‰, vColorê°€ í™œì„±í™”ëœë‹¤.)
 		};
 	Make_Buffer();
 	glm::vec3 P[8] = {
-		// ¾Õ¸é ÁÂ»ó, ¿ì»ó, ÁÂÇÏ, ¿ìÇÏ
+		// ì•ë©´ ì¢Œìƒ, ìš°ìƒ, ì¢Œí•˜, ìš°í•˜
 		glm::vec3(-x, +y, +z), // 0
 		glm::vec3(+x, +y, +z), // 1
 		glm::vec3(-x, -y, +z), // 2
 		glm::vec3(+x, -y, +z), // 3
-		// ¾Õ¿¡¼­ ºÃÀ» ¶§ÀÇ µŞ¸é ÁÂ»ó, ¿ì»ó, ÁÂÇÏ, ¿ìÇÏ
+		// ì•ì—ì„œ ë´¤ì„ ë•Œì˜ ë’·ë©´ ì¢Œìƒ, ìš°ìƒ, ì¢Œí•˜, ìš°í•˜
 		glm::vec3(-x, +y, -z), // 4
 		glm::vec3(+x, +y, -z), // 5
 		glm::vec3(-x, -y, -z), // 6
@@ -129,62 +129,62 @@ Box::Box(glm::vec3 position, float x, float y, float z) : pos(position) {
 		v.emplace_back(P[three]);
 
 		glm::vec3 color = glm::vec3(0.647f, 0.165f, 0.165f);
-		std::uniform_real_distribution<float> urd(0.01f, 0.2f); // »ö Èçµé¾î¼­ ÀÔÃ¼°¨ Ãß°¡
+		std::uniform_real_distribution<float> urd(0.01f, 0.2f); // ìƒ‰ í”ë“¤ì–´ì„œ ì…ì²´ê° ì¶”ê°€
 		c.emplace_back(color + glm::vec3(urd(dre), urd(dre), urd(dre)));
 		c.emplace_back(color + glm::vec3(urd(dre), urd(dre), urd(dre)));
 		c.emplace_back(color + glm::vec3(urd(dre), urd(dre), urd(dre)));
 		};
-	// ¾Õ¸é
+	// ì•ë©´
 	add_triangle(0, 2, 3);
 	add_triangle(0, 3, 1);
 
-	// µŞ¸é
+	// ë’·ë©´
 	add_triangle(4, 7, 6);
 	add_triangle(5, 7, 4);
 
-	// ÁÂÃø¸é
+	// ì¢Œì¸¡ë©´
 	add_triangle(4, 6, 2);
 	add_triangle(4, 2, 0);
-	// ¿ìÃø¸é
+	// ìš°ì¸¡ë©´
 	add_triangle(1, 3, 7);
 	add_triangle(1, 7, 5);
-	// À­¸é
+	// ìœ—ë©´
 	add_triangle(4, 0, 1);
 	add_triangle(4, 1, 5);
-	// ¹Ø¸é
+	// ë°‘ë©´
 	add_triangle(2, 6, 7);
 	add_triangle(2, 7, 3);
 }
 void Box::Update_Buffer() {
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // Á¤Á¡ ¹öÆÛ·Î ¹ÙÀÎµù (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ·Î µ¥ÀÌÅÍ°¡ Àü´ŞµÊ)
-	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), v.data(), GL_STATIC_DRAW); // ÇØ´ç ¹öÆÛ¿¡ ¼Ò½º ÆÄÀÏ¿¡¼­ ¼±¾ğÇÑ Á¤Á¡ ¼Ó¼º ¹è¿­ µ¥ÀÌÅÍ ÀúÀå
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // ì •ì  ë²„í¼ë¡œ ë°”ì¸ë”© (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¡œ ë°ì´í„°ê°€ ì „ë‹¬ë¨)
+	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), v.data(), GL_STATIC_DRAW); // í•´ë‹¹ ë²„í¼ì— ì†ŒìŠ¤ íŒŒì¼ì—ì„œ ì„ ì–¸í•œ ì •ì  ì†ì„± ë°°ì—´ ë°ì´í„° ì €ì¥
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // Á¤Á¡ ¹öÆÛ·Î ¹ÙÀÎµù (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ·Î µ¥ÀÌÅÍ°¡ Àü´ŞµÊ)
-	glBufferData(GL_ARRAY_BUFFER, c.size() * sizeof(glm::vec3), c.data(), GL_STATIC_DRAW); // ÇØ´ç ¹öÆÛ¿¡ ¼Ò½º ÆÄÀÏ¿¡¼­ ¼±¾ğÇÑ Á¤Á¡ ¼Ó¼º ¹è¿­ µ¥ÀÌÅÍ ÀúÀå
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // ì •ì  ë²„í¼ë¡œ ë°”ì¸ë”© (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¡œ ë°ì´í„°ê°€ ì „ë‹¬ë¨)
+	glBufferData(GL_ARRAY_BUFFER, c.size() * sizeof(glm::vec3), c.data(), GL_STATIC_DRAW); // í•´ë‹¹ ë²„í¼ì— ì†ŒìŠ¤ íŒŒì¼ì—ì„œ ì„ ì–¸í•œ ì •ì  ì†ì„± ë°°ì—´ ë°ì´í„° ì €ì¥
 }
 void Box::draw_shape() {
-	glBindVertexArray(VAO); // ±×·ÁÁú µµÇüµéÀÇ Á¤Á¡ Á¤º¸°¡ ÀúÀåµÈ VAO ¹ÙÀÎµå
-	// ¼ÎÀÌ´õ ÇÁ·Î±×·¥¿¡¼­ model_Transform º¯¼ö À§Ä¡ model_LocationÀ¸·Î °¡Á®¿À±â (ÇÑ ¹ø¸¸ °¡Á®¿À°í, °¢ µµÇü¿¡ ´ëÇØ¼­ Çà·Ä ÃÖ½ÅÈ­ ÇÒ°Å¶ó »ó°ü ¾øÀ½)
+	glBindVertexArray(VAO); // ê·¸ë ¤ì§ˆ ë„í˜•ë“¤ì˜ ì •ì  ì •ë³´ê°€ ì €ì¥ëœ VAO ë°”ì¸ë“œ
+	// ì…°ì´ë” í”„ë¡œê·¸ë¨ì—ì„œ model_Transform ë³€ìˆ˜ ìœ„ì¹˜ model_Locationìœ¼ë¡œ ê°€ì ¸ì˜¤ê¸° (í•œ ë²ˆë§Œ ê°€ì ¸ì˜¤ê³ , ê° ë„í˜•ì— ëŒ€í•´ì„œ í–‰ë ¬ ìµœì‹ í™” í• ê±°ë¼ ìƒê´€ ì—†ìŒ)
 	unsigned int model_Location = glGetUniformLocation(shaderProgramID, "model_Transform");
-	// ÇöÀç Á¸ÀçÇÏ´Â µµÇü ¸ğµÎ ±×¸®±â
-	int index = 0; // index 1´ç Á¤Á¡ ÇÏ³ª
-	int count = 0; // ÇØ´ç ¿ÀºêÁ§Æ®ÀÇ Á¤Á¡ °³¼ö ¼¼±â
+	// í˜„ì¬ ì¡´ì¬í•˜ëŠ” ë„í˜• ëª¨ë‘ ê·¸ë¦¬ê¸°
+	int index = 0; // index 1ë‹¹ ì •ì  í•˜ë‚˜
+	int count = 0; // í•´ë‹¹ ì˜¤ë¸Œì íŠ¸ì˜ ì •ì  ê°œìˆ˜ ì„¸ê¸°
 	glm::mat4 T(1.0f);
 	T = glm::translate(T, pos);
 	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T));
 
-	count = 0; // Á¤Á¡ °³¼ö ÃÊ±âÈ­
+	count = 0; // ì •ì  ê°œìˆ˜ ì´ˆê¸°í™”
 	for (auto vt = v.begin(); vt != v.end(); ++vt) {
-		count++; // Á¤Á¡ÀÇ °³¼ö ¼¼±â
+		count++; // ì •ì ì˜ ê°œìˆ˜ ì„¸ê¸°
 	}
-	count /= 3; // »ï°¢Çü °³¼ö ¼¼±â
-	// »ï°¢ÇüÀÇ °³¼ö¸¸Å­ ¹İº¹
+	count /= 3; // ì‚¼ê°í˜• ê°œìˆ˜ ì„¸ê¸°
+	// ì‚¼ê°í˜•ì˜ ê°œìˆ˜ë§Œí¼ ë°˜ë³µ
 	for (int i = 0; i < count; i++) {
 		glDrawArrays(GL_TRIANGLES, index, 3);
 		index += 3;
 	}
 }
 glm::vec4 Box::return_hitbox() {
-	// ÁÂ, ¿ì, ¾Õ, µÚ
+	// ì¢Œ, ìš°, ì•, ë’¤
 	return glm::vec4(pos.x - size_x, pos.x + size_x, pos.z - size_z, pos.z + size_z);
 }

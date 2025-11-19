@@ -1,11 +1,11 @@
-#include "Character.h"
+ï»¿#include "Character.h"
 #include "Background.h"
 
 Camera camera;
 std::vector<Player*> player;
 
 Gun::Gun() {
-	// 1. VAO/VBO »ı¼º & ¼Ó¼º ¿¬°á
+	// 1. VAO/VBO ìƒì„± & ì†ì„± ì—°ê²°
 	auto Make_Buffer = [&]() {
 		glGenBuffers(1, &VBO_position);
 		glGenBuffers(1, &VBO_color);
@@ -13,13 +13,13 @@ Gun::Gun() {
 
 		glBindVertexArray(VAO);
 
-		// À§Ä¡
+		// ìœ„ì¹˜
 		GLint pAttribute = glGetAttribLocation(shaderProgramID, "vPos");
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_position);
 		glVertexAttribPointer(pAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
 		glEnableVertexAttribArray(pAttribute);
 
-		// »ö
+		// ìƒ‰
 		GLint cAttribute = glGetAttribLocation(shaderProgramID, "vColor");
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_color);
 		glVertexAttribPointer(cAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
@@ -27,38 +27,38 @@ Gun::Gun() {
 		};
 	Make_Buffer();
 
-	// 2. OBJ¿¡¼­ ÃÑ ¸Ş½¬ ÀĞ¾î¿À±â
+	// 2. OBJì—ì„œ ì´ ë©”ì‰¬ ì½ì–´ì˜¤ê¸°
 	loadFromOBJ("Pistol.obj");
 }
 void Gun::Update_Buffer() {
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // Á¤Á¡ ¹öÆÛ·Î ¹ÙÀÎµù (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ·Î µ¥ÀÌÅÍ°¡ Àü´ŞµÊ)
-	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), v.data(), GL_STATIC_DRAW); // ÇØ´ç ¹öÆÛ¿¡ ¼Ò½º ÆÄÀÏ¿¡¼­ ¼±¾ğÇÑ Á¤Á¡ ¼Ó¼º ¹è¿­ µ¥ÀÌÅÍ ÀúÀå
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // ì •ì  ë²„í¼ë¡œ ë°”ì¸ë”© (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¡œ ë°ì´í„°ê°€ ì „ë‹¬ë¨)
+	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), v.data(), GL_STATIC_DRAW); // í•´ë‹¹ ë²„í¼ì— ì†ŒìŠ¤ íŒŒì¼ì—ì„œ ì„ ì–¸í•œ ì •ì  ì†ì„± ë°°ì—´ ë°ì´í„° ì €ì¥
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // Á¤Á¡ ¹öÆÛ·Î ¹ÙÀÎµù (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ·Î µ¥ÀÌÅÍ°¡ Àü´ŞµÊ)
-	glBufferData(GL_ARRAY_BUFFER, c.size() * sizeof(glm::vec3), c.data(), GL_STATIC_DRAW); // ÇØ´ç ¹öÆÛ¿¡ ¼Ò½º ÆÄÀÏ¿¡¼­ ¼±¾ğÇÑ Á¤Á¡ ¼Ó¼º ¹è¿­ µ¥ÀÌÅÍ ÀúÀå
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // ì •ì  ë²„í¼ë¡œ ë°”ì¸ë”© (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¡œ ë°ì´í„°ê°€ ì „ë‹¬ë¨)
+	glBufferData(GL_ARRAY_BUFFER, c.size() * sizeof(glm::vec3), c.data(), GL_STATIC_DRAW); // í•´ë‹¹ ë²„í¼ì— ì†ŒìŠ¤ íŒŒì¼ì—ì„œ ì„ ì–¸í•œ ì •ì  ì†ì„± ë°°ì—´ ë°ì´í„° ì €ì¥
 }
 void Gun::draw_shape() {
-	glBindVertexArray(VAO); // ±×·ÁÁú µµÇüµéÀÇ Á¤Á¡ Á¤º¸°¡ ÀúÀåµÈ VAO ¹ÙÀÎµå
-	// ¼ÎÀÌ´õ ÇÁ·Î±×·¥¿¡¼­ model_Transform º¯¼ö À§Ä¡ model_LocationÀ¸·Î °¡Á®¿À±â (ÇÑ ¹ø¸¸ °¡Á®¿À°í, °¢ µµÇü¿¡ ´ëÇØ¼­ Çà·Ä ÃÖ½ÅÈ­ ÇÒ°Å¶ó »ó°ü ¾øÀ½)
+	glBindVertexArray(VAO); // ê·¸ë ¤ì§ˆ ë„í˜•ë“¤ì˜ ì •ì  ì •ë³´ê°€ ì €ì¥ëœ VAO ë°”ì¸ë“œ
+	// ì…°ì´ë” í”„ë¡œê·¸ë¨ì—ì„œ model_Transform ë³€ìˆ˜ ìœ„ì¹˜ model_Locationìœ¼ë¡œ ê°€ì ¸ì˜¤ê¸° (í•œ ë²ˆë§Œ ê°€ì ¸ì˜¤ê³ , ê° ë„í˜•ì— ëŒ€í•´ì„œ í–‰ë ¬ ìµœì‹ í™” í• ê±°ë¼ ìƒê´€ ì—†ìŒ)
 	unsigned int model_Location = glGetUniformLocation(shaderProgramID, "model_Transform");
-	// ÇöÀç Á¸ÀçÇÏ´Â µµÇü ¸ğµÎ ±×¸®±â
-	int index = 0; // index 1´ç Á¤Á¡ ÇÏ³ª
-	int count = 0; // ÇØ´ç ¿ÀºêÁ§Æ®ÀÇ Á¤Á¡ °³¼ö ¼¼±â
+	// í˜„ì¬ ì¡´ì¬í•˜ëŠ” ë„í˜• ëª¨ë‘ ê·¸ë¦¬ê¸°
+	int index = 0; // index 1ë‹¹ ì •ì  í•˜ë‚˜
+	int count = 0; // í•´ë‹¹ ì˜¤ë¸Œì íŠ¸ì˜ ì •ì  ê°œìˆ˜ ì„¸ê¸°
 	glm::mat4 T(1.0f);
 	T = glm::translate(T, pos);
 	glm::mat4 S(1.0f);
-	S = glm::scale(S, glm::vec3(0.00025f, 0.00025f, 0.00025f)); // ÃÑ Å©±â °¨¼Ò
+	S = glm::scale(S, glm::vec3(0.00025f, 0.00025f, 0.00025f)); // ì´ í¬ê¸° ê°ì†Œ
 	glm::mat4 ST(1.0f);
 	ST = glm::translate(ST, glm::vec3(player[0]->return_size_x() * 0.5f, 0.0f, -0.125f));
 	//glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * side_rotation * up_rotation * trans_mat));
 	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * up_rotation * side_rotation * ST * S));
 
-	count = 0; // Á¤Á¡ °³¼ö ÃÊ±âÈ­
+	count = 0; // ì •ì  ê°œìˆ˜ ì´ˆê¸°í™”
 	for (auto vt = v.begin(); vt != v.end(); ++vt) {
-		count++; // Á¤Á¡ÀÇ °³¼ö ¼¼±â
+		count++; // ì •ì ì˜ ê°œìˆ˜ ì„¸ê¸°
 	}
-	count /= 3; // »ï°¢Çü °³¼ö ¼¼±â
-	// »ï°¢ÇüÀÇ °³¼ö¸¸Å­ ¹İº¹
+	count /= 3; // ì‚¼ê°í˜• ê°œìˆ˜ ì„¸ê¸°
+	// ì‚¼ê°í˜•ì˜ ê°œìˆ˜ë§Œí¼ ë°˜ë³µ
 	for (int i = 0; i < count; i++) {
 		glDrawArrays(GL_TRIANGLES, index, 3);
 		index += 3;
@@ -72,7 +72,7 @@ bool Gun::loadFromOBJ(const std::string& filename) {
 		return false;
 	}
 
-	std::vector<glm::vec3> temp_pos;  // OBJÀÇ v ¸®½ºÆ®
+	std::vector<glm::vec3> temp_pos;  // OBJì˜ v ë¦¬ìŠ¤íŠ¸
 	v.clear();
 	c.clear();
 
@@ -85,24 +85,24 @@ bool Gun::loadFromOBJ(const std::string& filename) {
 		iss >> type;
 
 		if (type == "v") {
-			// Á¤Á¡ ÁÂÇ¥
+			// ì •ì  ì¢Œí‘œ
 			float x, y, z;
 			iss >> x >> y >> z;
 			temp_pos.emplace_back(x, y, z);
 		}
 		else if (type == "f") {
-			// ¸é(»ï°¢Çü) - ÀÎµ¦½º ÆÄ½Ì
+			// ë©´(ì‚¼ê°í˜•) - ì¸ë±ìŠ¤ íŒŒì‹±
 			std::string s1, s2, s3;
 			iss >> s1 >> s2 >> s3;
 			if (s1.empty() || s2.empty() || s3.empty()) continue;
 
 			auto parseIndex = [](const std::string& s) -> int {
-				// "3", "3/1/2" °°Àº °Í¿¡¼­ ¾ÕÀÇ ¼ıÀÚ¸¸ »Ì±â
+				// "3", "3/1/2" ê°™ì€ ê²ƒì—ì„œ ì•ì˜ ìˆ«ìë§Œ ë½‘ê¸°
 				std::istringstream ss(s);
 				std::string idxStr;
-				std::getline(ss, idxStr, '/');   // '/' Àü±îÁö
+				std::getline(ss, idxStr, '/');   // '/' ì „ê¹Œì§€
 				int idx = std::stoi(idxStr);
-				return idx - 1; // OBJ´Â 1-based, ¿ì¸®´Â 0-based
+				return idx - 1; // OBJëŠ” 1-based, ìš°ë¦¬ëŠ” 0-based
 				};
 
 			int i1 = parseIndex(s1);
@@ -114,63 +114,63 @@ bool Gun::loadFromOBJ(const std::string& filename) {
 				i2 >= (int)temp_pos.size() ||
 				i3 >= (int)temp_pos.size()) continue;
 
-			// »ï°¢Çü Á¤Á¡ ÁÂÇ¥¸¦ ±×´ë·Î v¿¡ push
+			// ì‚¼ê°í˜• ì •ì  ì¢Œí‘œë¥¼ ê·¸ëŒ€ë¡œ vì— push
 			v.push_back(temp_pos[i1]);
 			v.push_back(temp_pos[i2]);
 			v.push_back(temp_pos[i3]);
 		}
-		// (ÇÊ¿äÇÏ¸é ³ªÁß¿¡ 'vn', 'vt' µîµµ Ã³¸® °¡´É)
+		// (í•„ìš”í•˜ë©´ ë‚˜ì¤‘ì— 'vn', 'vt' ë“±ë„ ì²˜ë¦¬ ê°€ëŠ¥)
 	}
 
-	// »ö±òÀº ÀÏ´Ü Player¿¡¼­ ¾²´Â ¹æ½ÄÃ³·³ ÁÂÇ¥ ±â¹İÀ¸·Î ¸¸µé±â
+	// ìƒ‰ê¹”ì€ ì¼ë‹¨ Playerì—ì„œ ì“°ëŠ” ë°©ì‹ì²˜ëŸ¼ ì¢Œí‘œ ê¸°ë°˜ìœ¼ë¡œ ë§Œë“¤ê¸°
 	c.reserve(v.size());
 	for (const auto& p : v) {
 		glm::vec3 n = glm::normalize(p);
-		glm::vec3 col = glm::vec3(0.5f) + 0.5f * n; // 0~1 ¹üÀ§ »ö
+		glm::vec3 col = glm::vec3(0.5f) + 0.5f * n; // 0~1 ë²”ìœ„ ìƒ‰
 		c.push_back(col);
 	}
 
-	// VBO °»½Å
+	// VBO ê°±ì‹ 
 	Update_Buffer();
 
 	return true;
 }
 void Gun::setting_attributes() {
-	//pos = (player[0]->return_pos() + glm::vec3(0.125f, 0.0f, -0.125f)); // ÇÃ·¹ÀÌ¾îÀÇ Çö À§Ä¡¿¡¼­ Á¶Á¤
-	pos = (player[0]->return_pos()); // ÇÃ·¹ÀÌ¾îÀÇ Çö À§Ä¡¿¡¼­ Á¶Á¤
+	//pos = (player[0]->return_pos() + glm::vec3(0.125f, 0.0f, -0.125f)); // í”Œë ˆì´ì–´ì˜ í˜„ ìœ„ì¹˜ì—ì„œ ì¡°ì •
+	pos = (player[0]->return_pos()); // í”Œë ˆì´ì–´ì˜ í˜„ ìœ„ì¹˜ì—ì„œ ì¡°ì •
 	side_rotation = player[0]->return_side_rotation();
 	up_rotation = player[0]->return_up_rotation();
 }
 
 float PIXEL_PER_METER = (5.0f);
-float RUN_SPEED_KMPH = 20.0f; // Km / Hour(¿©±â¼­ Çö½ÇÀûÀÎ ¼Óµµ¸¦ °áÁ¤) (km / h)
+float RUN_SPEED_KMPH = 20.0f; // Km / Hour(ì—¬ê¸°ì„œ í˜„ì‹¤ì ì¸ ì†ë„ë¥¼ ê²°ì •) (km / h)
 float RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0f / 60.0f); // Meter / Minute
 float RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0f); // Meter / Second
-float RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER); // ÃÊ´ç ¸î ÇÈ¼¿À» ÀÌµ¿ÇÒÁö °áÁ´(PPS) (ÀÌ°ÍÀÌ ¼Óµµ°¡ µÊ)
+float RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER); // ì´ˆë‹¹ ëª‡ í”½ì…€ì„ ì´ë™í• ì§€ ê²°ì¡(PPS) (ì´ê²ƒì´ ì†ë„ê°€ ë¨)
 
 Player::Player(glm::vec3 position, float x, float y, float z) : pos(position) {
-	// ÁÖÀÎ°ø Àü¿ë ¹öÆÛ
+	// ì£¼ì¸ê³µ ì „ìš© ë²„í¼
 	auto Make_Buffer = [&]() {
-		// ÁÂÇ¥ ¹öÆÛ
-		glGenBuffers(1, &VBO_position); // ¹öÆÛ ID ¹ß±ŞÇÏ¿© VBO_position¿¡ ÀúÀå
-		// »ö ¹öÆÛ
-		glGenBuffers(1, &VBO_color); // ¹öÆÛ ID ¹ß±ŞÇÏ¿© VBO_color¿¡ ÀúÀå
+		// ì¢Œí‘œ ë²„í¼
+		glGenBuffers(1, &VBO_position); // ë²„í¼ ID ë°œê¸‰í•˜ì—¬ VBO_positionì— ì €ì¥
+		// ìƒ‰ ë²„í¼
+		glGenBuffers(1, &VBO_color); // ë²„í¼ ID ë°œê¸‰í•˜ì—¬ VBO_colorì— ì €ì¥
 
-		// VAO ¼³Á¤ (±×¸®±â Àü¿¡´Â Ç×»ó VAO¸¦ ¹ÙÀÎµù ÇÑ ´ÙÀ½¿¡ ±×¸®±â¸¦ ¼öÇàÇØÁÖ¸é µÈ´Ù.) (VAO°¡ VBOµéÀ» ´ã°í ÀÖ±â ¶§¹®)
+		// VAO ì„¤ì • (ê·¸ë¦¬ê¸° ì „ì—ëŠ” í•­ìƒ VAOë¥¼ ë°”ì¸ë”© í•œ ë‹¤ìŒì— ê·¸ë¦¬ê¸°ë¥¼ ìˆ˜í–‰í•´ì£¼ë©´ ëœë‹¤.) (VAOê°€ VBOë“¤ì„ ë‹´ê³  ìˆê¸° ë•Œë¬¸)
 		glGenVertexArrays(1, &VAO);
 
-		glBindVertexArray(VAO); // ±×·ÁÁú µµÇüµéÀÇ Á¤Á¡µéÀÌ ÀúÀåµÈ ¹öÆÛ Á¤º¸¸¦ ÇÑµ¥ ¹­Àº VAO ¹ÙÀÎµå
+		glBindVertexArray(VAO); // ê·¸ë ¤ì§ˆ ë„í˜•ë“¤ì˜ ì •ì ë“¤ì´ ì €ì¥ëœ ë²„í¼ ì •ë³´ë¥¼ í•œë° ë¬¶ì€ VAO ë°”ì¸ë“œ
 
-		// ¹öÅØ½º ¼ÎÀÌ´õ·Î °ª Àü´Ş ¹× °ª ÀĞ¾îµéÀÏ À¯Çü ¼³Á¤ (3°³¾¿ ÀĞ¾î¾ß Á¤Á¡ ÇÏ³ªÀÇ ÁÂÇ¥, Á¤Á¡ ÇÏ³ªÀÇ »ö»óÀÌ ÀĞ¾îÁü)
-		GLint pAttribute = glGetAttribLocation(shaderProgramID, "vPos"); // Vertex Shader ÇÁ·Î±×·¥¿¡ Á¸ÀçÇÏ´Â vPos¶ó´Â ÀÌ¸§ÀÇ ¼Ó¼º(º¯¼ö)°¡ °¡Áø location°ªÀ» °¡Á®¿Í pAttribute º¯¼ö¿¡ ÀúÀåÇÑ´Ù.
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // Á¤Á¡ À§Ä¡ ¹öÆÛ ¹ÙÀÎµå (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ¸¦ ´ë»óÀ¸·Î ÇÑ ÀĞ¾îµéÀÌ±â À¯ÇüÀÌ Àü´ŞµÊ)
-		glVertexAttribPointer(pAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0); // pAttribute¿¡¼­ ÀĞ¾î¿Â locationÀ» °¡Áø ¼Ó¼º vPos°¡ µ¥ÀÌÅÍ¸¦ ÀĞ¾îµéÀÏ À¯ÇüÀ» ÁöÁ¤ (glm::vec3·Î Á¤Á¡ Á¤º¸¸¦ ÀúÀåÇß±â¿¡, glm::vec3¾¿ ÀĞ¾îµéÀÌµµ·Ï ÇØ¾ß ÇÔ. ±×·¡¾ß ÇÑ ¹ø ÀĞÀ» ¶§ Á¤Á¡ ÇÏ³ª ¸¸Å­À» ÀĞ¾îµéÀÏ ¼ö ÀÖ°Ô µÊ)
-		glEnableVertexAttribArray(pAttribute); // pAttribute°¡ ÀĞ¾îµéÀÎ locationÀ» °¡Áø ¼Ó¼ºÀ» È°¼ºÈ­ (Áï, vPos°¡ È°¼ºÈ­µÈ´Ù.)
+		// ë²„í…ìŠ¤ ì…°ì´ë”ë¡œ ê°’ ì „ë‹¬ ë° ê°’ ì½ì–´ë“¤ì¼ ìœ í˜• ì„¤ì • (3ê°œì”© ì½ì–´ì•¼ ì •ì  í•˜ë‚˜ì˜ ì¢Œí‘œ, ì •ì  í•˜ë‚˜ì˜ ìƒ‰ìƒì´ ì½ì–´ì§)
+		GLint pAttribute = glGetAttribLocation(shaderProgramID, "vPos"); // Vertex Shader í”„ë¡œê·¸ë¨ì— ì¡´ì¬í•˜ëŠ” vPosë¼ëŠ” ì´ë¦„ì˜ ì†ì„±(ë³€ìˆ˜)ê°€ ê°€ì§„ locationê°’ì„ ê°€ì ¸ì™€ pAttribute ë³€ìˆ˜ì— ì €ì¥í•œë‹¤.
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // ì •ì  ìœ„ì¹˜ ë²„í¼ ë°”ì¸ë“œ (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¥¼ ëŒ€ìƒìœ¼ë¡œ í•œ ì½ì–´ë“¤ì´ê¸° ìœ í˜•ì´ ì „ë‹¬ë¨)
+		glVertexAttribPointer(pAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0); // pAttributeì—ì„œ ì½ì–´ì˜¨ locationì„ ê°€ì§„ ì†ì„± vPosê°€ ë°ì´í„°ë¥¼ ì½ì–´ë“¤ì¼ ìœ í˜•ì„ ì§€ì • (glm::vec3ë¡œ ì •ì  ì •ë³´ë¥¼ ì €ì¥í–ˆê¸°ì—, glm::vec3ì”© ì½ì–´ë“¤ì´ë„ë¡ í•´ì•¼ í•¨. ê·¸ë˜ì•¼ í•œ ë²ˆ ì½ì„ ë•Œ ì •ì  í•˜ë‚˜ ë§Œí¼ì„ ì½ì–´ë“¤ì¼ ìˆ˜ ìˆê²Œ ë¨)
+		glEnableVertexAttribArray(pAttribute); // pAttributeê°€ ì½ì–´ë“¤ì¸ locationì„ ê°€ì§„ ì†ì„±ì„ í™œì„±í™” (ì¦‰, vPosê°€ í™œì„±í™”ëœë‹¤.)
 
-		GLint cAttribute = glGetAttribLocation(shaderProgramID, "vColor"); // Vertex Shader ÇÁ·Î±×·¥¿¡ Á¸ÀçÇÏ´Â vColor¶ó´Â ÀÌ¸§ÀÇ ¼Ó¼º(º¯¼ö)°¡ °¡Áø location°ªÀ» °¡Á®¿Í cAttribute º¯¼ö¿¡ ÀúÀåÇÑ´Ù.
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // »ö ¹öÆÛ ¹ÙÀÎµå (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ¸¦ ´ë»óÀ¸·Î ÇÑ ÀĞ¾îµéÀÌ±â À¯ÇüÀÌ Àü´ŞµÊ)
-		glVertexAttribPointer(cAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0); // cAttribute¿¡¼­ ÀĞ¾î¿Â locationÀ» °¡Áø ¼Ó¼º vColor°¡ µ¥ÀÌÅÍ¸¦ ÀĞ¾îµéÀÏ À¯ÇüÀ» ÁöÁ¤
-		glEnableVertexAttribArray(cAttribute); // cAttribute°¡ ÀĞ¾îµéÀÎ locationÀ» °¡Áø ¼Ó¼ºÀ» È°¼ºÈ­ (Áï, vColor°¡ È°¼ºÈ­µÈ´Ù.)
+		GLint cAttribute = glGetAttribLocation(shaderProgramID, "vColor"); // Vertex Shader í”„ë¡œê·¸ë¨ì— ì¡´ì¬í•˜ëŠ” vColorë¼ëŠ” ì´ë¦„ì˜ ì†ì„±(ë³€ìˆ˜)ê°€ ê°€ì§„ locationê°’ì„ ê°€ì ¸ì™€ cAttribute ë³€ìˆ˜ì— ì €ì¥í•œë‹¤.
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // ìƒ‰ ë²„í¼ ë°”ì¸ë“œ (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¥¼ ëŒ€ìƒìœ¼ë¡œ í•œ ì½ì–´ë“¤ì´ê¸° ìœ í˜•ì´ ì „ë‹¬ë¨)
+		glVertexAttribPointer(cAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0); // cAttributeì—ì„œ ì½ì–´ì˜¨ locationì„ ê°€ì§„ ì†ì„± vColorê°€ ë°ì´í„°ë¥¼ ì½ì–´ë“¤ì¼ ìœ í˜•ì„ ì§€ì •
+		glEnableVertexAttribArray(cAttribute); // cAttributeê°€ ì½ì–´ë“¤ì¸ locationì„ ê°€ì§„ ì†ì„±ì„ í™œì„±í™” (ì¦‰, vColorê°€ í™œì„±í™”ëœë‹¤.)
 		};
 	Make_Buffer();
 	x *= 0.5f;
@@ -180,12 +180,12 @@ Player::Player(glm::vec3 position, float x, float y, float z) : pos(position) {
 	size_y = y;
 	size_z = z;
 	glm::vec3 P[8] = {
-		// ¾Õ¸é ÁÂ»ó, ¿ì»ó, ÁÂÇÏ, ¿ìÇÏ
+		// ì•ë©´ ì¢Œìƒ, ìš°ìƒ, ì¢Œí•˜, ìš°í•˜
 		glm::vec3(-x, +y, +z), // 0
 		glm::vec3(+x, +y, +z), // 1
 		glm::vec3(-x, -y, +z), // 2
 		glm::vec3(+x, -y, +z), // 3
-		// ¾Õ¿¡¼­ ºÃÀ» ¶§ÀÇ µŞ¸é ÁÂ»ó, ¿ì»ó, ÁÂÇÏ, ¿ìÇÏ
+		// ì•ì—ì„œ ë´¤ì„ ë•Œì˜ ë’·ë©´ ì¢Œìƒ, ìš°ìƒ, ì¢Œí•˜, ìš°í•˜
 		glm::vec3(-x, +y, -z), // 4
 		glm::vec3(+x, +y, -z), // 5
 		glm::vec3(-x, -y, -z), // 6
@@ -197,67 +197,67 @@ Player::Player(glm::vec3 position, float x, float y, float z) : pos(position) {
 		v.emplace_back(P[two]);
 		v.emplace_back(P[three]);
 		auto change_rgb = [](const glm::vec3& p) {
-			// ÁÂÇ¥°ª p¸¦ ´ÜÀ§ º¤ÅÍ·Î ¹Ù²Ù¾î °¢ ¼ººĞÀÌ -1.0f ~ 1.0fÀÇ ¹üÀ§°¡ µÇµµ·Ï ¼³Á¤ÇÏ°í, ÀÌ¸¦ n¿¡ ÀúÀå
+			// ì¢Œí‘œê°’ pë¥¼ ë‹¨ìœ„ ë²¡í„°ë¡œ ë°”ê¾¸ì–´ ê° ì„±ë¶„ì´ -1.0f ~ 1.0fì˜ ë²”ìœ„ê°€ ë˜ë„ë¡ ì„¤ì •í•˜ê³ , ì´ë¥¼ nì— ì €ì¥
 			glm::vec3 n = glm::normalize(p);
-			// 0.5f¿¡´Ù°¡ -1.0f ~ 1.0fÀÇ ¹üÀ§¸¦ °¡Áø nÀ» Àı¹İÀ¸·Î ³ª´« -0.5f ~ 0.5f ´õÇØÁÖ°Ô µÇ¸é, ÇØ´ç °ªÀº 0.0f ~ 1.0fÀÇ °ªÀ» °¡Áö°Ô µÇ¾î »ö»óÀ» ³ªÅ¸³»±â ÁÁÀº °ªÀÌ µÈ´Ù.
+			// 0.5fì—ë‹¤ê°€ -1.0f ~ 1.0fì˜ ë²”ìœ„ë¥¼ ê°€ì§„ nì„ ì ˆë°˜ìœ¼ë¡œ ë‚˜ëˆˆ -0.5f ~ 0.5f ë”í•´ì£¼ê²Œ ë˜ë©´, í•´ë‹¹ ê°’ì€ 0.0f ~ 1.0fì˜ ê°’ì„ ê°€ì§€ê²Œ ë˜ì–´ ìƒ‰ìƒì„ ë‚˜íƒ€ë‚´ê¸° ì¢‹ì€ ê°’ì´ ëœë‹¤.
 			return glm::vec3(0.5f) + n * 0.5f;
 			};
 		c.emplace_back(change_rgb(P[one]));
 		c.emplace_back(change_rgb(P[two]));
 		c.emplace_back(change_rgb(P[three]));
 		};
-	// ¾Õ¸é
+	// ì•ë©´
 	add_triangle(0, 2, 3);
 	add_triangle(0, 3, 1);
 
-	// µŞ¸é
+	// ë’·ë©´
 	add_triangle(4, 7, 6);
 	add_triangle(5, 7, 4);
 
-	// ÁÂÃø¸é
+	// ì¢Œì¸¡ë©´
 	add_triangle(4, 6, 2);
 	add_triangle(4, 2, 0);
-	// ¿ìÃø¸é
+	// ìš°ì¸¡ë©´
 	add_triangle(1, 3, 7);
 	add_triangle(1, 7, 5);
-	// À­¸é
+	// ìœ—ë©´
 	add_triangle(4, 0, 1);
 	add_triangle(4, 1, 5);
-	// ¹Ø¸é
+	// ë°‘ë©´
 	add_triangle(2, 6, 7);
 	add_triangle(2, 7, 3);
 }
 void Player::Update_Buffer() {
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // Á¤Á¡ ¹öÆÛ·Î ¹ÙÀÎµù (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ·Î µ¥ÀÌÅÍ°¡ Àü´ŞµÊ)
-	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), v.data(), GL_STATIC_DRAW); // ÇØ´ç ¹öÆÛ¿¡ ¼Ò½º ÆÄÀÏ¿¡¼­ ¼±¾ğÇÑ Á¤Á¡ ¼Ó¼º ¹è¿­ µ¥ÀÌÅÍ ÀúÀå
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_position); // ì •ì  ë²„í¼ë¡œ ë°”ì¸ë”© (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¡œ ë°ì´í„°ê°€ ì „ë‹¬ë¨)
+	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), v.data(), GL_STATIC_DRAW); // í•´ë‹¹ ë²„í¼ì— ì†ŒìŠ¤ íŒŒì¼ì—ì„œ ì„ ì–¸í•œ ì •ì  ì†ì„± ë°°ì—´ ë°ì´í„° ì €ì¥
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // Á¤Á¡ ¹öÆÛ·Î ¹ÙÀÎµù (¾Æ·¡ ÄÚµå¿¡¼­ ¹ÙÀÎµùµÈ ¹öÆÛ·Î µ¥ÀÌÅÍ°¡ Àü´ŞµÊ)
-	glBufferData(GL_ARRAY_BUFFER, c.size() * sizeof(glm::vec3), c.data(), GL_STATIC_DRAW); // ÇØ´ç ¹öÆÛ¿¡ ¼Ò½º ÆÄÀÏ¿¡¼­ ¼±¾ğÇÑ Á¤Á¡ ¼Ó¼º ¹è¿­ µ¥ÀÌÅÍ ÀúÀå
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_color); // ì •ì  ë²„í¼ë¡œ ë°”ì¸ë”© (ì•„ë˜ ì½”ë“œì—ì„œ ë°”ì¸ë”©ëœ ë²„í¼ë¡œ ë°ì´í„°ê°€ ì „ë‹¬ë¨)
+	glBufferData(GL_ARRAY_BUFFER, c.size() * sizeof(glm::vec3), c.data(), GL_STATIC_DRAW); // í•´ë‹¹ ë²„í¼ì— ì†ŒìŠ¤ íŒŒì¼ì—ì„œ ì„ ì–¸í•œ ì •ì  ì†ì„± ë°°ì—´ ë°ì´í„° ì €ì¥
 }
 void Player::draw_shape() {
-	glBindVertexArray(VAO); // ±×·ÁÁú µµÇüµéÀÇ Á¤Á¡ Á¤º¸°¡ ÀúÀåµÈ VAO ¹ÙÀÎµå
-	// ¼ÎÀÌ´õ ÇÁ·Î±×·¥¿¡¼­ model_Transform º¯¼ö À§Ä¡ model_LocationÀ¸·Î °¡Á®¿À±â (ÇÑ ¹ø¸¸ °¡Á®¿À°í, °¢ µµÇü¿¡ ´ëÇØ¼­ Çà·Ä ÃÖ½ÅÈ­ ÇÒ°Å¶ó »ó°ü ¾øÀ½)
+	glBindVertexArray(VAO); // ê·¸ë ¤ì§ˆ ë„í˜•ë“¤ì˜ ì •ì  ì •ë³´ê°€ ì €ì¥ëœ VAO ë°”ì¸ë“œ
+	// ì…°ì´ë” í”„ë¡œê·¸ë¨ì—ì„œ model_Transform ë³€ìˆ˜ ìœ„ì¹˜ model_Locationìœ¼ë¡œ ê°€ì ¸ì˜¤ê¸° (í•œ ë²ˆë§Œ ê°€ì ¸ì˜¤ê³ , ê° ë„í˜•ì— ëŒ€í•´ì„œ í–‰ë ¬ ìµœì‹ í™” í• ê±°ë¼ ìƒê´€ ì—†ìŒ)
 	unsigned int model_Location = glGetUniformLocation(shaderProgramID, "model_Transform");
-	// ÇöÀç Á¸ÀçÇÏ´Â µµÇü ¸ğµÎ ±×¸®±â
-	int index = 0; // index 1´ç Á¤Á¡ ÇÏ³ª
-	int count = 0; // ÇØ´ç ¿ÀºêÁ§Æ®ÀÇ Á¤Á¡ °³¼ö ¼¼±â
+	// í˜„ì¬ ì¡´ì¬í•˜ëŠ” ë„í˜• ëª¨ë‘ ê·¸ë¦¬ê¸°
+	int index = 0; // index 1ë‹¹ ì •ì  í•˜ë‚˜
+	int count = 0; // í•´ë‹¹ ì˜¤ë¸Œì íŠ¸ì˜ ì •ì  ê°œìˆ˜ ì„¸ê¸°
 	glm::mat4 T(1.0f);
 	T = glm::translate(T, pos);
 	//glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * side_rotation * up_rotation * trans_mat));
 	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * side_rotation));
 
-	count = 0; // Á¤Á¡ °³¼ö ÃÊ±âÈ­
+	count = 0; // ì •ì  ê°œìˆ˜ ì´ˆê¸°í™”
 	for (auto vt = v.begin(); vt != v.end(); ++vt) {
-		count++; // Á¤Á¡ÀÇ °³¼ö ¼¼±â
+		count++; // ì •ì ì˜ ê°œìˆ˜ ì„¸ê¸°
 	}
-	count /= 3; // »ï°¢Çü °³¼ö ¼¼±â
-	// »ï°¢ÇüÀÇ °³¼ö¸¸Å­ ¹İº¹
+	count /= 3; // ì‚¼ê°í˜• ê°œìˆ˜ ì„¸ê¸°
+	// ì‚¼ê°í˜•ì˜ ê°œìˆ˜ë§Œí¼ ë°˜ë³µ
 	for (int i = 0; i < count; i++) {
 		glDrawArrays(GL_TRIANGLES, index, 3);
 		index += 3;
 	}
 }
-// ÀÌµ¿
+// ì´ë™
 void Player::up_move() {
 	glm::vec4 R(1.0f);
 	R = side_rotation * glm::vec4(glm::vec3(0.0f, 0.0f, -speed * frame_time), 1.0f);
@@ -282,24 +282,24 @@ void Player::right_move() {
 	pos += glm::vec3(R);
 	if (outside_map() or collision()) pos -= glm::vec3(R);
 }
-// Ä«¸Ş¶ó À§Ä¡ ¼¼ÆÃ
+// ì¹´ë©”ë¼ ìœ„ì¹˜ ì„¸íŒ…
 void Player::camera_pos_setting() {
-	// 1. Ä³¸¯ÅÍÀÇ Àü¹æÀ» side_rotationÀ¸·Î µ¹·Á¼­ ½ÇÁ¦ Àü¹æÀ» ±¸ÇÔ (¾îÂ÷ÇÇ ¹æÇâ¸¸ ÁÖ¸é µÇ±â¿¡ Á¤¸éÀº ±×³É glm::vec3 baseFront(0.0f, 0.0f, -1.0f)·Î Ã³¸®)
+	// 1. ìºë¦­í„°ì˜ ì „ë°©ì„ side_rotationìœ¼ë¡œ ëŒë ¤ì„œ ì‹¤ì œ ì „ë°©ì„ êµ¬í•¨ (ì–´ì°¨í”¼ ë°©í–¥ë§Œ ì£¼ë©´ ë˜ê¸°ì— ì •ë©´ì€ ê·¸ëƒ¥ glm::vec3 baseFront(0.0f, 0.0f, -1.0f)ë¡œ ì²˜ë¦¬)
 	glm::vec3 baseFront(0.0f, 0.0f, -1.0f);
-	glm::vec3 forward = glm::normalize(glm::vec3(up_rotation * side_rotation * glm::vec4(baseFront, 0.0f))); // Á¤¸éÀ» side_rotation¸¸Å­ È¸Àü ½ÃÅ² ÈÄ Á¤±ÔÈ­ (¾ÈÁ¤¼ºÀ» À§ÇÑ Á¤±ÔÈ­) (¹æÇâ¸¸ ¾²°í ÀÌµ¿Àº °í·ÁÇÏÁö ¾Ê´Â ¹æÇâ º¤ÅÍÀÌ±â¿¡ µ¿Â÷ÁÂÇ¥ 0.0f·Î »ç¿ë)
-	// Ä³¸¯ÅÍ Áß½ÉÁ¡ (Ä«¸Ş¶ó À§Ä¡ ¹× È¸Àü ½Ã ¸öÃ¼°¡ º¸ÀÌÁö ¾Êµµ·Ï ÇÏ´Â ³ôÀÌ¸¦ °í·ÁÇØ Á¶±İ À§ÂÊÀ¸·Î ¼³Á¤)
+	glm::vec3 forward = glm::normalize(glm::vec3(up_rotation * side_rotation * glm::vec4(baseFront, 0.0f))); // ì •ë©´ì„ side_rotationë§Œí¼ íšŒì „ ì‹œí‚¨ í›„ ì •ê·œí™” (ì•ˆì •ì„±ì„ ìœ„í•œ ì •ê·œí™”) (ë°©í–¥ë§Œ ì“°ê³  ì´ë™ì€ ê³ ë ¤í•˜ì§€ ì•ŠëŠ” ë°©í–¥ ë²¡í„°ì´ê¸°ì— ë™ì°¨ì¢Œí‘œ 0.0fë¡œ ì‚¬ìš©)
+	// ìºë¦­í„° ì¤‘ì‹¬ì  (ì¹´ë©”ë¼ ìœ„ì¹˜ ë° íšŒì „ ì‹œ ëª¸ì²´ê°€ ë³´ì´ì§€ ì•Šë„ë¡ í•˜ëŠ” ë†’ì´ë¥¼ ê³ ë ¤í•´ ì¡°ê¸ˆ ìœ„ìª½ìœ¼ë¡œ ì„¤ì •)
 	glm::vec3 center = glm::vec3(pos.x, pos.y + 0.25f, pos.z);
-	// Ä³¸¯ÅÍ·ÎºÎÅÍ Ä«¸Ş¶ó¸¦ µÑ À§Ä¡(¸Ó¸®)
+	// ìºë¦­í„°ë¡œë¶€í„° ì¹´ë©”ë¼ë¥¼ ë‘˜ ìœ„ì¹˜(ë¨¸ë¦¬)
 	camera.set_camera_Pos(center + forward * 0.125f);
-	// Ä«¸Ş¶ó°¡ Á¤¸éÀ» ¹Ù¶óº½
+	// ì¹´ë©”ë¼ê°€ ì •ë©´ì„ ë°”ë¼ë´„
 	camera.set_camera_Direction(center + forward);
 }
-// È¸Àü·® ¹Ş¾Æ¿Í¼­ ÀúÀå
+// íšŒì „ëŸ‰ ë°›ì•„ì™€ì„œ ì €ì¥
 void Player::rotation(glm::mat4 side, glm::mat4 up) {
 	side_rotation = side;
 	up_rotation = up;
 }
-// È÷Æ® ¹Ú½º (ÁÂ, ¿ì, ¾Õ, µÚ)
+// íˆíŠ¸ ë°•ìŠ¤ (ì¢Œ, ìš°, ì•, ë’¤)
 glm::vec4 Player::return_hitbox() {
 	return glm::vec4(pos.x - size_x, pos.x + size_x, pos.z - size_z, pos.z + size_z);
 }

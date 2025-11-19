@@ -1,16 +1,16 @@
-#include "basic.h"
+ï»¿#include "basic.h"
 std::default_random_engine dre;
 
-// À©µµ¿ì Å©±â
+// ìœˆë„ìš° í¬ê¸°
 GLint width, height;
-//--- ¼¼ÀÌ´õ ÇÁ·Î±×·¥ ÀÌ¸§
+//--- ì„¸ì´ë” í”„ë¡œê·¸ë¨ ì´ë¦„
 GLuint shaderProgramID;
-//--- ¹öÅØ½º¼¼ÀÌ´õ°´Ã¼
+//--- ë²„í…ìŠ¤ì„¸ì´ë”ê°ì²´
 GLuint vertexShader;
-//--- ÇÁ·¡±×¸ÕÆ® ¼¼ÀÌ´õ°´Ã¼
+//--- í”„ë˜ê·¸ë¨¼íŠ¸ ì„¸ì´ë”ê°ì²´
 GLuint fragmentShader;
 
-// ÇÁ·¹ÀÓ ½Ã°£
+// í”„ë ˆì„ ì‹œê°„
 float frame_time = 0.0f;
 std::chrono::steady_clock::time_point current_time = std::chrono::steady_clock::now();
 
@@ -32,12 +32,12 @@ char* filetobuf(const char* file)
 	return buf;
 }
 
-// ¹öÅØ½º ¼ÎÀÌ´õ °´Ã¼ ¸¸µé±â
+// ë²„í…ìŠ¤ ì…°ì´ë” ê°ì²´ ë§Œë“¤ê¸°
 void basic_make_vertexShaders()
 {
 	GLchar* vertexSource;
-	//--- ¹öÅØ½º ¼¼ÀÌ´õ ÀĞ¾î ÀúÀåÇÏ°í ÄÄÆÄÀÏÇÏ±â
-	//--- filetobuf: »ç¿ëÀÚÁ¤ÀÇ ÇÔ¼ö·Î ÅØ½ºÆ®¸¦ ÀĞ¾î¼­ ¹®ÀÚ¿­¿¡ ÀúÀåÇÏ´Â ÇÔ¼ö
+	//--- ë²„í…ìŠ¤ ì„¸ì´ë” ì½ì–´ ì €ì¥í•˜ê³  ì»´íŒŒì¼í•˜ê¸°
+	//--- filetobuf: ì‚¬ìš©ìì •ì˜ í•¨ìˆ˜ë¡œ í…ìŠ¤íŠ¸ë¥¼ ì½ì–´ì„œ ë¬¸ìì—´ì— ì €ì¥í•˜ëŠ” í•¨ìˆ˜
 	vertexSource = filetobuf("basic_vertex.glsl");
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexSource, NULL);
@@ -48,16 +48,16 @@ void basic_make_vertexShaders()
 	if (!result)
 	{
 		glGetShaderInfoLog(vertexShader, 512, NULL, errorLog);
-		std::cerr << "ERROR: vertex shader ÄÄÆÄÀÏ ½ÇÆĞ\n" << errorLog << std::endl;
+		std::cerr << "ERROR: vertex shader ì»´íŒŒì¼ ì‹¤íŒ¨\n" << errorLog << std::endl;
 		return;
 	}
 }
-//--- ÇÁ·¡±×¸ÕÆ® ¼¼ÀÌ´õ °´Ã¼ ¸¸µé±â
+//--- í”„ë˜ê·¸ë¨¼íŠ¸ ì„¸ì´ë” ê°ì²´ ë§Œë“¤ê¸°
 void basic_make_fragmentShaders()
 {
 	GLchar* fragmentSource;
-	//--- ÇÁ·¡±×¸ÕÆ® ¼¼ÀÌ´õ ÀĞ¾î ÀúÀåÇÏ°í ÄÄÆÄÀÏÇÏ±â
-	fragmentSource = filetobuf("basic_fragment.glsl");    // ÇÁ·¡±×¸ÕÆ® ¼¼ÀÌ´õ ÀĞ¾î¿À±â
+	//--- í”„ë˜ê·¸ë¨¼íŠ¸ ì„¸ì´ë” ì½ì–´ ì €ì¥í•˜ê³  ì»´íŒŒì¼í•˜ê¸°
+	fragmentSource = filetobuf("basic_fragment.glsl");    // í”„ë˜ê·¸ë¨¼íŠ¸ ì„¸ì´ë” ì½ì–´ì˜¤ê¸°
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
 	glCompileShader(fragmentShader);
@@ -67,37 +67,37 @@ void basic_make_fragmentShaders()
 	if (!result)
 	{
 		glGetShaderInfoLog(fragmentShader, 512, NULL, errorLog);
-		std::cerr << "ERROR: frag_shader ÄÄÆÄÀÏ ½ÇÆĞ\n" << errorLog << std::endl;
+		std::cerr << "ERROR: frag_shader ì»´íŒŒì¼ ì‹¤íŒ¨\n" << errorLog << std::endl;
 		return;
 	}
 }
-// ¼ÎÀÌ´õ ÇÁ·Î±×·¥
+// ì…°ì´ë” í”„ë¡œê·¸ë¨
 GLuint basic_make_shaderProgram()
 {
 	GLint result;
 	GLchar* errorLog = NULL;
 	GLuint shaderID;
-	//--- ¼¼ÀÌ´õÇÁ·Î±×·¥¸¸µé±â
+	//--- ì„¸ì´ë”í”„ë¡œê·¸ë¨ë§Œë“¤ê¸°
 	shaderID = glCreateProgram();
-	//--- ¼¼ÀÌ´õÇÁ·Î±×·¥¿¡¹öÅØ½º¼¼ÀÌ´õºÙÀÌ±â
+	//--- ì„¸ì´ë”í”„ë¡œê·¸ë¨ì—ë²„í…ìŠ¤ì„¸ì´ë”ë¶™ì´ê¸°
 	glAttachShader(shaderID, vertexShader);
-	//--- ¼¼ÀÌ´õÇÁ·Î±×·¥¿¡ÇÁ·¡±×¸ÕÆ®¼¼ÀÌ´õºÙÀÌ±â
+	//--- ì„¸ì´ë”í”„ë¡œê·¸ë¨ì—í”„ë˜ê·¸ë¨¼íŠ¸ì„¸ì´ë”ë¶™ì´ê¸°
 	glAttachShader(shaderID, fragmentShader);
-	//--- ¼¼ÀÌ´õÇÁ·Î±×·¥¸µÅ©ÇÏ±â
+	//--- ì„¸ì´ë”í”„ë¡œê·¸ë¨ë§í¬í•˜ê¸°
 	glLinkProgram(shaderID);
-	//--- ¼¼ÀÌ´õ °´Ã¼¸¦ ¼¼ÀÌ´õ ÇÁ·Î±×·¥¿¡ ¸µÅ©ÇßÀ¸¹Ç·Î,¼¼ÀÌ´õ °´Ã¼ ÀÚÃ¼´Â »èÁ¦ °¡´É
+	//--- ì„¸ì´ë” ê°ì²´ë¥¼ ì„¸ì´ë” í”„ë¡œê·¸ë¨ì— ë§í¬í–ˆìœ¼ë¯€ë¡œ,ì„¸ì´ë” ê°ì²´ ìì²´ëŠ” ì‚­ì œ ê°€ëŠ¥
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 	glGetProgramiv(shaderID, GL_LINK_STATUS, &result);
 	if (!result) {
 		glGetProgramInfoLog(shaderID, 512, NULL, errorLog);
-		// ---¼¼ÀÌ´õ°¡ Àß¿¬°áµÇ¾ú´ÂÁöÃ¼Å©ÇÏ±â
-		std::cerr << "ERROR: shader program ¿¬°á ½ÇÆĞ\n" << errorLog << std::endl;
+		// ---ì„¸ì´ë”ê°€ ì˜ì—°ê²°ë˜ì—ˆëŠ”ì§€ì²´í¬í•˜ê¸°
+		std::cerr << "ERROR: shader program ì—°ê²° ì‹¤íŒ¨\n" << errorLog << std::endl;
 		return false;
 	}
-	//--- ¸¸µé¾îÁø ¼¼ÀÌ´õ ÇÁ·Î±×·¥ »ç¿ëÇÏ±â
-	//--- ¿©·¯ °³ÀÇ ¼¼ÀÌ´õ ÇÁ·Î±×·¥À» ¸¸µé ¼ö ÀÖ°í, ±× Áß ÇÑ °³ÀÇ ÇÁ·Î±×·¥À» »ç¿ëÇÏ·Á¸é glUseProgram ÇÔ¼ö¸¦ È£ÃâÇÏ¿© »ç¿ëÇÒ Æ¯Á¤ ÇÁ·Î±×·¥À» ÁöÁ¤ÇÑ´Ù.
-	//--- »ç¿ëÇÏ±â Á÷Àü¿¡ È£ÃâÇÒ ¼ö ÀÖ´Ù.
+	//--- ë§Œë“¤ì–´ì§„ ì„¸ì´ë” í”„ë¡œê·¸ë¨ ì‚¬ìš©í•˜ê¸°
+	//--- ì—¬ëŸ¬ ê°œì˜ ì„¸ì´ë” í”„ë¡œê·¸ë¨ì„ ë§Œë“¤ ìˆ˜ ìˆê³ , ê·¸ ì¤‘ í•œ ê°œì˜ í”„ë¡œê·¸ë¨ì„ ì‚¬ìš©í•˜ë ¤ë©´ glUseProgram í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•˜ì—¬ ì‚¬ìš©í•  íŠ¹ì • í”„ë¡œê·¸ë¨ì„ ì§€ì •í•œë‹¤.
+	//--- ì‚¬ìš©í•˜ê¸° ì§ì „ì— í˜¸ì¶œí•  ìˆ˜ ìˆë‹¤.
 	glUseProgram(shaderID);
 	return shaderID;
 }
@@ -105,14 +105,14 @@ GLuint basic_make_shaderProgram()
 void Reshape(int w, int h) {
 	width = w;
 	height = h;
-	glViewport(0, 0, w, h); // ÀüÃ¼ È­¸é ¿µ¿ª ¼³Á¤
+	glViewport(0, 0, w, h); // ì „ì²´ í™”ë©´ ì˜ì—­ ì„¤ì •
 }
 
-// ½Ã°£ °è»ê
+// ì‹œê°„ ê³„ì‚°
 void frame_work() {
 	auto now = std::chrono::steady_clock::now();
 	std::chrono::duration<float> dt = now - current_time;
 	frame_time = dt.count();
 	current_time = now;
-	glutPostRedisplay(); // ·»´õ¸µ ¼öÇà ¿äÃ»
+	glutPostRedisplay(); // ë Œë”ë§ ìˆ˜í–‰ ìš”ì²­
 }

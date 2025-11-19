@@ -1,9 +1,9 @@
-#include "basic.h"
+ï»¿#include "basic.h"
 #include "Character.h"
 
 void Keyboard(unsigned char key, int x, int y) {
 	switch (key) {
-	// ÀÌµ¿
+	// ì´ë™
 	case 'w': {
 		player[0]->up_move();
 		player[0]->camera_pos_setting();
@@ -35,22 +35,22 @@ void Special(int key, int x, int y) {
 	glutPostRedisplay();
 }
 
-// ¸¶¿ì½ºÀÇ È­¸é À§Ä¡¿¡ µû¸¥ Àý´ë°ª ±â¹Ý 1ÀÎÄª ½ÃÁ¡
+// ë§ˆìš°ìŠ¤ì˜ í™”ë©´ ìœ„ì¹˜ì— ë”°ë¥¸ ì ˆëŒ€ê°’ ê¸°ë°˜ 1ì¸ì¹­ ì‹œì 
 void Passive(int x, int y) {
-	float max_side_rotate = 180.0f; // ÁÂ¿ì -180~180µµ
-	float max_updown_rotate = 45.0f; // »óÇÏ -45~45µµ
+	float max_side_rotate = 180.0f; // ì¢Œìš° -180~180ë„
+	float max_updown_rotate = 45.0f; // ìƒí•˜ -45~45ë„
 	float side, up_down;
-	side = -(max_side_rotate / (width / 2)) * (x - width / 2); // ÁÂ¿ì
-	up_down = -(max_updown_rotate / (height / 2)) * (y - height / 2); // À§¾Æ·¡
-	// È¸Àü °¢µµ°¡ 90µµ¸¦ ³Ñ¾î°¡¸é »óÇÏ È¸ÀüÀ» ´ã´çÇÏ´Â xÃàÀÌ ¹Ý´ë·Î µÚÁýÈ÷°Ô µÈ´Ù. ÀÌ¿¡ µû¶ó »óÇÏ °¢µµµµ ºÎÈ£¸¦ µÚÁý¾îÁÙ ÇÊ¿ä°¡ ÀÖ´Ù.
+	side = -(max_side_rotate / (width / 2)) * (x - width / 2); // ì¢Œìš°
+	up_down = -(max_updown_rotate / (height / 2)) * (y - height / 2); // ìœ„ì•„ëž˜
+	// íšŒì „ ê°ë„ê°€ 90ë„ë¥¼ ë„˜ì–´ê°€ë©´ ìƒí•˜ íšŒì „ì„ ë‹´ë‹¹í•˜ëŠ” xì¶•ì´ ë°˜ëŒ€ë¡œ ë’¤ì§‘ížˆê²Œ ëœë‹¤. ì´ì— ë”°ë¼ ìƒí•˜ ê°ë„ë„ ë¶€í˜¸ë¥¼ ë’¤ì§‘ì–´ì¤„ í•„ìš”ê°€ ìžˆë‹¤.
 	if (abs(side) >= 90.0f) {
 		up_down *= -1;
 	}
 	
 	glm::mat4 xR(1.0f);
 	glm::mat4 yR(1.0f);
-	xR = glm::rotate(xR, glm::radians(side), glm::vec3(0.0f, 1.0f, 0.0f)); // È¸Àü º¯È¯
-	yR = glm::rotate(yR, glm::radians(up_down), glm::vec3(1.0f, 0.0f, 0.0f)); // È¸Àü º¯È¯
+	xR = glm::rotate(xR, glm::radians(side), glm::vec3(0.0f, 1.0f, 0.0f)); // íšŒì „ ë³€í™˜
+	yR = glm::rotate(yR, glm::radians(up_down), glm::vec3(1.0f, 0.0f, 0.0f)); // íšŒì „ ë³€í™˜
 
 	player[0]->rotation(xR, yR);
 	player[0]->camera_pos_setting();
