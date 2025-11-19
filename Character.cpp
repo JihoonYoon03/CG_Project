@@ -50,8 +50,10 @@ void Gun::draw_shape() {
 	S = glm::scale(S, glm::vec3(0.00025f, 0.00025f, 0.00025f)); // 총 크기 감소
 	glm::mat4 ST(1.0f);
 	ST = glm::translate(ST, glm::vec3(player[0]->return_size_x() * 0.5f, 0.0f, -0.125f));
+	glm::mat4 R(1.0f);
+	R = glm::rotate(R, glm::radians(180.f), glm::vec3(0.0f, 1.0f, 0.0f));
 	//glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * side_rotation * up_rotation * trans_mat));
-	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * up_rotation * side_rotation * ST * S));
+	glUniformMatrix4fv(model_Location, 1, GL_FALSE, glm::value_ptr(T * up_rotation * side_rotation * ST * R * S));
 
 	count = 0; // 정점 개수 초기화
 	for (auto vt = v.begin(); vt != v.end(); ++vt) {
@@ -136,8 +138,29 @@ bool Gun::loadFromOBJ(const std::string& filename) {
 	return true;
 }
 void Gun::setting_attributes() {
-	//pos = (player[0]->return_pos() + glm::vec3(0.125f, 0.0f, -0.125f)); // 플레이어의 현 위치에서 조정
-	pos = (player[0]->return_pos()); // 플레이어의 현 위치에서 조정
+	// 카메라 외부 파라미터
+	glm::vec3 eye = camera.return_eye();
+	glm::vec3 at = camera.return_at();
+	glm::vec3 up = camera.return_up();
+
+	// 카메라 방향 벡터들 (u, v, n)
+	glm::vec3 forward_V = glm::normalize(at - eye);
+	glm::vec3 right_V = glm::normalize(glm::cross(forward_V, up));
+	glm::vec3 up_V = glm::cross(right_V, forward_V);
+
+	// 총 위치 (카메라 공간)
+	glm::vec3 gunOffset(0.125f, -0.35f, 0.15f);
+
+	// 총이 각 카메라 축 방향으로 이동한 것을 모두 합쳐 최종 이동 벡터를 만듦 (이 최종 이동 벡터가 월드 공간 내 총의 위치를 가리키게 됨)
+	// 즉, 총의 카메라 공간 위치만큼 카메라 공간의 기저 벡터를 스케일하고 이를 모두 합하여 원하는 방향을 가리키는 하나의 벡터로 만들어주는 것
+	glm::vec3 worldOffset =
+		right_V * gunOffset.x
+		+ up * gunOffset.y
+		+ forward_V * gunOffset.z;
+
+	pos = eye + worldOffset; // 위에서 구한 벡터를 카메라 위치에 더하여 총의 최종 월드 좌표를 구함
+
+	// 플레이어로부터 회전 정보 받아옴
 	side_rotation = player[0]->return_side_rotation();
 	up_rotation = player[0]->return_up_rotation();
 }
