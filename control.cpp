@@ -1,5 +1,6 @@
 ﻿#include "basic.h"
 #include "Character.h"
+#include "Targets.h"
 
 void Keyboard(unsigned char key, int x, int y) {
 	switch (key) {
@@ -24,6 +25,10 @@ void Keyboard(unsigned char key, int x, int y) {
 		player[0]->camera_setting();
 		break;
 	}
+	case '/':
+		// 디버그 모드 토글
+		debug_mode_collider = !debug_mode_collider;
+		break;
 	case 'q': {
 		glutLeaveMainLoop();
 		break;

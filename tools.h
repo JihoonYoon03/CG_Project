@@ -101,10 +101,14 @@ public:
 
 	~Model() {
 		delete color;
-		if (bounding_box != nullptr)
+		if (bounding_box != nullptr) {
 			delete bounding_box;
-		if (bounding_sphere != nullptr)
+			bounding_box = nullptr;
+		}
+		if (bounding_sphere != nullptr) {
 			delete bounding_sphere;
+			bounding_sphere = nullptr;
+		}
 	}
 };
 

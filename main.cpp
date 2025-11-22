@@ -51,8 +51,8 @@ int main(int argc, char** argv)
 	player[0]->camera_setting(); // 카메라 조정
 
 	// 타깃 오브젝트
-	targets.push_back(TargetDefault("models/Sphere.obj", glm::vec3(0.05f, 0.05f, 0.05f), SPHERE));
-	targets[0].translate(glm::vec3(0.0f, 0.5f, -2.0f));
+	targets.push_back(new TargetDefault("models/Sphere.obj", glm::vec3(0.05f, 0.05f, 0.05f), SPHERE));
+	targets[0]->translate(glm::vec3(0.0f, 0.5f, -0.1f));
 
 	glutMainLoop();
 
@@ -60,6 +60,9 @@ int main(int argc, char** argv)
 	for (auto obj : objects)
 		delete obj;
 	objects.clear();
+	for (auto t : targets)
+		delete t;
+	targets.clear();
 	for (auto p : player)
 		delete p;
 	player.clear();
