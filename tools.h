@@ -24,7 +24,8 @@ struct ColoredVertex {
 
 class DisplayBasis;
 
-class Collider;
+class BoxCollider;
+class SphereCollider;
 
 enum CollideMode{
 	NONE	=	0b00000000,
@@ -64,7 +65,7 @@ protected:
 
 	std::vector<glm::vec3>* color;		// 기본 정점 색상, 텍스쳐 적용 할 경우 불필요
 
-	glm::vec3 center;		// 모델 중심점 (정점 좌표값의 최대/최소값 기준 중앙임)
+	glm::vec3 center { 0, 0, 0 };		// 모델 중심점 (정점 좌표값의 최대/최소값 기준 중앙임)
 
 	// 모델 변환
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
@@ -100,8 +101,10 @@ public:
 
 	~Model() {
 		delete color;
-		delete bounding_box;
-		delete bounding_sphere;
+		if (bounding_box != nullptr)
+			delete bounding_box;
+		if (bounding_sphere != nullptr)
+			delete bounding_sphere;
 	}
 };
 
