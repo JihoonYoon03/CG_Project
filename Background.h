@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Character.h"
+#include "basic.h"
 
 // 기반 클래스
 class Objects {
