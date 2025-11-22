@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "tools.h"
-extern std::default_random_engine dre;
+extern std::random_device dre;
 
 // 윈도우 크기
 extern GLint width, height;
