@@ -1,6 +1,17 @@
 ﻿#pragma once
 #include "Character.h"
 
+void drawText(float x, float y, const char* text)
+{
+    glRasterPos2f(x, y);  // 텍스트 시작 위치
+
+    // 문자열 문자 하나씩 그리기
+    while (*text) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *text);
+        ++text;
+    }
+}
+
 void draw_UI() {
     // 2d 공간에 그리기 위해 화면에 대한 투영 변환 행렬 등 모두 초기화
     unsigned int view_Location = glGetUniformLocation(shaderProgramID, "view_Transform");
@@ -26,6 +37,25 @@ void draw_UI() {
     glVertex2f(0.0f, -size);
     glEnd();
 
+    // 셰이더 비활성화 (텍스트 출력을 위함)
+    glUseProgram(0);
+    // 텍스트
+    int stage_level = 1; // 나중에 스테이지 시스템 추가하면 해당 값 받아와서 넣으면 됨
+    std::string stage = std::to_string(stage_level);
+    stage = "stage: " + stage;
+    int point_count = 0; // 나중에 점수 시스템 추가하면 해당 값 받아와서 넣으면 됨
+    std::string point = std::to_string(point_count);
+    point = "point: " + point; 
+    int timer_count = 0; // 나중에 타이머 시스템 추가하면 해당 값 받아와서 넣으면 됨
+    std::string timer = std::to_string(timer_count);
+    timer = "timer: " + timer;
+    glColor3f(0.0f, 0.0f, 0.0f); // 글꼴 검정으로 변경
+    drawText(-0.99f, 0.9f, stage.c_str());
+    drawText(-0.99f, 0.8f, point.c_str());
+    drawText(+0.8f, 0.9f, timer.c_str());
+
     // 깊이 검사 재활성화
     glEnable(GL_DEPTH_TEST);
+    // 셰이더 재활성화
+    glUseProgram(shaderProgramID);
 }
