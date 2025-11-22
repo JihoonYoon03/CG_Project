@@ -138,6 +138,7 @@
     <ClInclude Include="basic.h" />
     <ClInclude Include="draw.h" />
     <ClInclude Include="tools.h" />
+    <ClInclude Include="UI.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="basic_fragment.glsl">

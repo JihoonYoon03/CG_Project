@@ -2,6 +2,7 @@
 #include "basic.h"
 #include "Character.h"
 #include "Background.h"
+#include "UI.h"
 
 // 뷰 및 투영 변환
 void view_and_projection() {
@@ -14,7 +15,7 @@ void view_and_projection() {
 	glUniformMatrix4fv(view_Location, 1, GL_FALSE, &view[0][0]);
 
 	// 투영 변환 행렬 준비
-	glm::mat4 pTransform = glm::mat4(1.0f); 
+	glm::mat4 pTransform = glm::mat4(1.0f);
 	pTransform = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 200.0f);
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &pTransform[0][0]); // &pTransform[0][0]의 형식을 통해 mat4 자료형의 view에 대한 시작 주소값을 넘김
 }
@@ -31,5 +32,6 @@ GLvoid drawScene()
 	player[0]->return_gun().setting_attributes();
 	player[0]->return_gun().draw_shape();
 	player[0]->draw_shape();
+    draw_UI();
 	glutSwapBuffers();
 }
