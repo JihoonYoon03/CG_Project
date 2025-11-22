@@ -134,11 +134,13 @@
     <ClCompile Include="Character.h" />
     <ClCompile Include="control.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Targets.cpp" />
     <ClCompile Include="tools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basic.h" />
     <ClInclude Include="draw.h" />
+    <ClInclude Include="Targets.h" />
     <ClInclude Include="tools.h" />
     <ClInclude Include="UI.h" />
   </ItemGroup>
