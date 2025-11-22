@@ -1,4 +1,5 @@
-﻿#include "Character.h"
+﻿#include "basic.h"
+#include "Character.h"
 #include "Background.h"
 
 Camera camera;

@@ -51,12 +51,6 @@ class Model {
 	glm::vec3 center;		// 모델 중심점 (정점 좌표값의 최대/최소값 기준 중앙임)
 	DisplayBasis* basis;	// 필요 시 모델 중심 좌표계 표시용 (디버그용)
 
-
-	// 변환행렬 적용 이전에 SRT순으로 모델 변환
-	glm::mat4 default_scale = glm::mat4(1.0f);
-	glm::mat4 default_rotate = glm::mat4(1.0f);
-	glm::mat4 default_translate = glm::mat4(1.0f);
-
 	// 모델 변환
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
 
@@ -67,7 +61,7 @@ class Model {
 	Model* parent = nullptr;
 
 	// OpenGL 버퍼 객체
-	GLuint VAO, VBO, EBO, COLOR, NORMAL;
+	GLuint VAO, VERTEX, FACE, COLOR, NORMAL;
 
 	// 비활성 상태에선 동작 X
 	bool enabled = true;
@@ -76,19 +70,16 @@ public:
 
 	void setParent(Model* parent);
 
-	void setDefScale(const glm::vec3& ds);
-	void setDefRotate(const glm::mat4& dr);
-	void setDefTranslate(const glm::vec3& dt);
-	
-	void scale(const glm::vec3& scaleFactor);
-	void rotate(GLfloat angle, const glm::vec3& axis);
-	void translate(const glm::vec3& delta);
+	// origin 기준 변환
+	// origin = retCenter()로 사용하면 모델 중심 기준 변환
+	void scale(const glm::vec3& ds, const glm::vec3& origin = {0, 0, 0});
+	void rotate(const glm::vec3& dr, const glm::vec3& origin = { 0, 0, 0 });
+	void translate(const glm::vec3& dt);
 
 	void Render();
 	void resetModelMatrix();
 	glm::vec3 retDistTo(const glm::vec3& origin = { 0.0f, 0.0f, 0.0f });
 	glm::mat4 getModelMatrix();
-	glm::vec3 retCenter() const { return center; }
 
 	void setEnabled(bool state) { enabled = state; }
 	

@@ -42,17 +42,7 @@ Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3
 	std::cout << "Loaded " << vertices.size() << " vertices, "
 		<< faces.size() << " faces" << std::endl;  // 디버그 출력
 
-	// 모델 크기 조정
-	for (auto& vertex : vertices) {
-		vertex *= size;
-	}
-
-	/*for (auto& normal : normals) {
-		normal *= size;
-		normal = glm::normalize(normal);
-	}*/
-
-
+	// 센터 구하기
 	glm::vec3 min_pos(FLT_MAX), max_pos(-FLT_MAX);
 	for (const auto& vertex : vertices) {
 		min_pos = glm::min(min_pos, vertex);
@@ -60,22 +50,25 @@ Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3
 	}
 
 	center = (min_pos + max_pos) * 0.5f;
-
+	
 	color = new std::vector<glm::vec3>(vertices.size(), defColor);
 
+	// 모델 크기 조정
+	this->scale(size, center);
+
 	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	glGenBuffers(1, &VERTEX);
+	glGenBuffers(1, &FACE);
 	glGenBuffers(1, &COLOR);
 	glGenBuffers(1, &NORMAL);
 
 	glBindVertexArray(VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VERTEX);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3),
 		vertices.data(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, FACE);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, faces.size() * sizeof(glm::uvec3),
 		faces.data(), GL_STATIC_DRAW);
 
@@ -93,47 +86,45 @@ Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3
 
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid*)0);
 	glEnableVertexAttribArray(2);
-
-	basis = new DisplayBasis(0.2f, center);
 }
 
 void Model::setParent(Model* parent) {
 	if (enabled) this->parent = parent;
 }
 
-void Model::setDefScale(const glm::vec3& ds) {
-	if (enabled) default_scale = glm::scale(glm::mat4(1.0f), ds);
-}
-void Model::setDefRotate(const glm::mat4& dr) {
-	if (enabled) default_rotate = dr;
-}
-void Model::setDefTranslate(const glm::vec3& dt) {
-	if (enabled) default_translate = glm::translate(glm::mat4(1.0f), dt);
+void Model::scale(const glm::vec3& ds, const glm::vec3& origin) {
+	if (!enabled) return;
+	glm::vec3 dist = retDistTo(origin);
+	transformQueue.push(glm::translate(glm::mat4(1.0f), -dist));
+	transformQueue.push(glm::scale(glm::mat4(1.0f), ds));
+	transformQueue.push(glm::translate(glm::mat4(1.0f), dist));
 }
 
-void Model::scale(const glm::vec3& scaleFactor) {
-	if (enabled) transformQueue.push(glm::scale(glm::mat4(1.0f), scaleFactor));
+void Model::rotate(const glm::vec3& dr, const glm::vec3& origin) {
+	if (!enabled) return;
+	glm::vec3 dist = retDistTo(origin);
+	glm::mat4 rotate = glm::mat4(1.0f);
+	transformQueue.push(glm::translate(glm::mat4(1.0f), -dist));
+	rotate = glm::rotate(rotate, glm::radians(dr.x), glm::vec3(1, 0, 0));
+	rotate = glm::rotate(rotate, glm::radians(dr.y), glm::vec3(0, 1, 0));
+	rotate = glm::rotate(rotate, glm::radians(dr.z), glm::vec3(0, 0, 1));
+	transformQueue.push(rotate);
+	transformQueue.push(glm::translate(glm::mat4(1.0f), dist));
 }
 
-void Model::rotate(GLfloat angle, const glm::vec3& axis) {
-	if (enabled) transformQueue.push(glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis));
-}
-
-void Model::translate(const glm::vec3& delta) {
-	if (enabled) transformQueue.push(glm::translate(glm::mat4(1.0f), delta));
+void Model::translate(const glm::vec3& dt) {
+	if (!enabled) return;
+	transformQueue.push(glm::translate(glm::mat4(1.0f), dt));
 }
 
 void Model::Render() {
 	if (!enabled) return;
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, faces.size() * 3, GL_UNSIGNED_INT, 0);
-
-	// 주석 해제 시 모델 중심 좌표계 출력
-	//basis->Render();
 }
 
 glm::vec3 Model::retDistTo(const glm::vec3& origin) {
-	glm::vec4 worldLocation = modelMatrix * default_translate * default_rotate * default_scale * glm::vec4(center, 1.0f);
+	glm::vec4 worldLocation = modelMatrix * glm::vec4(center, 1.0f);
 	return glm::vec3(worldLocation) - origin;
 }
 
@@ -148,9 +139,7 @@ glm::mat4 Model::getModelMatrix() {
 		parent_matrix = parent->getModelMatrix();
 	}
 
-	
-	// 모델 중심 변환 -> 모델 변환 -> 부모 변환
-	return parent_matrix * modelMatrix * default_translate * default_rotate * default_scale;
+	return parent_matrix * modelMatrix;
 }
 
 void Model::resetModelMatrix() {
