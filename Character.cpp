@@ -366,6 +366,7 @@ void Player::bounding(int t) {
 		bounding_onoff = false;
 	}
 	camera_setting();
+	gun.setting_attributes();
 	glutTimerFunc(100, bounding_callback, 1);
 	glutPostRedisplay();
 }
