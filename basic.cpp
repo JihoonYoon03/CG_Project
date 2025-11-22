@@ -1,5 +1,5 @@
 ﻿#include "basic.h"
-std::default_random_engine dre;
+std::random_device dre;
 
 // 윈도우 크기
 GLint width, height;
@@ -13,6 +13,9 @@ GLuint fragmentShader;
 // 프레임 시간
 float frame_time = 0.0f;
 std::chrono::steady_clock::time_point current_time = std::chrono::steady_clock::now();
+
+// 마우스 감도
+extern float mouse_sensitivity;
 
 char* filetobuf(const char* file)
 {

@@ -35,6 +35,7 @@ int main(int argc, char** argv)
 	glutPassiveMotionFunc(Passive);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // 배경 흰색
 	glEnable(GL_DEPTH_TEST); // 기본 깊이 검사 활성화
+	glutSetCursor(GLUT_CURSOR_NONE); // 마우스 커서 숨기기
 	glutIdleFunc(frame_work); // 시간 계산 (아무런 이벤트도 없는 상황일 때 수행) (아무런 동작이 없을 때 생기는 drawScene에서의 시간 계산 공백 부분 보완)
 
 	// 바닥
@@ -51,8 +52,13 @@ int main(int argc, char** argv)
 	player[0]->camera_setting(); // 카메라 조정
 
 	// 타깃 오브젝트
-	targets.push_back(new TargetDefault("models/Sphere.obj", glm::vec3(0.05f, 0.05f, 0.05f), SPHERE));
-	targets[0]->translate(glm::vec3(0.0f, 0.5f, -0.1f));
+	std::uniform_real_distribution<float> rand_x(-2.0f, 2.0f);
+	std::uniform_real_distribution<float> rand_y(0.2f, 0.8f);
+	std::uniform_real_distribution<float> rand_z(-2.0f, -0.2f);
+	for (int i = 0; i < 10; i++) {
+		targets.push_back(new TargetDefault("models/Sphere.obj", glm::vec3(0.05f, 0.05f, 0.05f), SPHERE));
+		targets.back()->translate(glm::vec3(rand_x(dre), rand_y(dre), rand_z(dre)));
+	}
 
 	glutMainLoop();
 
