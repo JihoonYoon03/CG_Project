@@ -49,7 +49,7 @@ class Model {
 	std::vector<glm::vec3>* color;		// 기본 정점 색상, 텍스쳐 적용 할 경우 불필요
 
 	glm::vec3 center;		// 모델 중심점 (정점 좌표값의 최대/최소값 기준 중앙임)
-	DisplayBasis* basis;	// 필요 시 모델 중심 좌표계 표시용 (디버그용)
+	GLfloat radius, width, height, depth; // 모델 크기 정보
 
 	// 모델 변환
 	glm::mat4 modelMatrix = glm::mat4(1.0f);

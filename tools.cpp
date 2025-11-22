@@ -50,6 +50,10 @@ Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3
 	}
 
 	center = (min_pos + max_pos) * 0.5f;
+	radius = glm::length(max_pos - center);
+	width = max_pos.x - min_pos.x;
+	height = max_pos.y - min_pos.y;
+	depth = max_pos.z - min_pos.z;
 	
 	color = new std::vector<glm::vec3>(vertices.size(), defColor);
 
@@ -151,7 +155,6 @@ void Model::resetModelMatrix() {
 
 Model::~Model() {
 	delete color;
-	delete basis;
 }
 
 DisplayBasis::DisplayBasis(GLfloat offset, const glm::vec3& origin) : origin(origin) {
