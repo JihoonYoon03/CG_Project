@@ -30,8 +30,8 @@ GLvoid drawScene()
 		objects[i]->draw_shape();
 	}
 	for (auto& target : targets) {
-		glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model_Transform"), 1, GL_FALSE, glm::value_ptr(target.getModelMatrix()));
-		target.Render();
+		glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model_Transform"), 1, GL_FALSE, glm::value_ptr(target->getModelMatrix()));
+		target->Render();
 	}
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model_Transform"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 	player[0]->return_gun().setting_attributes();

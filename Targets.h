@@ -10,4 +10,4 @@ public:
 	float return_hp() { return hp; }
 };
 
-extern std::vector<TargetDefault> targets;
+extern std::vector<TargetDefault*> targets;
