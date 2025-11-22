@@ -167,7 +167,7 @@ void Model::resetModelMatrix() {
 
 
 BoxCollider::BoxCollider(Model* origin, const GLfloat& w, const GLfloat& h, const GLfloat& d) :
-	Model("Models/Cube.obj", glm::vec3(w, h, d), glm::vec3(0.0f, 0.0f, 0.0f)), width(w), height(h), depth(d) {
+	Model("models/Cube.obj", glm::vec3(w, h, d), glm::vec3(0.0f, 0.0f, 0.0f)), width(w), height(h), depth(d) {
 	setParent(origin);
 }
 
@@ -181,7 +181,7 @@ void BoxCollider::Render() {
 
 
 SphereCollider::SphereCollider(Model* origin, const GLfloat& radius) :
-	Model("Models/Sphere.obj", glm::vec3(radius, radius, radius), glm::vec3(0.0f, 0.0f, 0.0f)), radius(radius) {
+	Model("models/Sphere.obj", glm::vec3(radius, radius, radius), glm::vec3(0.0f, 0.0f, 0.0f)), radius(radius) {
 	setParent(origin);
 }
 

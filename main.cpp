@@ -1,6 +1,7 @@
 ﻿#include "basic.h"
 #include "Character.h"
 #include "Background.h"
+#include "Targets.h"
 #include "draw.h"
 
 #pragma comment(lib, "opengl32.lib")
@@ -48,6 +49,10 @@ int main(int argc, char** argv)
 	player.push_back(new Player(glm::vec3(0.0f, 0.125f, 1.0f)));
 	player[0]->Update_Buffer();
 	player[0]->camera_setting(); // 카메라 조정
+
+	// 타깃 오브젝트
+	targets.push_back(TargetDefault("models/Sphere.obj", glm::vec3(0.05f, 0.05f, 0.05f), SPHERE));
+	targets[0].translate(glm::vec3(0.0f, 0.5f, -2.0f));
 
 	glutMainLoop();
 
