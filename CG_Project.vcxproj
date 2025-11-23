@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -126,12 +126,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Background.cpp" />
-    <ClCompile Include="Background.h" />
     <ClCompile Include="basic.cpp" />
     <ClCompile Include="Character.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Character.h" />
     <ClCompile Include="control.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Targets.cpp" />
@@ -143,6 +141,8 @@
     <ClInclude Include="Targets.h" />
     <ClInclude Include="tools.h" />
     <ClInclude Include="UI.h" />
+	<ClInclude Include="Character.h" />
+	<ClInclude Include="Background.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="basic_fragment.glsl">

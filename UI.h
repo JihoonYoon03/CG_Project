@@ -45,7 +45,7 @@ void draw_UI() {
     stage = "stage: " + stage;
     int point_count = 0; // 나중에 점수 시스템 추가하면 해당 값 받아와서 넣으면 됨
     std::string point = std::to_string(point_count);
-    point = "point: " + point; 
+    point = "point: " + point;
     int timer_count = 0; // 나중에 타이머 시스템 추가하면 해당 값 받아와서 넣으면 됨
     std::string timer = std::to_string(timer_count);
     timer = "timer: " + timer;
