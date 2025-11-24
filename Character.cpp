@@ -2,10 +2,9 @@
 #include "Character.h"
 #include "Background.h"
 
-Camera camera;
 std::vector<Player*> player;
 
-Gun::Gun() {
+Gun::Gun(Player* p): owner(p) {
 	// 1. VAO/VBO 생성 & 속성 연결
 	auto Make_Buffer = [&]() {
 		glGenBuffers(1, &VBO_position);
@@ -140,9 +139,9 @@ bool Gun::loadFromOBJ(const std::string& filename) {
 }
 void Gun::setting_attributes() {
 	// 카메라 외부 파라미터
-	glm::vec3 eye = camera.return_eye();
-	glm::vec3 at = camera.return_at();
-	glm::vec3 up = camera.return_up();
+	glm::vec3 eye = owner->return_camera().return_eye();
+	glm::vec3 at = owner->return_camera().return_at();
+	glm::vec3 up = owner->return_camera().return_up();
 
 	// 카메라 방향 벡터들 (u, v, n)
 	glm::vec3 forward_V = glm::normalize(at - eye); // at - eye를 통해 카메라가 바라보고 있는 방향에 대한 벡터가 결정되므로, 회전이 적용되어있다 봐도 무방
@@ -173,7 +172,7 @@ float RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0f); // Meter / Second
 float RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER); // 초당 몇 픽셀을 이동할지 결졍(PPS) (이것이 속도가 됨)
 
 Player* Player::bounding_select = nullptr; // 클래스 전역 변수 초기화
-Player::Player(glm::vec3 position, float x, float y, float z) : pos(position) {
+Player::Player(glm::vec3 position, float x, float y, float z) : pos(position), gun(this), camera(this) {
 	// 주인공 전용 버퍼
 	auto Make_Buffer = [&]() {
 		// 좌표 버퍼

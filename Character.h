@@ -1,14 +1,17 @@
 ﻿#pragma once
 #include "basic.h"
 
+class Player; // Player 클래스가 존재함을 알림
+
 // 카메라
 class Camera {
 private:
+	Player* owner = nullptr; // 카메라 클래스를 가지는 플레이어가 누군지 구분하기 위함
 	glm::vec3 camera_Pos; // EYE (카메라 위치)
 	glm::vec3 camera_Direction; // AT (카메라가 바라보는 방향)
 	glm::vec3 camera_Up; // UP (카메라의 위쪽)
 public:
-	Camera() {
+	Camera(Player* p) : owner(p) {
 		camera_Pos = glm::vec3(0.0f, 0.0f, 2.0f);
 		camera_Direction = glm::vec3(0.0f, 0.0f, 0.0f);
 		camera_Up = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -19,9 +22,10 @@ public:
 	glm::vec3 return_at() { return camera_Direction; }
 	glm::vec3 return_up() { return camera_Up; }
 };
-extern Camera camera;
 
 class Gun {
+private:
+	Player* owner = nullptr; // 총 클래스를 가지는 플레이어가 누군지 구분하기 위함
 	GLuint VAO;
 	GLuint VBO_position, VBO_color;
 	std::vector<glm::vec3> v; // 각 Shape의 정점 좌표들을 저장할 벡터 자료구조
@@ -31,7 +35,7 @@ class Gun {
 	glm::mat4 side_rotation = glm::mat4(1.0f); // 좌우 회전
 	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
 public:
-	Gun();
+	Gun(Player *p);
 	void Update_Buffer();
 	void draw_shape();
 	bool loadFromOBJ(const std::string& filename);
@@ -61,6 +65,7 @@ private:
 	static Player* bounding_select; // 반동 적용 대상
 
 	Gun gun; // 플레이어에 총 클래스 포함시키기
+	Camera camera;
 public:
 	// 기본 생성자
 	Player(glm::vec3 position = glm::vec3(0.0f, 0.5f, 0.0f), float x = 0.25f, float y = 0.25f, float z = 0.25f);
@@ -99,5 +104,6 @@ public:
 	static void bounding_callback(int value);
 	void bounding(int t);
 	Gun& return_gun() { return gun; }
+	Camera& return_camera() { return camera; }
 };
 extern std::vector<Player*> player;

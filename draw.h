@@ -11,7 +11,7 @@ void view_and_projection() {
 	unsigned int projLoc = glGetUniformLocation(shaderProgramID, "projection_Transform");
 
 	// 뷰 변환 행렬 준비
-	glm::mat4 view = glm::lookAt(camera.return_eye(), camera.return_at(), camera.return_up());
+	glm::mat4 view = glm::lookAt(player[0]->return_camera().return_eye(), player[0]->return_camera().return_at(), player[0]->return_camera().return_up());
 	glUniformMatrix4fv(view_Location, 1, GL_FALSE, &view[0][0]);
 
 	// 투영 변환 행렬 준비
