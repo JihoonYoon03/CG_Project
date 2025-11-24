@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "basic.h"
 
 // 기반 클래스

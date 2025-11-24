@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "basic.h"
 
 // 카메라

@@ -1,4 +1,4 @@
-﻿#include "basic.h"
+#include "basic.h"
 #include "Character.h"
 #include "Background.h"
 #include "Targets.h"

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Character.h"
 
 void drawText(float x, float y, const char* text)

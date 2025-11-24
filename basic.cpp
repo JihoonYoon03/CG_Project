@@ -1,4 +1,4 @@
-﻿#include "basic.h"
+#include "basic.h"
 std::random_device dre;
 
 // 윈도우 크기
