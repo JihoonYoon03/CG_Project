@@ -30,16 +30,13 @@
     <ClCompile Include="Character.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Character.h">
-      <Filter>헤더 파일</Filter>
-    </ClCompile>
     <ClCompile Include="control.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Background.h">
-      <Filter>헤더 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Background.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Targets.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -54,6 +51,18 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="UI.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Targets.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Background.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Standard.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

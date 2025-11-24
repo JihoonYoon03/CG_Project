@@ -138,11 +138,12 @@
   <ItemGroup>
     <ClInclude Include="basic.h" />
     <ClInclude Include="draw.h" />
+    <ClInclude Include="Standard.h" />
     <ClInclude Include="Targets.h" />
     <ClInclude Include="tools.h" />
     <ClInclude Include="UI.h" />
-	<ClInclude Include="Character.h" />
-	<ClInclude Include="Background.h" />
+    <ClInclude Include="Character.h" />
+    <ClInclude Include="Background.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="basic_fragment.glsl">
