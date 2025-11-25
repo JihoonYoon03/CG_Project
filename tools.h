@@ -128,6 +128,7 @@ class SphereCollider : protected Model {
 	GLfloat radius;
 public:
 	SphereCollider(Model* origin, const GLfloat& radius);
+	GLfloat getRadius() { return radius; }
 	void Render() override;
 };
 
