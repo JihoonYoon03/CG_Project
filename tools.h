@@ -15,12 +15,23 @@
 #include <gl/glm/ext.hpp>
 #include <gl/glm/gtc/matrix_transform.hpp>
 
+extern bool debug_mode_collider;
+
 struct ColoredVertex {
 	glm::vec3 pos;
 	glm::vec3 color;
 };
 
 class DisplayBasis;
+
+class BoxCollider;
+class SphereCollider;
+
+enum CollideMode{
+	NONE	=	0b00000000,
+	BOX		=	0b00000001,
+	SPHERE	=	0b00000010
+};
 
 /*
 Model 클래스 사용법
@@ -41,6 +52,12 @@ Model 클래스 사용법
 */
 
 class Model {
+// 콜라이더는 해당 객체에 종속되므로 private
+// Model의 자식 클래스에선 접근 불가
+private:
+	BoxCollider* bounding_box = nullptr;
+	SphereCollider* bounding_sphere = nullptr;
+protected:
 	// 정점 속성
 	std::vector<glm::vec3> vertices;	// 정점 위치
 	std::vector<glm::uvec3> faces;		// 삼각형의 정점 인덱스 순서
@@ -48,8 +65,7 @@ class Model {
 
 	std::vector<glm::vec3>* color;		// 기본 정점 색상, 텍스쳐 적용 할 경우 불필요
 
-	glm::vec3 center;		// 모델 중심점 (정점 좌표값의 최대/최소값 기준 중앙임)
-	DisplayBasis* basis;	// 필요 시 모델 중심 좌표계 표시용 (디버그용)
+	glm::vec3 center { 0, 0, 0 };		// 모델 중심점 (정점 좌표값의 최대/최소값 기준 중앙임)
 
 	// 모델 변환
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
@@ -66,7 +82,7 @@ class Model {
 	// 비활성 상태에선 동작 X
 	bool enabled = true;
 public:
-	Model(const std::string& filename, const glm::vec3& size = { 1.0f, 1.0f, 1.0f }, const glm::vec3& defColor = { 0.8f, 0.8f, 0.8f });
+	Model(const std::string& filename, const glm::vec3& size = { 1.0f, 1.0f, 1.0f }, const glm::vec3& defColor = { 0.8f, 0.8f, 0.8f }, const CollideMode& collider = NONE);
 
 	void setParent(Model* parent);
 
@@ -76,14 +92,40 @@ public:
 	void rotate(const glm::vec3& dr, const glm::vec3& origin = { 0, 0, 0 });
 	void translate(const glm::vec3& dt);
 
-	void Render();
+	virtual void Render();
 	void resetModelMatrix();
 	glm::vec3 retDistTo(const glm::vec3& origin = { 0.0f, 0.0f, 0.0f });
 	glm::mat4 getModelMatrix();
 
 	void setEnabled(bool state) { enabled = state; }
-	
-	~Model();
+
+	~Model() {
+		delete color;
+		if (bounding_box != nullptr) {
+			delete bounding_box;
+			bounding_box = nullptr;
+		}
+		if (bounding_sphere != nullptr) {
+			delete bounding_sphere;
+			bounding_sphere = nullptr;
+		}
+	}
+};
+
+// protected 상속 => 외부에서 Model 기능 접근 불가
+class BoxCollider : protected Model {
+	GLfloat width, height, depth;
+public:
+	BoxCollider(Model* origin, const GLfloat& w, const GLfloat& h, const GLfloat& d);
+	void Render() override;
+	// 박스 충돌 체크는 SAT 알고리즘 사용 예정
+};
+
+class SphereCollider : protected Model {
+	GLfloat radius;
+public:
+	SphereCollider(Model* origin, const GLfloat& radius);
+	void Render() override;
 };
 
 class DisplayBasis {

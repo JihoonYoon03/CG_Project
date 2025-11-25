@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "basic.h"
 
 class Player; // Player 클래스가 존재함을 알림

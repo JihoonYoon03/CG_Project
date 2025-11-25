@@ -1,4 +1,4 @@
-﻿#include "basic.h"
+#include "basic.h"
 #include "Character.h"
 #include "Background.h"
 
@@ -319,7 +319,7 @@ void Player::camera_setting() {
 	glm::vec3 baseFront(0.0f, 0.0f, -1.0f);
 	glm::vec3 forward = glm::normalize(glm::vec3(u * side_rotation * glm::vec4(baseFront, 0.0f))); // 정면을 side_rotation만큼 회전 시킨 후 정규화 (안정성을 위한 정규화) (방향만 쓰고 이동은 고려하지 않는 방향 벡터이기에 동차좌표 0.0f로 사용)
 	// 캐릭터 중심점 (카메라 위치 및 회전 시 몸체가 보이지 않도록 하는 높이를 고려해 조금 위쪽으로 설정)
-	glm::vec3 center = glm::vec3(pos.x, pos.y + 0.25f, pos.z);
+	glm::vec3 center = glm::vec3(pos.x, pos.y + 0.8f, pos.z);
 	// 캐릭터로부터 카메라를 둘 위치(머리)
 	camera.set_camera_Pos(center + forward * 0.125f);
 	// 카메라가 정면을 바라봄

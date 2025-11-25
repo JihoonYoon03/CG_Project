@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Character.h"
 
 void drawText(float x, float y, const char* text)
@@ -28,6 +28,9 @@ void draw_UI() {
     // 십자선 그리기
     glLineWidth(2.0f); // 두께
     float size = 0.025f; // 크기
+
+    // ===================================
+    // 레거시 함수 수정 필요!!!
     glBegin(GL_LINES);
     glVertex2f(+size, 0.0f);
     glVertex2f(-size, 0.0f);
@@ -36,6 +39,7 @@ void draw_UI() {
     glVertex2f(0.0f, +size);
     glVertex2f(0.0f, -size);
     glEnd();
+	// ===================================
 
     // 셰이더 비활성화 (텍스트 출력을 위함)
     glUseProgram(0);

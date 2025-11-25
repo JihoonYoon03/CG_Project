@@ -1,6 +1,8 @@
 #include "tools.h"
 
-Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3& defColor) {
+bool debug_mode_collider = false;
+
+Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3& defColor, const CollideMode& collider) {
 	std::ifstream file(filename);
 	if (!file.is_open()) {
 		std::cerr << "Error opening file: " << filename << std::endl;
@@ -52,6 +54,15 @@ Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3
 	center = (min_pos + max_pos) * 0.5f;
 	
 	color = new std::vector<glm::vec3>(vertices.size(), defColor);
+
+	GLfloat width = max_pos.x - min_pos.x;
+	GLfloat height = max_pos.y - min_pos.y;
+	GLfloat depth = max_pos.z - min_pos.z;
+	GLfloat radius = std::max({ width, height, depth }) * 0.5f;
+	if (collider & BOX)
+		bounding_box = new BoxCollider(this, width, height, depth);
+	if (collider & SPHERE)
+		bounding_sphere = new SphereCollider(this, radius);
 
 	// 모델 크기 조정
 	this->scale(size, center);
@@ -121,6 +132,10 @@ void Model::Render() {
 	if (!enabled) return;
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, faces.size() * 3, GL_UNSIGNED_INT, 0);
+	if (debug_mode_collider) {
+		if (bounding_box != nullptr) bounding_box->Render();
+		if (bounding_sphere != nullptr) bounding_sphere->Render();
+	}
 }
 
 glm::vec3 Model::retDistTo(const glm::vec3& origin) {
@@ -149,10 +164,36 @@ void Model::resetModelMatrix() {
 	}
 }
 
-Model::~Model() {
-	delete color;
-	delete basis;
+
+
+BoxCollider::BoxCollider(Model* origin, const GLfloat& w, const GLfloat& h, const GLfloat& d) :
+	Model("models/Cube.obj", glm::vec3(w, h, d), glm::vec3(1.0f, 0.0f, 0.0f)), width(w), height(h), depth(d) {
+	setParent(origin);
 }
+
+void BoxCollider::Render() {
+	if (!enabled) return;
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, faces.size() * 3, GL_UNSIGNED_INT, 0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+
+SphereCollider::SphereCollider(Model* origin, const GLfloat& radius) :
+	Model("models/Sphere.obj", glm::vec3(radius, radius, radius), glm::vec3(1.0f, 0.0f, 0.0f)), radius(radius) {
+	setParent(origin);
+}
+
+void SphereCollider::Render() {
+	if (!enabled) return;
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, faces.size() * 3, GL_UNSIGNED_INT, 0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+
 
 DisplayBasis::DisplayBasis(GLfloat offset, const glm::vec3& origin) : origin(origin) {
 
