@@ -130,6 +130,7 @@
     <ClCompile Include="Character.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="CollideHandler.cpp" />
     <ClCompile Include="control.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Targets.cpp" />
@@ -137,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basic.h" />
+    <ClInclude Include="CollideHandler.h" />
     <ClInclude Include="draw.h" />
     <ClInclude Include="Standard.h" />
     <ClInclude Include="Targets.h" />
