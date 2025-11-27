@@ -78,7 +78,7 @@ void Passive(int x, int y) {
 	//glm::mat4 yR(1.0f);
 	//yR = glm::rotate(yR, glm::radians(camera_pitch), new_X);
 
-	player[0]->camera->updateCamRot(camera_pitch, camera_yaw);
+	player[0]->camera->updateCam(camera_pitch, camera_yaw);
 
 	glutWarpPointer(width / 2, height / 2); // 마우스 커서를 윈도우 중앙으로 이동
 	glutPostRedisplay();

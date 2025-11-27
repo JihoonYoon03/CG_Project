@@ -17,7 +17,7 @@ private:
 	glm::mat4 camRot{ 1.0f };
 public:
 	Camera(Player* p);
-	void updateCamRot(const GLfloat& camera_pitch, const GLfloat& camera_yaw);
+	void updateCam(const GLfloat& camera_pitch, const GLfloat& camera_yaw);
 	glm::mat4 retViewMatrix() { return glm::lookAt(EYE, AT, UP); }
 	glm::mat4 getModelMatrix() override { return camRot; }
 	glm::mat4 retParentMatrix() override { return camRot; }

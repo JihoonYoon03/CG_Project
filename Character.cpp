@@ -3,13 +3,14 @@
 std::vector<Player*> player;
 
 Camera::Camera(Player* p) : owner(p) {
-	glm::vec3 center = glm::vec4(owner->retDistTo(), 0.0f)* owner->getModelMatrix();
-	EYE = center - glm::vec3(0.0f, 0.0f, -3.0f);
+	glm::vec3 center = owner->retDistTo();
+	EYE = center;
 	AT = EYE - glm::vec3(0.0f, 0.0f, -1.0f);
 	UP = glm::vec3(0.0f, 1.0f, 0.0f);
 }
 
-void Camera::updateCamRot(const GLfloat& camera_pitch, const GLfloat& camera_yaw) {
+void Camera::updateCam(const GLfloat& camera_pitch, const GLfloat& camera_yaw) {
+	EYE = owner->retDistTo();
 	// 쿼터니언 방식 카메라 회전
 	qPitch = glm::angleAxis(glm::radians(camera_pitch), glm::vec3(1.0f, 0.0f, 0.0f));
 	qYaw = glm::angleAxis(glm::radians(camera_yaw), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -20,7 +21,7 @@ void Camera::updateCamRot(const GLfloat& camera_pitch, const GLfloat& camera_yaw
 
 Gun::Gun() : Model("models/Pistol.obj", { 0.00025f, 0.00025f, 0.00025f }, { 0.8f, 0.8f, 0.8f }) {
 	rotate({ 0.0f, 180.0f, 0.0f }, center);
-	translate({ 0.5f, 0.0f, 0.0f });
+	translate({ 0.5f, 0.0f, -1.0f });
 }
 
 Player* Player::bounding_select = nullptr; // 클래스 전역 변수 초기화
