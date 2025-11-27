@@ -1,5 +1,6 @@
 #pragma once
 #include "basic.h"
+#include "Background.h"
 
 class Player; // Player 클래스가 존재함을 알림
 
@@ -23,59 +24,36 @@ public:
 	glm::vec3 return_up() { return camera_Up; }
 };
 
-class Gun {
-private:
-	Player* owner = nullptr; // 총 클래스를 가지는 플레이어가 누군지 구분하기 위함
-	GLuint VAO;
-	GLuint VBO_position, VBO_color;
-	std::vector<glm::vec3> v; // 각 Shape의 정점 좌표들을 저장할 벡터 자료구조
-	std::vector<glm::vec3> c; // 각 Shape의 정점 색들을 저장할 벡터 자료구조
-	// 동적 정보 (값 변경 O)
-	glm::vec3 pos; // 이동 (현재 위치)
+class Gun : public Model{
+	bool temp = false;
+	Player* owner = nullptr; // 총을 소유한 플레이어
 	glm::mat4 side_rotation = glm::mat4(1.0f); // 좌우 회전
 	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
 public:
 	Gun(Player *p);
 	void Update_Buffer();
 	void draw_shape();
-	bool loadFromOBJ(const std::string& filename);
 	void setting_attributes(); // 위치, 각도 최신화
 };
 
-extern float PIXEL_PER_METER; // 10 pixel 30 cm.즉, 1 meter 당 몇 픽셀인지 계산. 10pixel을 0.3(m)으로 나누어 1미터 당 픽셀 수를 구함
-extern float RUN_SPEED_KMPH; // Km / Hour(여기서 현실적인 속도를 결정) (km / h)
-extern float RUN_SPEED_MPM; // Meter / Minute
-extern float RUN_SPEED_MPS; // Meter / Second
-extern float RUN_SPEED_PPS; // 초당 몇 픽셀을 이동할지 결졍(PPS) (이것이 속도가 됨)
-
-class Player {
+class Player : public Model {
 private:
-	GLuint VAO;
-	GLuint VBO_position, VBO_color;
-	std::vector<glm::vec3> v; // 각 Shape의 정점 좌표들을 저장할 벡터 자료구조
-	std::vector<glm::vec3> c; // 각 Shape의 정점 색들을 저장할 벡터 자료구조
 	// 동적 정보 (값 변경 O)
-	glm::vec3 pos; // 이동 (현재 위치)
 	glm::mat4 side_rotation = glm::mat4(1.0f); // 좌우 회전
 	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
-	float speed = RUN_SPEED_PPS;
-	float size_x, size_y, size_z;
 	bool bounding_onoff = false; // 반동 상태
 	float bounding_rotation = 0.0f; // 반동 각도
 	static Player* bounding_select; // 반동 적용 대상
+
+	GLfloat speed = 0.1f; // 이동 속도
 
 	Gun gun; // 플레이어에 총 클래스 포함시키기
 	Camera camera;
 public:
 	// 기본 생성자
-	Player(glm::vec3 position = glm::vec3(0.0f, 0.5f, 0.0f), float x = 0.25f, float y = 0.25f, float z = 0.25f);
+	Player(glm::vec3 position = { 0.0f, 0.5f, 0.0f }, glm::vec3 scale = { 0.25f, 0.25f, 0.25f });
 	void Update_Buffer();
 	void draw_shape();
-	// 이동
-	void up_move();
-	void down_move();
-	void left_move();
-	void right_move();
 	// 카메라 세팅
 	void camera_setting();
 	// 회전량 받아와서 저장
@@ -83,22 +61,19 @@ public:
 	// 히트 박스 (좌, 우, 앞, 뒤)
 	glm::vec4 return_hitbox();
 	// 맵 안에 있는지 구분
-	bool outside_map();
-	bool collision();
-	glm::vec3 return_pos() { return pos; }
+	//bool outside_map();
+	//bool collision();
 	glm::mat4 return_side_rotation() { return side_rotation; }
 	glm::mat4 return_up_rotation() { 
-		glm::mat4 u(1.0f);
-		u = up_rotation;
+		glm::mat4 u = up_rotation;
 		if (bounding_onoff) { // 반동 중이면 반동이 적용된 상하 각도로 총에 전달
 			glm::vec3 new_X = glm::normalize(glm::vec3(side_rotation * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f)));
 			glm::mat4 yR(1.0f);
 			yR = glm::rotate(yR, glm::radians(bounding_rotation), new_X);
 			u = yR * up_rotation;
 		}
-		return u; 
+		return u;
 	}
-	float return_size_x() { return size_x; }
 	bool return_bounding() { return bounding_onoff; }
 	void bounding_on();
 	static void bounding_callback(int value);

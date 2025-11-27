@@ -1,17 +1,17 @@
 #version 330 core
 
 // Vertex Shader
-// vPos¿Í vColor´Â °¢°¢ ¼ÎÀÌ´õ ¼Ó¼º º¯¼öÀÌ´Ù.
-layout(location = 0) in vec3 vPos;     // VBO_position¿¡¼­ ¹ÞÀº À§Ä¡ (locationÀÌ 0À¸·Î ¼³Á¤µÈ ¼ÎÀÌ´õ ¼Ó¼º)
-layout(location = 1) in vec3 vColor;   // VBO_color¿¡¼­ ¹ÞÀº »ö»ó (locationÀÌ 1·Î ¼³Á¤µÈ ¼ÎÀÌ´õ ¼Ó¼º)
+// vPosï¿½ï¿½ vColorï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½.
+layout(location = 0) in vec3 vPos;     // VBO_positionï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ (locationï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½Ó¼ï¿½)
+layout(location = 1) in vec3 vColor;   // VBO_colorï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (locationï¿½ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½Ó¼ï¿½)
 
-out vec3 fColor;  // ÇÁ·¡±×¸ÕÆ® ¼ÎÀÌ´õ·Î Àü´ÞÇÒ °ª (outÀ¸·Î º¸³½ º¯¼ö¸¦ inÀ¸·Î ¹ÞÀ» ¶§, µÎ º¯¼öÀÇ ÀÌ¸§Àº ¼­·Î °°¾Æ¾ß ÇÑ´Ù.)
+out vec3 fColor;  // ï¿½ï¿½ï¿½ï¿½ï¿½×¸ï¿½Æ® ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ (outï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ inï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¾ï¿½ ï¿½Ñ´ï¿½.)
 
-uniform mat4 model_Transform; // º¹ÇÕ º¯È¯ Çà·Ä ¼±¾ð
-uniform mat4 view_Transform; // ºä º¯È¯
-uniform mat4 projection_Transform; // Åõ¿µ º¯È¯
+uniform mat4 projection; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
+uniform mat4 view; // ï¿½ï¿½ ï¿½ï¿½È¯
+uniform mat4 model; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 void main() {
-    gl_Position = projection_Transform * view_Transform * model_Transform * vec4(vPos, 1.0);
+    gl_Position = projection * view * model * vec4(vPos, 1.0);
     fColor = vColor;
 }

@@ -35,6 +35,8 @@ int main(int argc, char** argv)
 	glutPassiveMotionFunc(Passive);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // 배경 흰색
 	glEnable(GL_DEPTH_TEST); // 기본 깊이 검사 활성화
+	glFrontFace(GL_CCW); // 시계 반대 방향을 앞면으로 설정
+	glEnable(GL_CULL_FACE); // 뒷면 제거 활성화
 	glutSetCursor(GLUT_CURSOR_NONE); // 마우스 커서 숨기기
 	glutIdleFunc(frame_work); // 시간 계산 (아무런 이벤트도 없는 상황일 때 수행) (아무런 동작이 없을 때 생기는 drawScene에서의 시간 계산 공백 부분 보완)
 
@@ -48,7 +50,6 @@ int main(int argc, char** argv)
 
 	// 플레이어
 	player.push_back(new Player(glm::vec3(0.0f, 0.125f, 1.0f)));
-	player[0]->Update_Buffer();
 	player[0]->camera_setting(); // 카메라 조정
 
 	// 타깃 오브젝트

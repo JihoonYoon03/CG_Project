@@ -1,6 +1,4 @@
-#include "basic.h"
-#include "Character.h"
-#include "Targets.h"
+#include "Control.h"
 
 float mouse_sensitivity = 0.2f;
 // yaw - 좌우 회전, pitch - 상하 회전
@@ -10,23 +8,23 @@ void Keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 	// 이동
 	case 'w': {
-		player[0]->up_move();
-		player[0]->camera_setting();
+		//player[0]->up_move();
+		//player[0]->camera_setting();
 		break;
 	}
 	case 'a': {
-		player[0]->left_move();
-		player[0]->camera_setting();
+		//player[0]->left_move();
+		//player[0]->camera_setting();
 		break;
 	}
 	case 's': {
-		player[0]->down_move();
-		player[0]->camera_setting();
+		//player[0]->down_move();
+		//player[0]->camera_setting();
 		break;
 	}
 	case 'd': {
-		player[0]->right_move();
-		player[0]->camera_setting();
+		//player[0]->right_move();
+		//player[0]->camera_setting();
 		break;
 	}
 	case '/':
