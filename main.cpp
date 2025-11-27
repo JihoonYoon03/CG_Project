@@ -49,8 +49,7 @@ int main(int argc, char** argv)
 	objects[1]->Update_Buffer();
 
 	// 플레이어
-	player.push_back(new Player(glm::vec3(0.0f, 0.125f, 1.0f)));
-	player[0]->camera_setting(); // 카메라 조정
+	player.push_back(new Player(glm::vec3(0.0f, 1.0f, 1.0f)));
 
 	// 타깃 오브젝트
 	std::uniform_real_distribution<float> rand_x(-2.0f, 2.0f);

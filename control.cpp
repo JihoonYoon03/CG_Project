@@ -69,19 +69,16 @@ void Passive(int x, int y) {
 	if (camera_pitch < -max_updown_rotate) camera_pitch = -max_updown_rotate;
 	else if (camera_pitch > max_updown_rotate) camera_pitch = max_updown_rotate;
 
-	// 월드 좌표 기준 y축 회전
-	glm::mat4 xR(1.0f);
-	xR = glm::rotate(xR, glm::radians(camera_yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+	//// 월드 좌표 기준 y축 회전
+	//glm::mat4 xR(1.0f);
+	//xR = glm::rotate(xR, glm::radians(camera_yaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	// 회전 이후의 월드 좌표 기준 x축으로 상하 회전 (월드 좌표계 자체를 회전 시킨 다음 상하 회전을 적용)
-	glm::vec3 new_X = glm::normalize(glm::vec3(xR * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f)));
-	glm::mat4 yR(1.0f);
-	yR = glm::rotate(yR, glm::radians(camera_pitch), new_X);
+	//// 회전 이후의 월드 좌표 기준 x축으로 상하 회전 (월드 좌표계 자체를 회전 시킨 다음 상하 회전을 적용)
+	//glm::vec3 new_X = glm::normalize(glm::vec3(xR * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f)));
+	//glm::mat4 yR(1.0f);
+	//yR = glm::rotate(yR, glm::radians(camera_pitch), new_X);
 
-	// 회전 정보 전달
-	player[0]->rotation(xR, yR);
-	// 카메라 최신화
-	player[0]->camera_setting();
+	player[0]->camera->updateCamRot(camera_pitch, camera_yaw);
 
 	glutWarpPointer(width / 2, height / 2); // 마우스 커서를 윈도우 중앙으로 이동
 	glutPostRedisplay();

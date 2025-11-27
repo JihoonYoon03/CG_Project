@@ -14,18 +14,7 @@ void view_and_projection() {
 
 
 	// 뷰 변환 행렬 준비
-	glm::vec3 EYE = glm::vec3(-3.0f, 3.0f, 3.0f);
-
-	// 쿼터니언 방식 카메라 회전
-	glm::quat qPitch = glm::angleAxis(glm::radians(camera_pitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::quat qYaw = glm::angleAxis(glm::radians(camera_yaw), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::quat qRot = qYaw * qPitch;
-	glm::mat4 camRot = glm::mat4_cast(qRot);
-	glm::vec3 AT = EYE + glm::vec3(camRot * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f));
-
-	glm::vec3 UP = glm::vec3(0.0f, 1.0f, 0.0f);
-	glm::mat4 view = glm::lookAt(EYE, AT, UP);
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "view"), 1, GL_FALSE, &view[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "view"), 1, GL_FALSE, glm::value_ptr(player[0]->camera->retViewMatrix()));
 }
 
 GLvoid drawScene()
@@ -42,7 +31,7 @@ GLvoid drawScene()
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(target->getModelMatrix()));
 		target->Render();
 	}
-	player[0]->return_gun().setting_attributes();
+
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(player[0]->return_gun().getModelMatrix()));
 	player[0]->return_gun().Render();
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(player[0]->getModelMatrix()));

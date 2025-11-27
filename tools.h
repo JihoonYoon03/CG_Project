@@ -68,6 +68,7 @@ protected:
 	glm::vec3 center { 0, 0, 0 };		// 모델 중심점 (정점 좌표값의 최대/최소값 기준 중앙임)
 
 	// 모델 변환
+	glm::mat4 defScaleMatrix = glm::mat4(1.0f);	// 모델 기본 크기 조정
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
 
 	// modelMatrix에 적용할 변환 행렬 큐
@@ -82,6 +83,7 @@ protected:
 	// 비활성 상태에선 동작 X
 	bool enabled = true;
 public:
+	Model() { enabled = false; }
 	Model(const std::string& filename, const glm::vec3& size = { 1.0f, 1.0f, 1.0f }, const glm::vec3& defColor = { 0.8f, 0.8f, 0.8f }, const CollideMode& collider = NONE);
 
 	void setParent(Model* parent);
@@ -95,7 +97,9 @@ public:
 	virtual void Render();
 	void resetModelMatrix();
 	glm::vec3 retDistTo(const glm::vec3& origin = { 0.0f, 0.0f, 0.0f });
-	glm::mat4 getModelMatrix();
+
+	virtual glm::mat4 getModelMatrix();		// 리턴값 커스텀 가능
+	virtual glm::mat4 retParentMatrix();	// 리턴값 커스텀 가능
 
 	void setEnabled(bool state) { enabled = state; }
 

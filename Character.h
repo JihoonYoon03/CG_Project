@@ -4,36 +4,29 @@
 
 class Player; // Player 클래스가 존재함을 알림
 
-// 카메라
-class Camera {
+// 카메라. Model 클래스 상속으로 getModelMatrix() 사용 가능
+class Camera : public Model {
 private:
 	Player* owner = nullptr; // 카메라 클래스를 가지는 플레이어가 누군지 구분하기 위함
-	glm::vec3 camera_Pos; // EYE (카메라 위치)
-	glm::vec3 camera_Direction; // AT (카메라가 바라보는 방향)
-	glm::vec3 camera_Up; // UP (카메라의 위쪽)
+	glm::vec3 EYE; // EYE (카메라 위치)
+	glm::vec3 AT; // AT (카메라가 바라보는 방향)
+	glm::vec3 UP; // UP (카메라의 위쪽)
+
+	// 쿼터니언 방식 카메라 회전
+	glm::quat qPitch, qYaw, qRot;
+	glm::mat4 camRot{ 1.0f };
 public:
-	Camera(Player* p) : owner(p) {
-		camera_Pos = glm::vec3(0.0f, 0.0f, 2.0f);
-		camera_Direction = glm::vec3(0.0f, 0.0f, 0.0f);
-		camera_Up = glm::vec3(0.0f, 1.0f, 0.0f);
-	}
-	void set_camera_Pos(glm::vec3 p) { camera_Pos = p; }
-	void set_camera_Direction(glm::vec3 p) { camera_Direction = p; }
-	glm::vec3 return_eye() { return camera_Pos; }
-	glm::vec3 return_at() { return camera_Direction; }
-	glm::vec3 return_up() { return camera_Up; }
+	Camera(Player* p);
+	void updateCamRot(const GLfloat& camera_pitch, const GLfloat& camera_yaw);
+	glm::mat4 retViewMatrix() { return glm::lookAt(EYE, AT, UP); }
+	glm::mat4 getModelMatrix() override { return camRot; }
+	glm::mat4 retParentMatrix() override { return camRot; }
 };
 
 class Gun : public Model{
 	bool temp = false;
-	Player* owner = nullptr; // 총을 소유한 플레이어
-	glm::mat4 side_rotation = glm::mat4(1.0f); // 좌우 회전
-	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
 public:
-	Gun(Player *p);
-	void Update_Buffer();
-	void draw_shape();
-	void setting_attributes(); // 위치, 각도 최신화
+	Gun();
 };
 
 class Player : public Model {
@@ -46,22 +39,17 @@ private:
 	static Player* bounding_select; // 반동 적용 대상
 
 	GLfloat speed = 0.1f; // 이동 속도
+	GLfloat last_camera_pitch = 0, last_camera_yaw = 0;
 
-	Gun gun; // 플레이어에 총 클래스 포함시키기
-	Camera camera;
+	Gun* gun; // 플레이어에 총 클래스 포함시키기
 public:
+	Camera* camera;
 	// 기본 생성자
 	Player(glm::vec3 position = { 0.0f, 0.5f, 0.0f }, glm::vec3 scale = { 0.25f, 0.25f, 0.25f });
-	void Update_Buffer();
-	void draw_shape();
-	// 카메라 세팅
-	void camera_setting();
-	// 회전량 받아와서 저장
-	void rotation(glm::mat4 side, glm::mat4 up);
+		
 	// 히트 박스 (좌, 우, 앞, 뒤)
 	glm::vec4 return_hitbox();
-	// 맵 안에 있는지 구분
-	//bool outside_map();
+		//bool outside_map();
 	//bool collision();
 	glm::mat4 return_side_rotation() { return side_rotation; }
 	glm::mat4 return_up_rotation() { 
@@ -78,7 +66,12 @@ public:
 	void bounding_on();
 	static void bounding_callback(int value);
 	void bounding(int t);
-	Gun& return_gun() { return gun; }
-	Camera& return_camera() { return camera; }
+	Gun& return_gun() { return *gun; }
+	Camera& return_camera() { return *camera; }
+
+	~Player() {
+		delete gun;
+		delete camera;
+	}
 };
 extern std::vector<Player*> player;

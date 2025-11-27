@@ -65,7 +65,7 @@ Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3
 		bounding_sphere = new SphereCollider(this, radius);
 
 	// 모델 크기 조정
-	this->scale(size, center);
+	defScaleMatrix = glm::scale(defScaleMatrix, size);
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VERTEX);
@@ -151,7 +151,22 @@ glm::mat4 Model::getModelMatrix() {
 	
 	glm::mat4 parent_matrix(1.0f);
 	if (parent != nullptr) {
-		parent_matrix = parent->getModelMatrix();
+		parent_matrix = parent->retParentMatrix();
+	}
+
+	return parent_matrix * modelMatrix * defScaleMatrix;
+}
+
+// 모델 기본 크기 설정인 defScaleMatrix를 제외하고 반환
+glm::mat4 Model::retParentMatrix() {
+	while (!transformQueue.empty()) {
+		modelMatrix = transformQueue.front() * modelMatrix;
+		transformQueue.pop();
+	}
+
+	glm::mat4 parent_matrix(1.0f);
+	if (parent != nullptr) {
+		parent_matrix = parent->retParentMatrix();
 	}
 
 	return parent_matrix * modelMatrix;
