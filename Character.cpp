@@ -7,12 +7,12 @@ Camera::Camera(Player* p) : owner(p) {
 	UP = glm::vec3(0.0f, 1.0f, 0.0f);
 }
 
-void Camera::updateCam(const GLfloat& camera_pitch, const GLfloat& camera_yaw) {
+void Camera::updateCam() {
 	EYE = owner->getEye();
 
 	// 쿼터니언 방식 카메라 회전
-	qPitch = glm::angleAxis(glm::radians(camera_pitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	qYaw = glm::angleAxis(glm::radians(camera_yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+	qPitch = glm::angleAxis(glm::radians(pitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	qYaw = glm::angleAxis(glm::radians(yaw), glm::vec3(0.0f, 1.0f, 0.0f));
 	qRot = qYaw * qPitch;
 	camRot = glm::mat4_cast(qRot);
 	AT = EYE + glm::vec3(camRot * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f));
@@ -48,6 +48,59 @@ glm::mat4 Player::applyCameraRotation(Camera* camera) {
 	}
 }
 
+
+void Player::move(const Direction& dir) {
+	switch (dir) {
+	case FORWARD:
+		if (movement_input.z <= -1.0f) break;
+		movement_input.z -= 1.0f;
+		break;
+	case BACKWARD:
+		if (movement_input.z >= 1.0f) break;
+		movement_input.z += 1.0f;
+		break;
+	case LEFT:
+		if (movement_input.x <= -1.0f) break;
+		movement_input.x -= 1.0f;
+		break;
+	case RIGHT:
+		if (movement_input.x >= 1.0f) break;
+		movement_input.x += 1.0f;
+		break;
+	}
+}
+
+void Player::stop(const Direction& dir) {
+	switch (dir) {
+	case FORWARD:
+		if (movement_input.z >= 1.0f) break;
+		movement_input.z += 1.0f;
+		break;
+	case BACKWARD:
+		if (movement_input.z <= -1.0f) break;
+		movement_input.z -= 1.0f;
+		break;
+	case LEFT:
+		if (movement_input.x >= 1.0f) break;
+		movement_input.x += 1.0f;
+		break;
+	case RIGHT:
+		if (movement_input.x <= -1.0f) break;
+		movement_input.x -= 1.0f;
+		break;
+	}
+}
+
+void Player::updateMovement(const GLfloat& deltaTime, Camera* camera) {
+	if (movement_input == glm::vec3(0.0f, 0.0f, 0.0f)) return; // 이동 입력이 없으면 종료
+
+	direction = glm::vec3(camera->getYaw() * glm::vec4(glm::normalize(movement_input), 0.0f));
+	translate(direction * RUN_SPEED_MPS * deltaTime);
+
+	eye = center + glm::vec3(0.0f, 0.75f, -0.4f);
+	camera->updateCam();
+}
+
 //bool Player::outside_map() {
 //	if (return_hitbox()[0] >= objects[0]->return_hitbox()[1]) return true;
 //	if (return_hitbox()[1] <= objects[0]->return_hitbox()[0]) return true;
@@ -66,9 +119,9 @@ glm::mat4 Player::applyCameraRotation(Camera* camera) {
 //}
 
 // 반동
-void Player::bounding_on() { 
+void Player::bounding_on() {
 	if (bounding_onoff) return; // 이미 반동 중이면 종료
-	bounding_onoff = true; 
+	bounding_onoff = true;
 	bounding_rotation = 10.0f;
 	bounding_select = this; // 현재 플레이어가 반동 중임을 알림
 	glutTimerFunc(100, bounding_callback, 1);

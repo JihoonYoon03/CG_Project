@@ -1,5 +1,6 @@
 #pragma once
 #include "basic.h"
+#include "Standard.h"
 
 class Player; // Player 클래스가 존재함을 알림
 
@@ -15,8 +16,11 @@ private:
 	glm::quat qPitch{ 0, 0, 0, 1 }, qYaw{ 0, 0, 0, 1 }, qRot{ 0, 0, 0, 1 };
 	glm::mat4 camRot{ 1.0f };
 public:
+	// 좌우 회전각, 상하 회전각
+	GLfloat yaw = 0.0f, pitch = 0.0f;
+
 	Camera(Player* p);
-	void updateCam(const GLfloat& camera_pitch, const GLfloat& camera_yaw);
+	void updateCam();
 	glm::mat4 retViewMatrix() { return glm::lookAt(EYE, AT, UP); }
 	glm::mat4 getRotation();
 	glm::mat4 retParentMatrix();
@@ -40,7 +44,9 @@ private:
 	float bounding_rotation = 0.0f; // 반동 각도
 	static Player* bounding_select; // 반동 적용 대상
 
-	GLfloat speed = 0.1f; // 이동 속도
+	glm::vec3 movement_input = glm::vec3(0.0f, 0.0f, 0.0f); // 축별 이동방향 입력 벡터
+	glm::vec3 direction = glm::vec3(0.0f, 0.0f, 0.0f); // 실제 이동 방향 벡터
+
 	GLfloat last_camera_pitch = 0, last_camera_yaw = 0;
 public:
 	// 기본 생성자
@@ -50,6 +56,10 @@ public:
 	void setFPS(bool state) { FPS = state; } // 1인칭 모드 설정
 	glm::vec3 getEye() { return eye; }	// camera에 눈 위치 전달
 	glm::mat4 applyCameraRotation(Camera* camera);
+
+	void move(const Direction& dir);
+	void stop(const Direction& dir);
+	void updateMovement(const GLfloat& deltaTime, Camera* camera);
 
 	glm::mat4 return_side_rotation() { return side_rotation; }
 	glm::mat4 return_up_rotation() { 

@@ -12,7 +12,7 @@ GLuint fragmentShader;
 
 // 프레임 시간
 float frame_time = 0.0f;
-std::chrono::steady_clock::time_point current_time = std::chrono::steady_clock::now();
+auto prev_time = std::chrono::steady_clock::now();
 
 // 마우스 감도
 extern float mouse_sensitivity;
@@ -112,10 +112,11 @@ void Reshape(int w, int h) {
 }
 
 // 시간 계산
-void frame_work() {
+void calculateFrameTime() {
 	auto now = std::chrono::steady_clock::now();
-	std::chrono::duration<float> dt = now - current_time;
+	std::chrono::duration<float> dt = now - prev_time;
 	frame_time = dt.count();
-	current_time = now;
+	prev_time = now;
+	glutSetWindowTitle(("FPS: " + std::to_string(static_cast<int>(1000.0f / (frame_time * 1000.0f)))).c_str());
 	glutPostRedisplay(); // 렌더링 수행 요청
 }

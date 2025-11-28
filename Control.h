@@ -4,7 +4,6 @@
 #include "Standard.h"
 
 extern float mouse_sensitivity;
-extern GLfloat camera_yaw, camera_pitch;
 extern std::vector<Player*> player;
 extern Camera* camera;
 

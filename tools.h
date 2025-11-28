@@ -91,7 +91,7 @@ public:
 	// origin = retCenter()로 사용하면 모델 중심 기준 변환
 	void scale(const glm::vec3& ds, const glm::vec3& origin = {0, 0, 0});
 	void rotate(const glm::vec3& dr, const glm::vec3& origin = { 0, 0, 0 });
-	void translate(const glm::vec3& dt);
+	void translate(const glm::vec3& dt, const glm::vec3& offset = { 0, 0, 0 }); // offset: 변환 적용 이전, 현재 위치 조정. retDistTo() 입력 시 좌표 dt로 초기화 가능
 
 	virtual void Render();
 	void resetModelMatrix();

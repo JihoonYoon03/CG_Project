@@ -18,14 +18,18 @@ void view_and_projection() {
 
 GLvoid drawScene()
 {
+	calculateFrameTime();
+
 	glUseProgram(shaderProgramID);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	frame_work(); // 시간 계산 (이벤트가 작용하여 렌더링 되는 경우 수행)
+
 	view_and_projection();
+
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 	for (size_t i = 0; i < objects.size(); ++i) {
 		objects[i]->draw_shape();
 	}
+
 	for (auto& target : targets) {
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(target->getModelMatrix()));
 		target->Render();
@@ -33,8 +37,11 @@ GLvoid drawScene()
 
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(camera->getRotation() * gun->getModelMatrix()));
 	gun->Render();
+	
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(player[0]->applyCameraRotation(camera) * player[0]->getModelMatrix()));
 	player[0]->Render();
+
     draw_UI();
+
 	glutSwapBuffers();
 }

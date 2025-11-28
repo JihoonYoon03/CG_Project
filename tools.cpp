@@ -123,8 +123,9 @@ void Model::rotate(const glm::vec3& dr, const glm::vec3& origin) {
 	transformQueue.push(glm::translate(glm::mat4(1.0f), dist));
 }
 
-void Model::translate(const glm::vec3& dt) {
+void Model::translate(const glm::vec3& dt, const glm::vec3& offset) {
 	if (!enabled) return;
+	transformQueue.push(glm::translate(glm::mat4(1.0f), -offset));
 	transformQueue.push(glm::translate(glm::mat4(1.0f), dt));
 	center += dt;
 }

@@ -1,26 +1,24 @@
 #include "Control.h"
 
 float mouse_sensitivity = 0.2f;
-// yaw - 좌우 회전, pitch - 상하 회전
-GLfloat camera_yaw = 0.0f, camera_pitch = 0.0f;
 
 void Keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 	// 이동
 	case 'w': {
-		//player[0]->move(FORWARD);
+		player[0]->move(FORWARD);
 		break;
 	}
 	case 'a': {
-		//player[0]->move(LEFT);
+		player[0]->move(LEFT);
 		break;
 	}
 	case 's': {
-		//player[0]->move(BACKWARD);
+		player[0]->move(BACKWARD);
 		break;
 	}
 	case 'd': {
-		//player[0]->move(RIGHT);
+		player[0]->move(RIGHT);
 		break;
 	}
 	case '/':
@@ -38,19 +36,19 @@ void Keyboard(unsigned char key, int x, int y) {
 void KeyboardUp(unsigned char key, int x, int y) {
 	switch (key) {
 	case 'w': {
-		//player[0]->stop(FORWARD);
+		player[0]->stop(FORWARD);
 		break;
 	}
 	case 'a': {
-		//player[0]->stop(LEFT);
+		player[0]->stop(LEFT);
 		break;
 	}
 	case 's': {
-		//player[0]->stop(BACKWARD);
+		player[0]->stop(BACKWARD);
 		break;
 	}
 	case 'd': {
-		//player[0]->stop(RIGHT);
+		player[0]->stop(RIGHT);
 		break;
 	}
 	}
@@ -63,9 +61,10 @@ void Special(int key, int x, int y) {
 
 // 월드 업데이트 (매 순간 호출)
 void UpdateWorld(int value) {
+	player[0]->updateMovement(frame_time, camera);
+	camera->updateCam();
 
-
-	glutTimerFunc(1000 / FRAME_RATE, UpdateWorld, 0);
+	glutTimerFunc(1000 / MAX_FPS, UpdateWorld, 0);
 	glutPostRedisplay();
 }
 
@@ -86,15 +85,15 @@ void Passive(int x, int y) {
 	mPosToGL(width, height, x, y, gl_x, gl_y);
 
 	// 마우스 위치에 따른 회전량 설정
-	camera_yaw -= gl_x * width / 2.0f * mouse_sensitivity; // y축 회전이므로 좌회전이 양수, 우회전이 음수
-	camera_pitch += gl_y * height / 2.0f * mouse_sensitivity; // x축 회전이므로 하회전이 양수, 상회전이 음수
+	camera->yaw -= gl_x * width / 2.0f * mouse_sensitivity; // y축 회전이므로 좌회전이 양수, 우회전이 음수
+	camera->pitch += gl_y * height / 2.0f * mouse_sensitivity; // x축 회전이므로 하회전이 양수, 상회전이 음수
 
 	// 값 초기화 & 최대 각도 설정 (초과 방지)
-	if (camera_yaw < 0.0f) camera_yaw += 360.0f;
-	else if (camera_yaw >= 360.0f) camera_yaw -= 360.0f;
+	if (camera->yaw < 0.0f) camera->yaw += 360.0f;
+	else if (camera->yaw >= 360.0f) camera->yaw -= 360.0f;
 
-	if (camera_pitch < -max_updown_rotate) camera_pitch = -max_updown_rotate;
-	else if (camera_pitch > max_updown_rotate) camera_pitch = max_updown_rotate;
+	if (camera->pitch < -max_updown_rotate) camera->pitch = -max_updown_rotate;
+	else if (camera->pitch > max_updown_rotate) camera->pitch = max_updown_rotate;
 
 	//// 월드 좌표 기준 y축 회전
 	//glm::mat4 xR(1.0f);
@@ -104,8 +103,6 @@ void Passive(int x, int y) {
 	//glm::vec3 new_X = glm::normalize(glm::vec3(xR * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f)));
 	//glm::mat4 yR(1.0f);
 	//yR = glm::rotate(yR, glm::radians(camera_pitch), new_X);
-
-	camera->updateCam(camera_pitch, camera_yaw);
 
 	glutWarpPointer(width / 2, height / 2); // 마우스 커서를 윈도우 중앙으로 이동
 	glutPostRedisplay();
