@@ -2,13 +2,13 @@
 
 Camera::Camera(Player* p) : owner(p) {
 	owner->setFPS(true);
-	EYE = owner->getEye(this);
+	EYE = owner->getEye();
 	AT = EYE - glm::vec3(0.0f, 0.0f, -1.0f);
 	UP = glm::vec3(0.0f, 1.0f, 0.0f);
 }
 
 void Camera::updateCam(const GLfloat& camera_pitch, const GLfloat& camera_yaw) {
-	EYE = owner->getEye(this);
+	EYE = owner->getEye();
 
 	// 쿼터니언 방식 카메라 회전
 	qPitch = glm::angleAxis(glm::radians(camera_pitch), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -36,12 +36,6 @@ Player* Player::bounding_select = nullptr; // 클래스 전역 변수 초기화
 Player::Player(glm::vec3 position, glm::vec3 scale) : Model("models/Cube.obj", scale, { 0.8f, 0.8f, 0.2f }, BOX) {
 	translate(position);
 	eye = center + glm::vec3(0.0f, 0.75f, -0.4f);
-	gun = new Gun();
-	gun->setParent(this);
-}
-
-glm::vec3 Player::getEye(Camera* camera) {
-	return eye;
 }
 
 // FPS모드일 때 카메라 Yaw만 적용

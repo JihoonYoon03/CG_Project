@@ -31,6 +31,8 @@ int main(int argc, char** argv)
 	glutMouseFunc(Mouse);
 	glutSpecialFunc(Special);
 	glutPassiveMotionFunc(Passive);
+	glutTimerFunc(1000 / FRAME_RATE, UpdateWorld, 0); // 월드 업데이트 (매 순간 호출)
+
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // 배경 흰색
 	glEnable(GL_DEPTH_TEST); // 기본 깊이 검사 활성화
 	glFrontFace(GL_CCW); // 시계 반대 방향을 앞면으로 설정
@@ -48,6 +50,9 @@ int main(int argc, char** argv)
 
 	// 플레이어
 	player.push_back(new Player(glm::vec3(0.0f, 1.0f, 1.0f)));
+
+	gun = new Gun();
+	gun->setParent(player[0]);
 
 	// 카메라
 	camera = new Camera(player[0]);
@@ -73,5 +78,7 @@ int main(int argc, char** argv)
 	for (auto p : player)
 		delete p;
 	player.clear();
+	delete gun;
+	delete camera;
 	return 0;
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "basic.h"
 #include "Variables.h"
+#include "Standard.h"
 
 extern float mouse_sensitivity;
 extern GLfloat camera_yaw, camera_pitch;
@@ -8,7 +9,9 @@ extern std::vector<Player*> player;
 extern Camera* camera;
 
 void Keyboard(unsigned char key, int x, int y);
+void KeyboardUp(unsigned char key, int x, int y);
 void Special(int key, int x, int y);
+void UpdateWorld(int value);
 
 void Mouse(int button, int state, int x, int y);
 

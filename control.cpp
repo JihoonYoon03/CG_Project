@@ -8,23 +8,19 @@ void Keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 	// 이동
 	case 'w': {
-		//player[0]->up_move();
-		//player[0]->camera_setting();
+		//player[0]->move(FORWARD);
 		break;
 	}
 	case 'a': {
-		//player[0]->left_move();
-		//player[0]->camera_setting();
+		//player[0]->move(LEFT);
 		break;
 	}
 	case 's': {
-		//player[0]->down_move();
-		//player[0]->camera_setting();
+		//player[0]->move(BACKWARD);
 		break;
 	}
 	case 'd': {
-		//player[0]->right_move();
-		//player[0]->camera_setting();
+		//player[0]->move(RIGHT);
 		break;
 	}
 	case '/':
@@ -38,7 +34,38 @@ void Keyboard(unsigned char key, int x, int y) {
 	}
 	glutPostRedisplay();
 }
+
+void KeyboardUp(unsigned char key, int x, int y) {
+	switch (key) {
+	case 'w': {
+		//player[0]->stop(FORWARD);
+		break;
+	}
+	case 'a': {
+		//player[0]->stop(LEFT);
+		break;
+	}
+	case 's': {
+		//player[0]->stop(BACKWARD);
+		break;
+	}
+	case 'd': {
+		//player[0]->stop(RIGHT);
+		break;
+	}
+	}
+	glutPostRedisplay();
+}
+
 void Special(int key, int x, int y) {
+	glutPostRedisplay();
+}
+
+// 월드 업데이트 (매 순간 호출)
+void UpdateWorld(int value) {
+
+
+	glutTimerFunc(1000 / FRAME_RATE, UpdateWorld, 0);
 	glutPostRedisplay();
 }
 

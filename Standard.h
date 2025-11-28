@@ -1,5 +1,7 @@
 #pragma once
 
+constexpr float FRAME_RATE = 60.0f; // 1초에 60프레임
+
 constexpr float FLOAT_PER_METER = 1.0f; // 1.0f / 1 meter
 
 constexpr float PIXEL_PER_METER = (5.0f);

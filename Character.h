@@ -42,21 +42,15 @@ private:
 
 	GLfloat speed = 0.1f; // 이동 속도
 	GLfloat last_camera_pitch = 0, last_camera_yaw = 0;
-
-	Gun* gun; // 플레이어에 총 클래스 포함시키기
 public:
 	// 기본 생성자
 	Player(glm::vec3 position = { 0.0f, 0.5f, 0.0f }, glm::vec3 scale = { 0.25f, 0.25f, 0.25f });
 
 	bool FPS = false; // 1인칭 모드 여부
-	void setFPS(bool state) { FPS = state; }
-	glm::vec3 getEye(Camera* camera);
+	void setFPS(bool state) { FPS = state; } // 1인칭 모드 설정
+	glm::vec3 getEye() { return eye; }	// camera에 눈 위치 전달
 	glm::mat4 applyCameraRotation(Camera* camera);
 
-	// 히트 박스 (좌, 우, 앞, 뒤)
-	glm::vec4 return_hitbox();
-		//bool outside_map();
-	//bool collision();
 	glm::mat4 return_side_rotation() { return side_rotation; }
 	glm::mat4 return_up_rotation() { 
 		glm::mat4 u = up_rotation;
@@ -72,9 +66,4 @@ public:
 	void bounding_on();
 	static void bounding_callback(int value);
 	void bounding(int t);
-	Gun& return_gun() { return *gun; }
-
-	~Player() {
-		delete gun;
-	}
 };
