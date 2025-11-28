@@ -30,8 +30,9 @@ int main(int argc, char** argv)
 	glutKeyboardFunc(Keyboard);
 	glutKeyboardUpFunc(KeyboardUp);
 	glutMouseFunc(Mouse);
+	glutMotionFunc(Motion);
+	glutPassiveMotionFunc(PassiveMotion);
 	glutSpecialFunc(Special);
-	glutPassiveMotionFunc(Passive);
 	glutTimerFunc(1000 / MAX_FPS, UpdateWorld, 0); // 월드 업데이트 (매 순간 호출)
 
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // 배경 흰색

@@ -13,5 +13,5 @@ void Special(int key, int x, int y);
 void UpdateWorld(int value);
 
 void Mouse(int button, int state, int x, int y);
-
-void Passive(int x, int y);
+void Motion(int x, int y);
+void PassiveMotion(int x, int y);

@@ -17,7 +17,7 @@ extern std::chrono::steady_clock::time_point prev_time;
 void Keyboard(unsigned char key, int x, int y);
 void Mouse(int button, int state, int x, int y);
 void Special(int key, int x, int y);
-void Passive(int x, int y);
+void PassiveMotion(int x, int y);
 void Reshape(int w, int h);
 
 char* filetobuf(const char* file);

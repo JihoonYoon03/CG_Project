@@ -77,8 +77,12 @@ void Mouse(int button, int state, int x, int y) { // button은 좌클릭과 우�
 	glutPostRedisplay();
 }
 
+void Motion(int x, int y) {
+	PassiveMotion(x, y);
+}
+
 // 마우스의 화면 위치에 따른 절대값 기반 1인칭 시점
-void Passive(int x, int y) {
+void PassiveMotion(int x, int y) {
 	float max_updown_rotate = 89.0f; // 상하 회전 최대 각
 
 	// 마우스 위치 윈도우 좌표계를 OpenGL 좌표계로 변환
