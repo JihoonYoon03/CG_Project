@@ -1,6 +1,6 @@
 #include "Variables.h"
 
-std::vector<Player*> player;
+Player* player;
 Gun* gun = nullptr;
 Camera* camera = nullptr;
 std::vector<TargetDefault*> targets;

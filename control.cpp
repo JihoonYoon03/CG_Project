@@ -6,19 +6,19 @@ void Keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 	// 이동
 	case 'w': {
-		player[0]->move(FORWARD);
+		player->move(FORWARD);
 		break;
 	}
 	case 'a': {
-		player[0]->move(LEFT);
+		player->move(LEFT);
 		break;
 	}
 	case 's': {
-		player[0]->move(BACKWARD);
+		player->move(BACKWARD);
 		break;
 	}
 	case 'd': {
-		player[0]->move(RIGHT);
+		player->move(RIGHT);
 		break;
 	}
 	case '/':
@@ -36,19 +36,19 @@ void Keyboard(unsigned char key, int x, int y) {
 void KeyboardUp(unsigned char key, int x, int y) {
 	switch (key) {
 	case 'w': {
-		player[0]->stop(FORWARD);
+		player->stop(FORWARD);
 		break;
 	}
 	case 'a': {
-		player[0]->stop(LEFT);
+		player->stop(LEFT);
 		break;
 	}
 	case 's': {
-		player[0]->stop(BACKWARD);
+		player->stop(BACKWARD);
 		break;
 	}
 	case 'd': {
-		player[0]->stop(RIGHT);
+		player->stop(RIGHT);
 		break;
 	}
 	}
@@ -61,7 +61,7 @@ void Special(int key, int x, int y) {
 
 // 월드 업데이트 (매 순간 호출)
 void UpdateWorld(int value) {
-	player[0]->updateMovement(frame_time, camera);
+	player->updateMovement(frame_time, camera);
 	camera->updateCam();
 
 	glutTimerFunc(1000 / MAX_FPS, UpdateWorld, 0);
@@ -71,7 +71,7 @@ void UpdateWorld(int value) {
 // 마우스 입력에 따른 기능 설정
 void Mouse(int button, int state, int x, int y) { // button은 좌클릭과 우클릭 구분, state는 누른 상태인지 뗀 상태인지 구분, x와 y는 각각 '윈도우'에서의 마우스 위치
 	if (button == GLUT_LEFT_BUTTON and state == GLUT_DOWN) { // 좌클릭을 눌렀을 때 수행되는 조건문
-		player[0]->bounding_on();
+		player->bounding_on();
 	}
 	glutPostRedisplay();
 }

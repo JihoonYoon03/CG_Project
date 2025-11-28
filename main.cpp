@@ -49,13 +49,13 @@ int main(int argc, char** argv)
 	objects[1]->Update_Buffer();
 
 	// 플레이어
-	player.push_back(new Player(glm::vec3(0.0f, 1.0f, 1.0f)));
+	player = new Player(glm::vec3(0.0f, 1.0f, 1.0f));
 
 	gun = new Gun();
-	gun->setParent(player[0]);
+	gun->setParent(player);
 
 	// 카메라
-	camera = new Camera(player[0]);
+	camera = new Camera(player);
 
 	// 타깃 오브젝트
 	std::uniform_real_distribution<float> rand_x(-2.0f, 2.0f);
@@ -75,9 +75,8 @@ int main(int argc, char** argv)
 	for (auto t : targets)
 		delete t;
 	targets.clear();
-	for (auto p : player)
-		delete p;
-	player.clear();
+
+	delete player;
 	delete gun;
 	delete camera;
 	return 0;

@@ -4,7 +4,7 @@
 #include "Standard.h"
 
 extern float mouse_sensitivity;
-extern std::vector<Player*> player;
+extern Player* player;
 extern Camera* camera;
 
 void Keyboard(unsigned char key, int x, int y);
