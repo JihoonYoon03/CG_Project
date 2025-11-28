@@ -4,6 +4,12 @@
 
 class Player; // Player 클래스가 존재함을 알림
 
+// 키프레임 이동, 회전변환 저장 구조체
+struct KeyFrame {
+	glm::vec3 position;
+	glm::vec3 rotation;	// pitch, yaw, roll
+};
+
 // 카메라. Model 클래스 상속으로 getModelMatrix() 사용 가능
 class Camera {
 private:
@@ -27,11 +33,24 @@ public:
 	glm::mat4 getYaw();
 };
 
+
 class Gun : public Model{
-	bool temp = false;
+	// 반동 애니메이션 키프레임. 기본 총 위치에서의 상대 좌표 저장
+	KeyFrame keyframes[3] = {
+		{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f) },
+		{ glm::vec3(0.0f, 0.1f, -0.2f), glm::vec3(-15.0f, 0.0f, 0.0f) },
+		{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f) }
+	};
+
+	bool rebound = false; // 반동 애니메이션 진행 상태
+	GLfloat t = 0.0f, t_per_time = 1.5f; // 반동 애니메이션 매개변수, 시간 당 증가율
 public:
 	Gun();
+	void shoot() { { rebound = true; t = 0.0f; } } // 반동 애니메이션 시작
+	KeyFrame getKeyframe();
+	glm::mat4 getAnimationMatrix();
 };
+
 
 class Player : public Model {
 private:
@@ -60,20 +79,4 @@ public:
 	void move(const Direction& dir);
 	void stop(const Direction& dir);
 	void updateMovement(const GLfloat& deltaTime, Camera* camera);
-
-	glm::mat4 return_side_rotation() { return side_rotation; }
-	glm::mat4 return_up_rotation() { 
-		glm::mat4 u = up_rotation;
-		if (bounding_onoff) { // 반동 중이면 반동이 적용된 상하 각도로 총에 전달
-			glm::vec3 new_X = glm::normalize(glm::vec3(side_rotation * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f)));
-			glm::mat4 yR(1.0f);
-			yR = glm::rotate(yR, glm::radians(bounding_rotation), new_X);
-			u = yR * up_rotation;
-		}
-		return u;
-	}
-	bool return_bounding() { return bounding_onoff; }
-	void bounding_on();
-	static void bounding_callback(int value);
-	void bounding(int t);
 };

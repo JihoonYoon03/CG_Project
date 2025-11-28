@@ -31,6 +31,49 @@ Gun::Gun() : Model("models/Pistol.obj", { 0.00025f, 0.00025f, 0.00025f }, { 0.8f
 	translate({ 0.2f, 0.3f, -0.8f });
 }
 
+KeyFrame Gun::getKeyframe() {
+	if (!rebound) {
+		return { glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f) }; // 반동 중이 아니면 기본 위치 반환
+	}
+
+	KeyFrame result;
+	if (t < 0.05f) {
+		float local_t = t / 0.05f; // 0.0f ~ 0.05f 구간을 0.0f ~ 1.0f로 매핑
+		result.position = glm::mix(keyframes[0].position, keyframes[1].position, local_t);
+		result.rotation = glm::mix(keyframes[0].rotation, keyframes[1].rotation, local_t);
+	}
+	else {
+		float local_t = (t - 0.05f) / 0.95f; // 0.05f ~ 1.0f 구간을 0.0f ~ 1.0f로 매핑
+		result.position = glm::mix(keyframes[1].position, keyframes[2].position, local_t);
+		result.rotation = glm::mix(keyframes[1].rotation, keyframes[2].rotation, local_t);
+	}
+	
+	t = std::min(t + t_per_time * frame_time, 1.0f); // t 증가, 최대 1.0f까지
+
+	if (t >= 1.0f) {
+		t = 0.0f; // 애니메이션 종료 시 초기화
+		rebound = false;
+	}
+
+	return result;
+}
+
+glm::mat4 Gun::getAnimationMatrix() {
+	KeyFrame frame = getKeyframe();
+	frame.position = glm::inverse(defScaleMatrix) * glm::vec4(frame.position, 0.0f); // 원래 크기 기준으로 변환
+	glm::mat4 mat = glm::mat4(1.0f);
+
+	glm::quat qPitch = glm::angleAxis(glm::radians(frame.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::quat qYaw = glm::angleAxis(glm::radians(frame.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::quat qRoll = glm::angleAxis(glm::radians(frame.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::quat qRot = qRoll * qYaw * qPitch;
+
+	mat = glm::mat4_cast(qRot);
+	mat = glm::translate(mat, frame.position);
+
+	return mat;
+}
+
 Player* Player::bounding_select = nullptr; // 클래스 전역 변수 초기화
 
 Player::Player(glm::vec3 position, glm::vec3 scale) : Model("models/Cube.obj", scale, { 0.8f, 0.8f, 0.2f }, BOX) {
@@ -117,28 +160,3 @@ void Player::updateMovement(const GLfloat& deltaTime, Camera* camera) {
 //	}
 //	return false;
 //}
-
-// 반동
-void Player::bounding_on() {
-	if (bounding_onoff) return; // 이미 반동 중이면 종료
-	bounding_onoff = true;
-	bounding_rotation = 10.0f;
-	bounding_select = this; // 현재 플레이어가 반동 중임을 알림
-	glutTimerFunc(100, bounding_callback, 1);
-}
-void Player::bounding(int t) {
-	if (!bounding_onoff) return;
-	bounding_rotation -= 2.0f; // 서서히 각도 감소
-	if (bounding_rotation <= 0.0f) {
-		bounding_rotation = 0.0f;
-		bounding_onoff = false;
-	}
-	glutTimerFunc(100, bounding_callback, 1);
-	glutPostRedisplay();
-}
-// 타이머에 지속적으로 bounding을 호출하기 위한 방식
-// 전역 멤버 함수 내에서 bounding을 대신 호출하고, 이 함수를 타이머에서 계속 반복 호출하는 것
-void Player::bounding_callback(int value) {
-	if (bounding_select)
-		bounding_select->bounding(value);
-}
