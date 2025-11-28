@@ -1,16 +1,18 @@
 #include "Character.h"
 
 std::vector<Player*> player;
+Camera* camera = nullptr;
 
 Camera::Camera(Player* p) : owner(p) {
-	glm::vec3 center = owner->retDistTo();
-	EYE = center;
+	owner->setFPS(true);
+	EYE = owner->getEye(this);
 	AT = EYE - glm::vec3(0.0f, 0.0f, -1.0f);
 	UP = glm::vec3(0.0f, 1.0f, 0.0f);
 }
 
 void Camera::updateCam(const GLfloat& camera_pitch, const GLfloat& camera_yaw) {
-	EYE = owner->retDistTo();
+	EYE = owner->getEye(this);
+
 	// 쿼터니언 방식 카메라 회전
 	qPitch = glm::angleAxis(glm::radians(camera_pitch), glm::vec3(1.0f, 0.0f, 0.0f));
 	qYaw = glm::angleAxis(glm::radians(camera_yaw), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -19,19 +21,43 @@ void Camera::updateCam(const GLfloat& camera_pitch, const GLfloat& camera_yaw) {
 	AT = EYE + glm::vec3(camRot * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f));
 }
 
+glm::mat4 Camera::getModelMatrix() {
+	return glm::translate(glm::mat4(1.0f), EYE) * camRot * glm::translate(glm::mat4(1.0f), -EYE);
+}
+
+glm::mat4 Camera::retParentMatrix() {
+	return glm::translate(glm::mat4(1.0f), EYE) * camRot * glm::translate(glm::mat4(1.0f), -EYE);
+}
+
+glm::mat4 Camera::getYaw() {
+	return glm::translate(glm::mat4(1.0f), EYE) * glm::mat4_cast(qYaw) * glm::translate(glm::mat4(1.0f), -EYE);
+}
+
 Gun::Gun() : Model("models/Pistol.obj", { 0.00025f, 0.00025f, 0.00025f }, { 0.8f, 0.8f, 0.8f }) {
 	rotate({ 0.0f, 180.0f, 0.0f }, center);
-	translate({ 0.5f, 0.0f, -1.0f });
+	translate({ 0.2f, 0.1f, -0.5f });
 }
 
 Player* Player::bounding_select = nullptr; // 클래스 전역 변수 초기화
 
 Player::Player(glm::vec3 position, glm::vec3 scale) : Model("models/Cube.obj", scale, { 0.8f, 0.8f, 0.2f }, BOX) {
 	translate(position);
-	camera = new Camera(this);
+	eye = center + glm::vec3(0.0f, 0.5f, 0.0f);
 	gun = new Gun();
-	this->setParent(camera);
 	gun->setParent(this);
+}
+
+glm::vec3 Player::getEye(Camera* camera) {
+	return eye;
+}
+
+glm::mat4 Player::applyCameraRotation(Camera* camera) {
+	if (FPS) {
+		return camera->getModelMatrix();
+	}
+	else {
+		return glm::mat4(1.0f);
+	}
 }
 
 //bool Player::outside_map() {

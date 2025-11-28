@@ -51,6 +51,9 @@ int main(int argc, char** argv)
 	// 플레이어
 	player.push_back(new Player(glm::vec3(0.0f, 1.0f, 1.0f)));
 
+	// 카메라
+	camera = new Camera(player[0]);
+
 	// 타깃 오브젝트
 	std::uniform_real_distribution<float> rand_x(-2.0f, 2.0f);
 	std::uniform_real_distribution<float> rand_y(0.2f, 0.8f);

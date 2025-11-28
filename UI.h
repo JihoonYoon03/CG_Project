@@ -14,9 +14,9 @@ void drawText(float x, float y, const char* text)
 
 void draw_UI() {
     // 2d 공간에 그리기 위해 화면에 대한 투영 변환 행렬 등 모두 초기화
-    unsigned int view_Location = glGetUniformLocation(shaderProgramID, "view_Transform");
-    unsigned int projLoc = glGetUniformLocation(shaderProgramID, "projection_Transform");
-    unsigned int modelLoc = glGetUniformLocation(shaderProgramID, "model_Transform");
+    unsigned int view_Location = glGetUniformLocation(shaderProgramID, "view");
+    unsigned int projLoc = glGetUniformLocation(shaderProgramID, "projection");
+    unsigned int modelLoc = glGetUniformLocation(shaderProgramID, "model");
     glm::mat4 m(1.0f);
     glUniformMatrix4fv(view_Location, 1, GL_FALSE, &m[0][0]);
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, &m[0][0]);

@@ -13,14 +13,15 @@ private:
 	glm::vec3 UP; // UP (카메라의 위쪽)
 
 	// 쿼터니언 방식 카메라 회전
-	glm::quat qPitch, qYaw, qRot;
+	glm::quat qPitch{ 0, 0, 0, 1 }, qYaw{ 0, 0, 0, 1 }, qRot{ 0, 0, 0, 1 };
 	glm::mat4 camRot{ 1.0f };
 public:
 	Camera(Player* p);
 	void updateCam(const GLfloat& camera_pitch, const GLfloat& camera_yaw);
 	glm::mat4 retViewMatrix() { return glm::lookAt(EYE, AT, UP); }
-	glm::mat4 getModelMatrix() override { return camRot; }
-	glm::mat4 retParentMatrix() override { return camRot; }
+	glm::mat4 getModelMatrix() override;
+	glm::mat4 retParentMatrix() override;
+	glm::mat4 getYaw();
 };
 
 class Gun : public Model{
@@ -31,6 +32,8 @@ public:
 
 class Player : public Model {
 private:
+	glm::vec3 eye{ 0.0f, 0.0f, 0.0f }; // 눈 위치
+
 	// 동적 정보 (값 변경 O)
 	glm::mat4 side_rotation = glm::mat4(1.0f); // 좌우 회전
 	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
@@ -43,10 +46,14 @@ private:
 
 	Gun* gun; // 플레이어에 총 클래스 포함시키기
 public:
-	Camera* camera;
 	// 기본 생성자
 	Player(glm::vec3 position = { 0.0f, 0.5f, 0.0f }, glm::vec3 scale = { 0.25f, 0.25f, 0.25f });
-		
+
+	bool FPS = false; // 1인칭 모드 여부
+	void setFPS(bool state) { FPS = state; }
+	glm::vec3 getEye(Camera* camera);
+	glm::mat4 applyCameraRotation(Camera* camera);
+
 	// 히트 박스 (좌, 우, 앞, 뒤)
 	glm::vec4 return_hitbox();
 		//bool outside_map();
@@ -67,11 +74,10 @@ public:
 	static void bounding_callback(int value);
 	void bounding(int t);
 	Gun& return_gun() { return *gun; }
-	Camera& return_camera() { return *camera; }
 
 	~Player() {
 		delete gun;
-		delete camera;
 	}
 };
 extern std::vector<Player*> player;
+extern Camera* camera;
