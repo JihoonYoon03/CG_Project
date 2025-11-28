@@ -1,8 +1,5 @@
 #include "Character.h"
 
-std::vector<Player*> player;
-Camera* camera = nullptr;
-
 Camera::Camera(Player* p) : owner(p) {
 	owner->setFPS(true);
 	EYE = owner->getEye(this);
@@ -21,11 +18,7 @@ void Camera::updateCam(const GLfloat& camera_pitch, const GLfloat& camera_yaw) {
 	AT = EYE + glm::vec3(camRot * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f));
 }
 
-glm::mat4 Camera::getModelMatrix() {
-	return glm::translate(glm::mat4(1.0f), EYE) * camRot * glm::translate(glm::mat4(1.0f), -EYE);
-}
-
-glm::mat4 Camera::retParentMatrix() {
+glm::mat4 Camera::getRotation() {
 	return glm::translate(glm::mat4(1.0f), EYE) * camRot * glm::translate(glm::mat4(1.0f), -EYE);
 }
 

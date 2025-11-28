@@ -1,11 +1,10 @@
 #pragma once
 #include "basic.h"
-#include "Background.h"
 
 class Player; // Player 클래스가 존재함을 알림
 
 // 카메라. Model 클래스 상속으로 getModelMatrix() 사용 가능
-class Camera : public Model {
+class Camera {
 private:
 	Player* owner = nullptr; // 카메라 클래스를 가지는 플레이어가 누군지 구분하기 위함
 	glm::vec3 EYE; // EYE (카메라 위치)
@@ -19,8 +18,8 @@ public:
 	Camera(Player* p);
 	void updateCam(const GLfloat& camera_pitch, const GLfloat& camera_yaw);
 	glm::mat4 retViewMatrix() { return glm::lookAt(EYE, AT, UP); }
-	glm::mat4 getModelMatrix() override;
-	glm::mat4 retParentMatrix() override;
+	glm::mat4 getRotation();
+	glm::mat4 retParentMatrix();
 	glm::mat4 getYaw();
 };
 
@@ -79,5 +78,3 @@ public:
 		delete gun;
 	}
 };
-extern std::vector<Player*> player;
-extern Camera* camera;

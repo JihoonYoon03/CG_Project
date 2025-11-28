@@ -9,7 +9,6 @@ public:
 	virtual glm::vec4 return_hitbox() = 0;
 	virtual ~Objects() {}  // 반드시 virtual 소멸자
 };
-extern std::vector<Objects*> objects;
 
 class Background : public Objects {
 private:

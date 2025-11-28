@@ -1,10 +1,11 @@
 #pragma once
 #include "basic.h"
-#include "Character.h"
-#include "Targets.h"
+#include "Variables.h"
 
 extern float mouse_sensitivity;
 extern GLfloat camera_yaw, camera_pitch;
+extern std::vector<Player*> player;
+extern Camera* camera;
 
 void Keyboard(unsigned char key, int x, int y);
 void Special(int key, int x, int y);

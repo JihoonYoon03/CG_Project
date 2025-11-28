@@ -1,7 +1,5 @@
 #include "basic.h"
-#include "Character.h"
-#include "Background.h"
-#include "Targets.h"
+#include "Variables.h"
 #include "draw.h"
 
 #pragma comment(lib, "opengl32.lib")

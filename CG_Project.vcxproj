@@ -134,6 +134,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Targets.cpp" />
     <ClCompile Include="tools.cpp" />
+    <ClCompile Include="Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basic.h" />
@@ -145,6 +146,7 @@
     <ClInclude Include="UI.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="Background.h" />
+    <ClInclude Include="Variables.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="basic_fragment.glsl">

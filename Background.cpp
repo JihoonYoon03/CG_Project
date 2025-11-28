@@ -1,6 +1,6 @@
 #include "Background.h"
 
-std::vector<Objects*> objects;
+extern std::vector<Objects*> objects;
 
 Background::Background(glm::vec3 position, float x, float y, float z) : pos(position) {
 	size_x = x;

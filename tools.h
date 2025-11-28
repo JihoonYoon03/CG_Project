@@ -83,7 +83,6 @@ protected:
 	// 비활성 상태에선 동작 X
 	bool enabled = true;
 public:
-	Model() { enabled = false; }
 	Model(const std::string& filename, const glm::vec3& size = { 1.0f, 1.0f, 1.0f }, const glm::vec3& defColor = { 0.8f, 0.8f, 0.8f }, const CollideMode& collider = NONE);
 
 	void setParent(Model* parent);
