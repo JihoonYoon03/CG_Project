@@ -29,8 +29,8 @@ public:
 	void updateCam();
 	glm::mat4 retViewMatrix() { return glm::lookAt(EYE, AT, UP); }
 	glm::mat4 getRotation();
-	glm::mat4 retParentMatrix();
 	glm::mat4 getYaw();
+	glm::vec3 getEYE() { return EYE; }
 };
 
 

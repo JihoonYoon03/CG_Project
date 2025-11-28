@@ -26,9 +26,9 @@ glm::mat4 Camera::getYaw() {
 	return glm::translate(glm::mat4(1.0f), EYE) * glm::mat4_cast(qYaw) * glm::translate(glm::mat4(1.0f), -EYE);
 }
 
-Gun::Gun() : Model("models/Pistol.obj", { 0.00025f, 0.00025f, 0.00025f }, { 0.8f, 0.8f, 0.8f }) {
+Gun::Gun() : Model("models/Pistol.obj", { 0.025f, 0.025f, 0.025f }, { 0.8f, 0.8f, 0.8f }) {
 	rotate({ 0.0f, 180.0f, 0.0f }, center);
-	translate({ 0.2f, 0.3f, -0.8f });
+	translate({ 0.2f, 0.35f, -0.8f });
 }
 
 KeyFrame Gun::getKeyframe() {

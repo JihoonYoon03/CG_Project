@@ -1,9 +1,35 @@
 #version 330 core
 
-// Fragment Shader
-in vec3 fColor;       // Vertex Shader·ÎºÎÅÍ º¸°£µÈ °ªÀÌ µé¾î¿È (outÀ¸·Î Àü´ŞÇÑ fColor¿Í º¯¼ö¸íÀ» ÀÏÄ¡½ÃÄÑÁà¾ß ÇÏ±â ¶§¹®¿¡ fColor·Î ¼Ó¼º º¯¼ö¸í ¼³Á¤ÇÏ°í inÀ¸·Î ¹Ş¾Æ¿È)
-out vec4 FragColor;   // ÃÖÁ¾ ÇÈ¼¿ »ö»ó (outÀ» ÅëÇØ ÇÁ·¹ÀÓ ¹öÆÛ(È­¸é)¿¡ ÀúÀåµÇµµ·Ï ÇÔ)
+in vec3 fPos;
+in vec3 fNormal;
+in vec3 fColor;
+
+out vec4 FragColor;	// ìµœì¢… ì¶œë ¥ ìƒ‰ìƒ
+
+uniform vec3 lightColor;
+uniform vec3 lightPos;
+uniform vec3 viewPos;
+//uniform float shininess;
 
 void main() {
-    FragColor = vec4(fColor, 1.0); // ÇÈ¼¿ »ö»ó = º¸°£µÈ Á¤Á¡ »ö»ó (ÀÌ ¶ÇÇÑ Çà·Ä º¯È¯¿¡ ¿ëÀÌÇÏµµ·Ï ÇÏ±â À§ÇØ µ¿Â÷ ÁÂÇ¥·Î ¼³Á¤). ÀÌÈÄ outÀ¸·Î ÀÎÇØ ¸ğ´ÏÅÍ¿¡ ÇØ´ç »ö»óÀÌ Ãâ·ÂµÈ´Ù.
+	// ì•°ë¹„ì–¸íŠ¸ ì¡°ëª…
+	float ambientLight = 0.3;
+	vec3 ambient = ambientLight * lightColor;
+
+	// ë””í“¨ì¦ˆ ì¡°ëª…
+	vec3 nVector = normalize(fNormal);
+	vec3 lightDir = normalize(lightPos - fPos);
+	float diffuseLight = max(dot(nVector, lightDir), 0.0);
+	vec3 diffuse = diffuseLight * lightColor;
+
+	// ìŠ¤í˜í˜ëŸ¬ ì¡°ëª…
+	vec3 viewDir = normalize(viewPos - fPos);
+	vec3 reflectDir = reflect(-lightDir, nVector);
+	float specularLight = max(dot(viewDir, reflectDir), 0.0);
+	specularLight = pow(specularLight, 32.0f);
+	vec3 specular = specularLight * lightColor;
+
+	vec3 result = (ambient + diffuse + specular) * fColor;
+
+    FragColor = vec4(result, 1.0);
 }
