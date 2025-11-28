@@ -32,7 +32,7 @@ GLvoid drawScene()
 		target->Render();
 	}
 
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(player[0]->applyCameraRotation(camera) * player[0]->return_gun().getModelMatrix()));
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(camera->getModelMatrix() * player[0]->return_gun().getModelMatrix()));
 	player[0]->return_gun().Render();
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(player[0]->applyCameraRotation(camera) * player[0]->getModelMatrix()));
 	player[0]->Render();

@@ -35,14 +35,14 @@ glm::mat4 Camera::getYaw() {
 
 Gun::Gun() : Model("models/Pistol.obj", { 0.00025f, 0.00025f, 0.00025f }, { 0.8f, 0.8f, 0.8f }) {
 	rotate({ 0.0f, 180.0f, 0.0f }, center);
-	translate({ 0.2f, 0.1f, -0.5f });
+	translate({ 0.2f, 0.3f, -0.8f });
 }
 
 Player* Player::bounding_select = nullptr; // 클래스 전역 변수 초기화
 
 Player::Player(glm::vec3 position, glm::vec3 scale) : Model("models/Cube.obj", scale, { 0.8f, 0.8f, 0.2f }, BOX) {
 	translate(position);
-	eye = center + glm::vec3(0.0f, 0.5f, 0.0f);
+	eye = center + glm::vec3(0.0f, 0.75f, -0.4f);
 	gun = new Gun();
 	gun->setParent(this);
 }
@@ -51,9 +51,10 @@ glm::vec3 Player::getEye(Camera* camera) {
 	return eye;
 }
 
+// FPS모드일 때 카메라 Yaw만 적용
 glm::mat4 Player::applyCameraRotation(Camera* camera) {
 	if (FPS) {
-		return camera->getModelMatrix();
+		return camera->getYaw();
 	}
 	else {
 		return glm::mat4(1.0f);
