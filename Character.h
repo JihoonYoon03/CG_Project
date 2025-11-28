@@ -56,13 +56,6 @@ class Player : public Model {
 private:
 	glm::vec3 eye{ 0.0f, 0.0f, 0.0f }; // 눈 위치
 
-	// 동적 정보 (값 변경 O)
-	glm::mat4 side_rotation = glm::mat4(1.0f); // 좌우 회전
-	glm::mat4 up_rotation = glm::mat4(1.0f); // 상하 회전
-	bool bounding_onoff = false; // 반동 상태
-	float bounding_rotation = 0.0f; // 반동 각도
-	static Player* bounding_select; // 반동 적용 대상
-
 	glm::vec3 movement_input = glm::vec3(0.0f, 0.0f, 0.0f); // 축별 이동방향 입력 벡터
 	glm::vec3 direction = glm::vec3(0.0f, 0.0f, 0.0f); // 실제 이동 방향 벡터
 

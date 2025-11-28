@@ -74,8 +74,6 @@ glm::mat4 Gun::getAnimationMatrix() {
 	return mat;
 }
 
-Player* Player::bounding_select = nullptr; // 클래스 전역 변수 초기화
-
 Player::Player(glm::vec3 position, glm::vec3 scale) : Model("models/Cube.obj", scale, { 0.8f, 0.8f, 0.2f }, BOX) {
 	translate(position);
 	eye = center + glm::vec3(0.0f, 0.75f, -0.4f);
@@ -91,7 +89,7 @@ glm::mat4 Player::applyCameraRotation(Camera* camera) {
 	}
 }
 
-
+// 이동 방향만 설정. 실제 이동은 updateMovement에서 처리
 void Player::move(const Direction& dir) {
 	switch (dir) {
 	case FORWARD:
@@ -134,6 +132,7 @@ void Player::stop(const Direction& dir) {
 	}
 }
 
+// Control의 UpdateWorld에서 매 프레임 호출
 void Player::updateMovement(const GLfloat& deltaTime, Camera* camera) {
 	if (movement_input == glm::vec3(0.0f, 0.0f, 0.0f)) return; // 이동 입력이 없으면 종료
 
