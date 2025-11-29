@@ -140,6 +140,7 @@
   <ItemGroup>
     <ClInclude Include="basic.h" />
     <ClInclude Include="CollideHandler.h" />
+    <ClInclude Include="Control.h" />
     <ClInclude Include="draw.h" />
     <ClInclude Include="Standard.h" />
     <ClInclude Include="Targets.h" />

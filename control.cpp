@@ -61,8 +61,10 @@ void Special(int key, int x, int y) {
 
 // 월드 업데이트 (매 순간 호출)
 void UpdateWorld(int value) {
+	calculateFrameTime();
 	player->updateMovement(frame_time, camera);
 	camera->updateCam();
+	handle_collisions();
 
 	glutTimerFunc(1000 / MAX_FPS, UpdateWorld, 0);
 	glutPostRedisplay();

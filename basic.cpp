@@ -118,5 +118,4 @@ void calculateFrameTime() {
 	frame_time = dt.count();
 	prev_time = now;
 	glutSetWindowTitle(("FPS: " + std::to_string(static_cast<int>(1000.0f / (frame_time * 1000.0f)))).c_str());
-	glutPostRedisplay(); // 렌더링 수행 요청
 }

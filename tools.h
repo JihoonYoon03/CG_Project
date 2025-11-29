@@ -103,6 +103,9 @@ public:
 	BoxCollider* getBoxCollider() { if (bounding_box != nullptr) return bounding_box; }
 	SphereCollider* getSphereCollider() { if (bounding_sphere != nullptr) return bounding_sphere; }
 
+	// 충돌 처리 함수
+	virtual void HandleCollisionRange(const std::string& group, Model* other) {};
+
 	void setEnabled(bool state) { enabled = state; }
 
 	~Model() {

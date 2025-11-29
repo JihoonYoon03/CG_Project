@@ -2,6 +2,7 @@
 #include "basic.h"
 #include "Variables.h"
 #include "Standard.h"
+#include "CollideHandler.h"
 
 extern float mouse_sensitivity;
 extern Player* player;
