@@ -62,6 +62,11 @@ Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3
     }
 	file.close();
 
+	std::cout << "Loaded model: " << filename << " ("
+		<< renderVertices.size() << " vertices, "
+		<< renderTexCoords.size() << " texcoords, "
+		<< renderNormals.size() << " normals)" << std::endl;
+
 
 	// 센터 구하기
 	glm::vec3 min_pos(FLT_MAX), max_pos(-FLT_MAX);

@@ -135,7 +135,7 @@ void handle_collisions_raycast() {
 						penetration--;
 						ray->HandleCollisionRaycast<TargetDefault>(group, target);
 						target->HandleCollisionRaycast(group, ray);
-						delete_collision_pair_raycast(group, ray, target);
+						delete_collision_pair_raycast(group, nullptr, target);
 						if (penetration <= 0) break; // 더 이상 검사하지 않음
 					}
 				}
