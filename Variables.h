@@ -13,3 +13,5 @@ extern glm::vec3 lightColor;
 extern glm::vec3 lightPos;
 extern glm::vec3 viewPos;
 extern float shininess;
+
+extern DebugCube* debugCube;

@@ -64,6 +64,9 @@ void UpdateWorld(int value) {
 	calculateFrameTime();
 	player->updateMovement(frame_time, camera);
 	camera->updateCam();
+	if (debugCube) {
+		debugCube->update();
+	}
 	handle_collisions();
 
 	glutTimerFunc(1000 / MAX_FPS, UpdateWorld, 0);
@@ -73,8 +76,7 @@ void UpdateWorld(int value) {
 // 마우스 입력에 따른 기능 설정
 void Mouse(int button, int state, int x, int y) { // button은 좌클릭과 우클릭 구분, state는 누른 상태인지 뗀 상태인지 구분, x와 y는 각각 '윈도우'에서의 마우스 위치
 	if (button == GLUT_LEFT_BUTTON and state == GLUT_DOWN) { // 좌클릭을 눌렀을 때 수행되는 조건문
-		//player->bounding_on();
-		gun->shoot();
+		gun->shoot(camera);
 	}
 	glutPostRedisplay();
 }

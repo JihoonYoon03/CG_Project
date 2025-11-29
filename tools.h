@@ -96,6 +96,7 @@ public:
 	virtual void Render();
 	void resetModelMatrix();
 	glm::vec3 retDistTo(const glm::vec3& origin = { 0.0f, 0.0f, 0.0f });
+	glm::vec3 retCenter() { return center; }
 
 	virtual glm::mat4 getModelMatrix();		// 리턴값 커스텀 가능
 	virtual glm::mat4 retParentMatrix();	// 리턴값 커스텀 가능
@@ -105,6 +106,7 @@ public:
 
 	// 충돌 처리 함수
 	virtual void HandleCollisionRange(const std::string& group, Model* other) {};
+	virtual void HandleCollisionRaycast(const std::string& group, Model* other) {};
 
 	void setEnabled(bool state) { enabled = state; }
 
@@ -138,6 +140,22 @@ public:
 	void Render() override;
 };
 
+class Ray {
+	// Ray는 월드 좌표 기준
+	glm::vec3 origin;
+	glm::vec3 direction;
+
+public:
+	Ray(const glm::vec3& ori, const glm::vec3& dir);
+	Ray& operator=(const Ray& other);
+
+	glm::vec3 getOrigin() const { return origin; }
+	glm::vec3 getDirection() const { return direction; }
+
+	template<typename T>
+	void HandleCollisionRaycast(const std::string& group, T* target) {}
+};
+
 class DisplayBasis {
 	glm::vec3 origin;
 	ColoredVertex xyz[3][2];
@@ -154,3 +172,15 @@ std::string read_file(const std::string& filename);
 void make_vertexShaders(GLuint& vertexShader, const std::string& shaderName);
 void make_fragmentShaders(GLuint& fragmentShader, const std::string& shaderName);
 GLuint make_shaderProgram(const GLuint& vertexShader, const GLuint& fragmentShader);
+
+class DebugCube : public Model {
+public:
+    glm::vec3 velocity;
+    DebugCube(const glm::vec3& pos, const glm::vec3& dir)
+        : Model("models/Cube.obj", glm::vec3(0.1f), glm::vec3(1.0f, 0.0f, 0.0f), NONE), velocity(glm::normalize(dir) * 0.05f) {
+        translate(pos);
+    }
+    void update() {
+        translate(velocity);
+    }
+};

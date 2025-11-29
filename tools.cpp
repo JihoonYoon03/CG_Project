@@ -55,17 +55,17 @@ Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3
 	
 	color = new std::vector<glm::vec3>(vertices.size(), defColor);
 
-	GLfloat width = max_pos.x - min_pos.x;
-	GLfloat height = max_pos.y - min_pos.y;
-	GLfloat depth = max_pos.z - min_pos.z;
-	GLfloat radius = std::max({ width, height, depth }) * 0.5f;
+	// 모델 크기 조정
+	defScaleMatrix = glm::scale(defScaleMatrix, size);
+
+	glm::vec3 WHD = max_pos - min_pos;
+	WHD *= size; // 크기 조정 반영
+	GLfloat radius = std::max({ WHD.x, WHD.y, WHD.z }) * 0.5f;
 	if (collider & BOX)
-		bounding_box = new BoxCollider(this, width, height, depth);
+		bounding_box = new BoxCollider(this, WHD.x, WHD.y, WHD.z);
 	if (collider & SPHERE)
 		bounding_sphere = new SphereCollider(this, radius);
 
-	// 모델 크기 조정
-	defScaleMatrix = glm::scale(defScaleMatrix, size);
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VERTEX);
@@ -210,7 +210,14 @@ void SphereCollider::Render() {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+Ray::Ray(const glm::vec3& ori, const glm::vec3& dir) : origin(ori), direction(glm::normalize(dir)) {}
 
+Ray& Ray::operator=(const Ray& other) {
+	if (this == &other) return *this;
+	origin = other.origin;
+	direction = other.direction;
+	return *this;
+}
 
 DisplayBasis::DisplayBasis(GLfloat offset, const glm::vec3& origin) : origin(origin) {
 

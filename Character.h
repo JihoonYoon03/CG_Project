@@ -1,6 +1,7 @@
 #pragma once
 #include "basic.h"
 #include "Standard.h"
+#include "CollideHandler.h"
 
 class Player; // Player 클래스가 존재함을 알림
 
@@ -44,9 +45,11 @@ class Gun : public Model{
 
 	bool rebound = false; // 반동 애니메이션 진행 상태
 	GLfloat t = 0.0f, t_per_time = 1.5f; // 반동 애니메이션 매개변수, 시간 당 증가율
+
+	Ray* ray = nullptr; // 총알 광선들
 public:
 	Gun();
-	void shoot() { { rebound = true; t = 0.0f; } } // 반동 애니메이션 시작
+	void shoot(Camera* camera);
 	KeyFrame getKeyframe();
 	glm::mat4 getAnimationMatrix();
 };
@@ -59,7 +62,6 @@ private:
 	glm::vec3 movement_input = glm::vec3(0.0f, 0.0f, 0.0f); // 축별 이동방향 입력 벡터
 	glm::vec3 direction = glm::vec3(0.0f, 0.0f, 0.0f); // 실제 이동 방향 벡터
 
-	GLfloat last_camera_pitch = 0, last_camera_yaw = 0;
 public:
 	// 기본 생성자
 	Player(glm::vec3 position = { 0.0f, 0.5f, 0.0f }, glm::vec3 scale = { 0.25f, 0.25f, 0.25f });

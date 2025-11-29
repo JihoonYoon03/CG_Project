@@ -1,4 +1,5 @@
 #include "Character.h"
+#include "Variables.h" // debugCube 사용
 
 Camera::Camera(Player* p) : owner(p) {
 	owner->setFPS(true);
@@ -29,6 +30,30 @@ glm::mat4 Camera::getYaw() {
 Gun::Gun() : Model("models/Pistol.obj", { 0.025f, 0.025f, 0.025f }, { 0.8f, 0.8f, 0.8f }) {
 	rotate({ 0.0f, 180.0f, 0.0f }, center);
 	translate({ 0.2f, 0.35f, -0.8f });
+}
+
+void Gun::shoot(Camera* camera) {
+	camera->updateCam();
+	// 반동 애니메이션 시작
+	rebound = true;
+	t = 0.0f;
+
+	// 총알 광선 생성
+	// 광선 원점 위치: 화면 중앙, 방향: -z축 방향
+	glm::vec3 origin = camera->getEYE();
+	glm::vec3 dir = glm::normalize(glm::vec3(camera->getRotation() * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f)));
+	if (ray == nullptr) {
+		ray = new Ray(origin, dir);
+		add_collision_pair_raycast("bullet:target", ray, nullptr); // 충돌 쌍 등록
+	}
+	else {
+		Ray new_ray(origin, dir);
+		*ray = new_ray;
+	}
+
+	// 디버그 큐브 생성
+	if (debugCube) delete debugCube;
+	debugCube = new DebugCube(origin, dir);
 }
 
 KeyFrame Gun::getKeyframe() {
@@ -142,20 +167,3 @@ void Player::updateMovement(const GLfloat& deltaTime, Camera* camera) {
 	eye = center + glm::vec3(0.0f, 0.75f, -0.4f);
 	camera->updateCam();
 }
-
-//bool Player::outside_map() {
-//	if (return_hitbox()[0] >= objects[0]->return_hitbox()[1]) return true;
-//	if (return_hitbox()[1] <= objects[0]->return_hitbox()[0]) return true;
-//	if (return_hitbox()[2] >= objects[0]->return_hitbox()[3]) return true;
-//	if (return_hitbox()[3] <= objects[0]->return_hitbox()[2]) return true;
-//	return false;
-//}
-//bool Player::collision() {
-//	for (size_t i = 1; i < objects.size(); ++i) {
-//		if (return_hitbox()[0] <= objects[i]->return_hitbox()[1]
-//			and return_hitbox()[1] >= objects[i]->return_hitbox()[0]
-//			and return_hitbox()[2] <= objects[i]->return_hitbox()[3]
-//			and return_hitbox()[3] >= objects[i]->return_hitbox()[2]) return true;
-//	}
-//	return false;
-//}

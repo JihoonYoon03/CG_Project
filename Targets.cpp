@@ -9,3 +9,9 @@ void TargetDefault::HandleCollisionRange(const std::string& group, Model* other)
 		std::cout << "TargetDefault collided with another TargetDefault." << std::endl;
 	}
 }
+
+void TargetDefault::HandleCollisionRaycast(const std::string& group, Ray* other) {
+	if (group == "bullet:target") {
+		std::cout << "TargetDefault got shooting." << std::endl;
+	}
+}

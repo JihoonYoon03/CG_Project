@@ -1,6 +1,8 @@
 #pragma once
 #include "basic.h"
 
+class Ray;
+
 class TargetDefault : public Model {
 protected:
 	float hp = 0;
@@ -10,4 +12,5 @@ public:
 	float return_hp() { return hp; }
 
 	void HandleCollisionRange(const std::string& group, Model* other) override;
+	void HandleCollisionRaycast(const std::string& group, Ray* other);
 };

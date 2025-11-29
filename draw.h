@@ -46,7 +46,13 @@ GLvoid drawScene()
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(player->applyCameraRotation(camera) * player->getModelMatrix()));
 	player->Render();
 
-    draw_UI();
+	// 디버그 큐브 이동 및 렌더링
+	if (debugCube) {
+		glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(debugCube->getModelMatrix()));
+		debugCube->Render();
+	}
+
+	draw_UI();
 
 	glutSwapBuffers();
 }

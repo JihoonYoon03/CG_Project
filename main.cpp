@@ -65,16 +65,8 @@ int main(int argc, char** argv)
 	std::uniform_real_distribution<float> rand_z(-5.0f, -0.5f);
 	for (int i = 0; i < 10; i++) {
 		targets.push_back(new TargetDefault("models/Sphere.obj", glm::vec3(0.15f, 0.15f, 0.15f), SPHERE));
-		glm::vec3 location = glm::vec3(rand_x(dre), rand_y(dre), rand_z(dre));
-		targets.back()->translate(location);
-		add_collision_pair_range("target:target", targets.back(), targets.back());
-
-		if (i == 0) {
-			targets.push_back(new TargetDefault("models/Sphere.obj", glm::vec3(0.15f, 0.15f, 0.15f), SPHERE, glm::vec3(1.0f, 0.0f, 0.0f)));
-			location.y += 0.1f;
-			targets.back()->translate(location);
-			add_collision_pair_range("target:target", targets.back(), targets.back());
-		}
+		targets.back()->translate(glm::vec3(rand_x(dre), rand_y(dre), rand_z(dre)));
+		add_collision_pair_raycast("bullet:target", nullptr, targets.back());
 	}
 
 	glutMainLoop();
