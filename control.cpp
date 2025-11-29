@@ -22,7 +22,7 @@ void Keyboard(unsigned char key, int x, int y) {
 		break;
 	}
 	case '/':
-		// 디버그 모드 토글
+		// 디버그 모드 토글. 해당 변수는 tools.cpp에 정의되어 있음
 		debug_mode_collider = !debug_mode_collider;
 		break;
 	case 'q': {

@@ -100,6 +100,9 @@ public:
 	virtual glm::mat4 getModelMatrix();		// 리턴값 커스텀 가능
 	virtual glm::mat4 retParentMatrix();	// 리턴값 커스텀 가능
 
+	BoxCollider* getBoxCollider() { if (bounding_box != nullptr) return bounding_box; }
+	SphereCollider* getSphereCollider() { if (bounding_sphere != nullptr) return bounding_sphere; }
+
 	void setEnabled(bool state) { enabled = state; }
 
 	~Model() {
