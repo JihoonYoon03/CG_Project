@@ -28,7 +28,7 @@ glm::mat4 Camera::getYaw() {
 }
 
 Gun::Gun() : Model("models/Pistol.obj", { 0.025f, 0.025f, 0.025f }, { 0.8f, 0.8f, 0.8f }) {
-	rotate({ 0.0f, 180.0f, 0.0f }, center);
+	rotate({ 0.0f, 180.0f, 0.0f }, retDistTo());
 	translate({ 0.2f, 0.35f, -0.8f });
 }
 
@@ -101,7 +101,7 @@ glm::mat4 Gun::getAnimationMatrix() {
 
 Player::Player(glm::vec3 position, glm::vec3 scale) : Model("models/Cube.obj", scale, { 0.8f, 0.8f, 0.2f }, BOX) {
 	translate(position);
-	eye = center + glm::vec3(0.0f, 0.75f, -0.4f);
+	eye = retDistTo() + glm::vec3(0.0f, 0.75f, -0.4f);
 }
 
 // FPS모드일 때 카메라 Yaw만 적용
@@ -164,6 +164,6 @@ void Player::updateMovement(const GLfloat& deltaTime, Camera* camera) {
 	direction = glm::vec3(camera->getYaw() * glm::vec4(glm::normalize(movement_input), 0.0f));
 	translate(direction * RUN_SPEED_MPS * deltaTime);
 
-	eye = center + glm::vec3(0.0f, 0.75f, -0.4f);
+	eye = retDistTo() + glm::vec3(0.0f, 0.75f, -0.4f);
 	camera->updateCam();
 }

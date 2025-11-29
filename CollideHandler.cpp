@@ -2,13 +2,13 @@
 
 // 거리 충돌 검사 대상 쌍
 std::map<	std::string,
-std::pair<	std::vector<Model*>,
-			std::vector<Model*>>> collide_pair_range;
+	std::pair<	std::vector<Model*>,
+	std::vector<Model*>>> collide_pair_range;
 
 // 광선 충돌 검사 대상 쌍
 std::map<	std::string,
-std::pair<	std::vector<Ray*>,
-			std::vector<TargetDefault*>>> collide_pair_raycast;
+	std::pair<	std::vector<Ray*>,
+	std::vector<TargetDefault*>>> collide_pair_raycast;
 
 // 거리 충돌 검사
 bool collision_range(Model& a, Model& b) {
@@ -24,7 +24,7 @@ bool collision_range(Model& a, Model& b) {
 bool collision_raycast(Ray& ray, TargetDefault& target) {
 	glm::vec3 ray_origin = ray.getOrigin();
 	glm::vec3 ray_direction = ray.getDirection();
-	glm::vec3 target_center = glm::vec3(target.getModelMatrix() * glm::vec4(target.retCenter(), 1.0f)); // 월드 좌표
+	glm::vec3 target_center = target.retDistTo(); // 월드 좌표
 	GLfloat radius = target.getSphereCollider()->getRadius();
 
 	// 광선-구 충돌 검사 공식 적용
@@ -61,6 +61,30 @@ void add_collision_pair_raycast(const std::string& pair_name, Ray* ray, TargetDe
 		collide_pair_raycast[pair_name].first.push_back(ray);
 	if (target != nullptr)
 		collide_pair_raycast[pair_name].second.push_back(target);
+}
+
+void delete_collision_pair_raycast(const std::string& pair_name, Ray* ray, TargetDefault* target) {
+	// 해당 그룹 쌍 각각의 시작부터 끝까지 탐색하며 일치하는 객체 삭제
+	if (ray != nullptr) {
+		for (auto it = collide_pair_raycast[pair_name].first.begin(); it != collide_pair_raycast[pair_name].first.end(); ) {
+			if (*it == ray) {
+				it = collide_pair_raycast[pair_name].first.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+	}
+	if (target != nullptr) {
+		for (auto it = collide_pair_raycast[pair_name].second.begin(); it != collide_pair_raycast[pair_name].second.end(); ) {
+			if (*it == target) {
+				it = collide_pair_raycast[pair_name].second.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+	}
 }
 
 void handle_collisions() {
@@ -104,12 +128,15 @@ void handle_collisions_raycast() {
 
 		// 리스트의 각 객체들 간 충돌 검사
 		for (auto& ray : groupRay) {
+			int penetration = ray->getPenetrationCount();
 			for (auto& target : groupTarget) {
 				if (ray != nullptr && target != nullptr) {
 					if (collision_raycast(*ray, *target)) {
-						// 충돌 처리 로직
+						penetration--;
 						ray->HandleCollisionRaycast<TargetDefault>(group, target);
 						target->HandleCollisionRaycast(group, ray);
+						delete_collision_pair_raycast(group, ray, target);
+						if (penetration <= 0) break; // 더 이상 검사하지 않음
 					}
 				}
 			}

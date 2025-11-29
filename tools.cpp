@@ -52,7 +52,11 @@ Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3
 	}
 
 	center = (min_pos + max_pos) * 0.5f;
-	
+	float epsilon = 1e-6f;
+	if (std::abs(center.x) < epsilon) center.x = 0.0f;
+	if (std::abs(center.y) < epsilon) center.y = 0.0f;
+	if (std::abs(center.z) < epsilon) center.z = 0.0f;
+
 	color = new std::vector<glm::vec3>(vertices.size(), defColor);
 
 	// 모델 크기 조정
@@ -97,6 +101,7 @@ Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3
 
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid*)0);
 	glEnableVertexAttribArray(2);
+	glBindVertexArray(0);
 }
 
 void Model::setParent(Model* parent) {
@@ -127,7 +132,6 @@ void Model::translate(const glm::vec3& dt, const glm::vec3& offset) {
 	if (!enabled) return;
 	transformQueue.push(glm::translate(glm::mat4(1.0f), -offset));
 	transformQueue.push(glm::translate(glm::mat4(1.0f), dt));
-	center += dt;
 }
 
 void Model::Render() {
@@ -140,8 +144,8 @@ void Model::Render() {
 	}
 }
 
-glm::vec3 Model::retDistTo(const glm::vec3& origin) {
-	glm::vec4 worldLocation = modelMatrix * glm::vec4(center, 1.0f);
+glm::vec3 Model::retDistTo(const glm::vec3& origin)  {
+	glm::vec4 worldLocation = getModelMatrix() * glm::vec4(center, 1.0f);
 	return glm::vec3(worldLocation) - origin;
 }
 

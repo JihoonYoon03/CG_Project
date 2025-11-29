@@ -47,7 +47,7 @@ GLvoid drawScene()
 	player->Render();
 
 	// 디버그 큐브 이동 및 렌더링
-	if (debugCube) {
+	if (debugCube && debug_mode_collider) {
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(debugCube->getModelMatrix()));
 		debugCube->Render();
 	}

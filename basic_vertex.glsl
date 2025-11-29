@@ -15,6 +15,6 @@ uniform mat4 model;     // 월드(모델) 변환
 void main() {
     gl_Position = projection * view * model * vec4(vPos, 1.0);
 	fPos = vec3(model * vec4(vPos, 1.0));
-    fNormal = normalize(vec3(model * vec4(vNormal, 0.0)));
+    fNormal = transpose(inverse(mat3(model))) * vNormal;
     fColor = vColor;
 }

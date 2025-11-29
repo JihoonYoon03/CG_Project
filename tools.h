@@ -65,7 +65,7 @@ protected:
 
 	std::vector<glm::vec3>* color;		// 기본 정점 색상, 텍스쳐 적용 할 경우 불필요
 
-	glm::vec3 center { 0, 0, 0 };		// 모델 중심점 (정점 좌표값의 최대/최소값 기준 중앙임)
+	glm::vec3 center { 0, 0, 0 };		// 모델 중심점 (정점 좌표값의 최대/최소값 기준 중앙임). 이동 변환 상시 반영
 
 	// 모델 변환
 	glm::mat4 defScaleMatrix = glm::mat4(1.0f);	// 모델 기본 크기 조정
@@ -91,12 +91,11 @@ public:
 	// origin = retCenter()로 사용하면 모델 중심 기준 변환
 	void scale(const glm::vec3& ds, const glm::vec3& origin = {0, 0, 0});
 	void rotate(const glm::vec3& dr, const glm::vec3& origin = { 0, 0, 0 });
-	void translate(const glm::vec3& dt, const glm::vec3& offset = { 0, 0, 0 }); // offset: 변환 적용 이전, 현재 위치 조정. retDistTo() 입력 시 좌표 dt로 초기화 가능
+	void translate(const glm::vec3& dt, const glm::vec3& offset = { 0.0f, 0.0f, 0.0f }); // offset: 변환 적용 이전, 현재 위치 조정. retDistTo() 입력 시 좌표 dt로 초기화 가능
 
 	virtual void Render();
 	void resetModelMatrix();
 	glm::vec3 retDistTo(const glm::vec3& origin = { 0.0f, 0.0f, 0.0f });
-	glm::vec3 retCenter() { return center; }
 
 	virtual glm::mat4 getModelMatrix();		// 리턴값 커스텀 가능
 	virtual glm::mat4 retParentMatrix();	// 리턴값 커스텀 가능
@@ -145,12 +144,16 @@ class Ray {
 	glm::vec3 origin;
 	glm::vec3 direction;
 
+	int penetrate_force = 1; // 최대 관통 횟수
+
 public:
 	Ray(const glm::vec3& ori, const glm::vec3& dir);
 	Ray& operator=(const Ray& other);
 
 	glm::vec3 getOrigin() const { return origin; }
 	glm::vec3 getDirection() const { return direction; }
+
+	int getPenetrationCount() const { return penetrate_force; }
 
 	template<typename T>
 	void HandleCollisionRaycast(const std::string& group, T* target) {}
@@ -177,7 +180,7 @@ class DebugCube : public Model {
 public:
     glm::vec3 velocity;
     DebugCube(const glm::vec3& pos, const glm::vec3& dir)
-        : Model("models/Cube.obj", glm::vec3(0.1f), glm::vec3(1.0f, 0.0f, 0.0f), NONE), velocity(glm::normalize(dir) * 0.05f) {
+        : Model("models/Cube.obj", glm::vec3(0.01f), glm::vec3(1.0f, 0.0f, 0.0f), NONE), velocity(glm::normalize(dir) * 0.05f) {
         translate(pos);
     }
     void update() {

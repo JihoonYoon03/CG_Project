@@ -12,6 +12,9 @@ void TargetDefault::HandleCollisionRange(const std::string& group, Model* other)
 
 void TargetDefault::HandleCollisionRaycast(const std::string& group, Ray* other) {
 	if (group == "bullet:target") {
-		std::cout << "TargetDefault got shooting." << std::endl;
+		if (hp <= 0) {
+			hp = 0;
+			enabled = false;
+		}
 	}
 }
