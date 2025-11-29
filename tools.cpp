@@ -1,52 +1,71 @@
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include "tools.h"
 
 bool debug_mode_collider = false;
 
-Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3& defColor, const CollideMode& collider) {
+Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3& defColor, const CollideMode& collider, const std::string& texture) {
 	std::ifstream file(filename);
 	if (!file.is_open()) {
 		std::cerr << "Error opening file: " << filename << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
-	std::string line;
-	while (std::getline(file, line)) {
-		if (line.empty()) continue;
-		std::istringstream iss(line);
-		std::string prefix;
-		iss >> prefix;
+	std::vector<glm::vec3> tempVertices;
+    std::vector<glm::vec2> tempTexCoords;
+    std::vector<glm::vec3> tempNormals;
 
-		if (prefix == "v") {
-			glm::vec3 vertex;
-			iss >> vertex.x >> vertex.y >> vertex.z;
-			vertices.push_back(vertex);
-		}
-		else if (prefix == "f") {
-			std::string v1, v2, v3;
-			iss >> v1 >> v2 >> v3;
+    std::string line;
+    while (std::getline(file, line)) {
+        if (line.empty()) continue;
+        std::istringstream iss(line);
+        std::string prefix;
+        iss >> prefix;
 
-			// "정점/텍스처/노멀"에서 정점 인덱스만 추출
-			glm::uvec3 face;
-			face.x = std::stoi(v1.substr(0, v1.find('/'))) - 1;
-			face.y = std::stoi(v2.substr(0, v2.find('/'))) - 1;
-			face.z = std::stoi(v3.substr(0, v3.find('/'))) - 1;
+        if (prefix == "v") {
+            glm::vec3 vertex;
+            iss >> vertex.x >> vertex.y >> vertex.z;
+            tempVertices.push_back(vertex);
+        }
+        else if (prefix == "vt") {
+            glm::vec2 texCoord;
+            iss >> texCoord.x >> texCoord.y;
+            tempTexCoords.push_back(texCoord);
+        }
+        else if (prefix == "vn") {
+            glm::vec3 normal;
+            iss >> normal.x >> normal.y >> normal.z;
+            tempNormals.push_back(normal);
+        }
+        else if (prefix == "f") {
+            std::string v1, v2, v3;
+            iss >> v1 >> v2 >> v3;
+            auto parse_face = [](const std::string& s) {
+                size_t p1 = s.find('/');
+                size_t p2 = s.find('/', p1 + 1);
+                int vi = std::stoi(s.substr(0, p1)) - 1;
+                int ti = std::stoi(s.substr(p1 + 1, p2 - p1 - 1)) - 1;
+                int ni = std::stoi(s.substr(p2 + 1)) - 1;
+                return std::make_tuple(vi, ti, ni);
+            };
+            int vi[3], ti[3], ni[3];
+            std::tie(vi[0], ti[0], ni[0]) = parse_face(v1);
+            std::tie(vi[1], ti[1], ni[1]) = parse_face(v2);
+            std::tie(vi[2], ti[2], ni[2]) = parse_face(v3);
 
-			faces.push_back(face);
-		}
-		else if (prefix == "vn") {
-			glm::vec3 normal;
-			iss >> normal.x >> normal.y >> normal.z;
-			normals.push_back(normal);
-		}
-	}
+            for (int i = 0; i < 3; ++i) {
+                renderVertices.push_back(tempVertices[vi[i]]);
+                renderTexCoords.push_back(tempTexCoords[ti[i]]);
+                renderNormals.push_back(tempNormals[ni[i]]);
+            }
+        }
+    }
 	file.close();
 
-	std::cout << "Loaded " << vertices.size() << " vertices, "
-		<< faces.size() << " faces" << std::endl;  // 디버그 출력
 
 	// 센터 구하기
 	glm::vec3 min_pos(FLT_MAX), max_pos(-FLT_MAX);
-	for (const auto& vertex : vertices) {
+	for (const auto& vertex : renderVertices) {
 		min_pos = glm::min(min_pos, vertex);
 		max_pos = glm::max(max_pos, vertex);
 	}
@@ -57,7 +76,7 @@ Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3
 	if (std::abs(center.y) < epsilon) center.y = 0.0f;
 	if (std::abs(center.z) < epsilon) center.z = 0.0f;
 
-	color = new std::vector<glm::vec3>(vertices.size(), defColor);
+	color = new std::vector<glm::vec3>(renderVertices.size(), defColor);
 
 	// 모델 크기 조정
 	defScaleMatrix = glm::scale(defScaleMatrix, size);
@@ -73,36 +92,38 @@ Model::Model(const std::string& filename, const glm::vec3& size, const glm::vec3
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VERTEX);
-	glGenBuffers(1, &FACE);
 	glGenBuffers(1, &COLOR);
 	glGenBuffers(1, &NORMAL);
+	glGenBuffers(1, &TEXCOORD);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VERTEX);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3),
-		vertices.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, FACE);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, faces.size() * sizeof(glm::uvec3),
-		faces.data(), GL_STATIC_DRAW);
-
+	glBufferData(GL_ARRAY_BUFFER, renderVertices.size() * sizeof(glm::vec3), renderVertices.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, COLOR);
 	glBufferData(GL_ARRAY_BUFFER, color->size() * sizeof(glm::vec3), color->data(), GL_STATIC_DRAW);
-
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid*)0);
 	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, NORMAL);
-	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), normals.data(), GL_STATIC_DRAW);
-
+	glBufferData(GL_ARRAY_BUFFER, renderNormals.size() * sizeof(glm::vec3), renderNormals.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid*)0);
 	glEnableVertexAttribArray(2);
+
+	glBindBuffer(GL_ARRAY_BUFFER, TEXCOORD);
+	glBufferData(GL_ARRAY_BUFFER, renderTexCoords.size() * sizeof(glm::vec2), renderTexCoords.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (GLvoid*)0);
+	glEnableVertexAttribArray(3);
+
 	glBindVertexArray(0);
+
+	if (texture != "") TEXTURE_ID = loadTexture(texture);
 }
+
+
 
 void Model::setParent(Model* parent) {
 	if (enabled) this->parent = parent;
@@ -137,7 +158,7 @@ void Model::translate(const glm::vec3& dt, const glm::vec3& offset) {
 void Model::Render() {
 	if (!enabled) return;
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, faces.size() * 3, GL_UNSIGNED_INT, 0);
+	glDrawArrays(GL_TRIANGLES, 0, renderVertices.size());
 	if (debug_mode_collider) {
 		if (bounding_box != nullptr) bounding_box->Render();
 		if (bounding_sphere != nullptr) bounding_sphere->Render();
@@ -334,4 +355,37 @@ GLuint make_shaderProgram(const GLuint& vertexShader, const GLuint& fragmentShad
 
 	glUseProgram(shaderID);
 	return shaderID;
+}
+
+GLuint loadTexture(const std::string& filename) {
+	// stbi_load 함수를 사용하여 이미지 파일 로드
+	stbi_set_flip_vertically_on_load(true); // OpenGL 텍스처 좌표계에 맞게 이미지 뒤집기
+	int width, height, channels;
+	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
+	if (!data) {
+		std::cerr << "Failed to load texture: " << filename << std::endl;
+		return 0;
+	}
+	std::cout << "Texture loaded: " << filename << " ("
+		<< width << "x" << height << ", " << channels << " channels)" << std::endl;
+
+	GLenum format = GL_RGB;
+	if (channels == 4) format = GL_RGBA;
+
+	// 텍스처 생성 및 설정
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // S 축 반복
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // T 축 반복
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // 축소 필터링
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // 확대 필터링
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	stbi_image_free(data); // 이미지 데이터 메모리 해제
+
+	return textureID; // 텍스처 ID 반환
 }

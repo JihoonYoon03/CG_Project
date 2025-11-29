@@ -30,6 +30,24 @@ GLvoid drawScene()
 	view_and_projection();
 	setLight();
 
+	// 스카이돔 렌더링
+	glDisable(GL_CULL_FACE); // 스카이돔은 안쪽 면을 봐야 하므로 면 제거 비활성화
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, skydome->getTexture());
+
+	glUniform1i(glGetUniformLocation(shaderProgramID, "tex"), 0);
+	glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), 1);
+	glUniform1i(glGetUniformLocation(shaderProgramID, "isBackground"), 1);
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(skydome->getModelMatrix()));
+	skydome->Render();
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), 0);
+	glUniform1i(glGetUniformLocation(shaderProgramID, "isBackground"), 0);
+
+	glEnable(GL_CULL_FACE); // 면 제거 다시 활성화
+
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 	for (size_t i = 0; i < objects.size(); ++i) {
 		objects[i]->draw_shape();

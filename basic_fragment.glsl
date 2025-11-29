@@ -3,6 +3,7 @@
 in vec3 fPos;
 in vec3 fNormal;
 in vec3 fColor;
+in vec2 fTexCoord;
 
 out vec4 FragColor;	// 최종 출력 색상
 
@@ -10,6 +11,10 @@ uniform vec3 lightColor;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 //uniform float shininess;
+
+uniform sampler2D tex;
+uniform bool useTexture;
+uniform bool isBackground;
 
 void main() {
 	// 앰비언트 조명
@@ -29,7 +34,19 @@ void main() {
 	specularLight = pow(specularLight, 32.0f);
 	vec3 specular = specularLight * lightColor;
 
-	vec3 result = (ambient + diffuse + specular) * fColor;
+	vec3 result = (ambient + diffuse + specular);
 
-    FragColor = vec4(result, 1.0);
+	if (useTexture) {
+		if (isBackground) {
+			FragColor = texture(tex, fTexCoord);
+			return;
+		}
+		else{
+			FragColor = texture(tex, fTexCoord) * vec4(result, 1.0f);
+		}
+	}
+	else {
+		FragColor = vec4(fColor * result, 1.0f);
+	}
+
 }

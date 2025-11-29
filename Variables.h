@@ -3,6 +3,7 @@
 #include "Targets.h"
 #include "Background.h"
 
+extern Model* skydome;
 extern Player* player;
 extern Gun* gun;
 extern Camera* camera;

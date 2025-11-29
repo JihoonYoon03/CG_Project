@@ -7,6 +7,7 @@
 #include <vector>
 #include <random>
 #include <queue>
+#include <tuple>
 #include <chrono>
 #include <gl/glew.h>
 #include <gl/freeglut.h>
@@ -59,11 +60,12 @@ private:
 	SphereCollider* bounding_sphere = nullptr;
 protected:
 	// 정점 속성
-	std::vector<glm::vec3> vertices;	// 정점 위치
 	std::vector<glm::uvec3> faces;		// 삼각형의 정점 인덱스 순서
-	std::vector<glm::vec3> normals;		// 정점 법선 벡터
-
 	std::vector<glm::vec3>* color;		// 기본 정점 색상, 텍스쳐 적용 할 경우 불필요
+
+	std::vector<glm::vec3> renderVertices;  // 실제 렌더링에 사용할 정점
+	std::vector<glm::vec2> renderTexCoords; // 실제 렌더링에 사용할 텍스처 좌표
+	std::vector<glm::vec3> renderNormals;	// 실제 렌더링에 사용할 법선 벡터
 
 	glm::vec3 center { 0, 0, 0 };		// 모델 중심점 (정점 좌표값의 최대/최소값 기준 중앙임). 이동 변환 상시 반영
 
@@ -78,12 +80,13 @@ protected:
 	Model* parent = nullptr;
 
 	// OpenGL 버퍼 객체
-	GLuint VAO, VERTEX, FACE, COLOR, NORMAL;
+	GLuint VAO, VERTEX, FACE, COLOR, NORMAL, TEXCOORD, TEXTURE_ID = -1;
 
 	// 비활성 상태에선 동작 X
 	bool enabled = true;
 public:
-	Model(const std::string& filename, const glm::vec3& size = { 1.0f, 1.0f, 1.0f }, const glm::vec3& defColor = { 0.8f, 0.8f, 0.8f }, const CollideMode& collider = NONE);
+	Model(const std::string& filename, const glm::vec3& size = { 1.0f, 1.0f, 1.0f }, const glm::vec3& defColor = { 1.0f, 1.0f, 1.0f }, const CollideMode& collider = NONE,
+		const std::string& texture = "");
 
 	void setParent(Model* parent);
 
@@ -99,6 +102,8 @@ public:
 
 	virtual glm::mat4 getModelMatrix();		// 리턴값 커스텀 가능
 	virtual glm::mat4 retParentMatrix();	// 리턴값 커스텀 가능
+
+	GLuint getTexture() { return TEXTURE_ID; }
 
 	BoxCollider* getBoxCollider() { if (bounding_box != nullptr) return bounding_box; }
 	SphereCollider* getSphereCollider() { if (bounding_sphere != nullptr) return bounding_sphere; }
@@ -175,6 +180,7 @@ std::string read_file(const std::string& filename);
 void make_vertexShaders(GLuint& vertexShader, const std::string& shaderName);
 void make_fragmentShaders(GLuint& fragmentShader, const std::string& shaderName);
 GLuint make_shaderProgram(const GLuint& vertexShader, const GLuint& fragmentShader);
+GLuint loadTexture(const std::string& filename);
 
 class DebugCube : public Model {
 public:

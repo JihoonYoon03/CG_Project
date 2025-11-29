@@ -42,8 +42,14 @@ int main(int argc, char** argv)
 	glEnable(GL_CULL_FACE); // 뒷면 제거 활성화
 	glutSetCursor(GLUT_CURSOR_NONE); // 마우스 커서 숨기기
 
+	// 배경
+	// 스카이돔 배경 이미지 출처
+	// https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
+
+	skydome = new Model("models/Sphere.obj", glm::vec3(150.0f), glm::vec3(1.0f, 1.0f, 1.0f), NONE, "models/SkydomeTex.png");
+
 	// 바닥
-	objects.push_back(new Background(glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f, 5.0f));
+	objects.push_back(new Background(glm::vec3(0.0f), 5.0f, 5.0f, 5.0f));
 	objects[0]->Update_Buffer();
 
 	// 박스
