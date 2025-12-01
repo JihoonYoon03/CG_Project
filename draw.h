@@ -48,9 +48,9 @@ GLvoid drawScene()
 
 	glEnable(GL_CULL_FACE); // 면 제거 다시 활성화
 
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
-	for (size_t i = 0; i < objects.size(); ++i) {
-		objects[i]->draw_shape();
+	for (auto& object : objects) {
+		glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1, GL_FALSE, glm::value_ptr(object->getModelMatrix()));
+		object->Render();
 	}
 
 	for (auto& target : targets) {

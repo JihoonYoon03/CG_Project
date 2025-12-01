@@ -111,6 +111,7 @@ public:
 	// 충돌 처리 함수
 	virtual void HandleCollisionRange(const std::string& group, Model* other) {};
 	virtual void HandleCollisionRaycast(const std::string& group, Model* other) {};
+	virtual void HandleCollisionBB(const std::string& group, Model* other) {};
 
 	void setEnabled(bool state) { enabled = state; }
 

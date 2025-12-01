@@ -19,8 +19,10 @@ extern	std::map<	std::string,
 bool collision_range(Model& a, Model& b);
 bool collision_raycast(Ray& ray, TargetDefault& target);
 void add_collision_pair_range(const std::string& pair_name, Model* a, Model* b);
+void add_collision_pair_BB(const std::string& pair_name, Model* a, Model* b);
 void add_collision_pair_raycast(const std::string& pair_name, Ray* ray, TargetDefault* target);
 void delete_collision_pair_raycast(const std::string& pair_name, Ray* ray, TargetDefault* target);
 void handle_collisions();
 void handle_collisions_range();
+void handle_collisions_BB();
 void handle_collisions_raycast();

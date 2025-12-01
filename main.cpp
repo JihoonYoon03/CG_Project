@@ -48,16 +48,17 @@ int main(int argc, char** argv)
 
 	skydome = new Model("models/Sphere.obj", glm::vec3(150.0f), glm::vec3(1.0f, 1.0f, 1.0f), NONE, "models/SkydomeTex.png");
 
-	// 바닥
-	objects.push_back(new Background(glm::vec3(0.0f), 5.0f, 5.0f, 5.0f));
-	objects[0]->Update_Buffer();
-
-	// 박스
-	objects.push_back(new Box(glm::vec3(0.0f, 0.0625f, 0.0f), 5.0f, 0.125f, 0.1f));
-	objects[1]->Update_Buffer();
+	// 배경
+	objects.push_back(new Objects("models/Cube.obj", glm::vec3(5.0f, 0.0f, 5.0f), BOX)); // 바닥
+	add_collision_pair_BB("player:floor", nullptr, objects.back());
+	objects.push_back(new Objects("models/Cube.obj", glm::vec3(5.0f, 0.125f, 0.1f), BOX)); // 울타리
+	objects.back()->translate(glm::vec3(0.0f, 0.0625f, -2.5f));
+	add_collision_pair_BB("player:fance", nullptr, objects.back());
 
 	// 플레이어
 	player = new Player(glm::vec3(0.0f, 1.0f, 1.0f));
+	add_collision_pair_BB("player:floor", player, nullptr);
+	add_collision_pair_BB("player:fance", player, nullptr);
 
 	gun = new Gun();
 	gun->setParent(player);

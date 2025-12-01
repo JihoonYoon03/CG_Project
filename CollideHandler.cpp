@@ -5,6 +5,10 @@ std::map<	std::string,
 	std::pair<	std::vector<Model*>,
 	std::vector<Model*>>> collide_pair_range;
 
+std::map<	std::string,
+	std::pair<	std::vector<Model*>,
+	std::vector<Model*>>> collide_pair_BB;
+
 // 광선 충돌 검사 대상 쌍
 std::map<	std::string,
 	std::pair<	std::vector<Ray*>,
@@ -12,6 +16,17 @@ std::map<	std::string,
 
 // 거리 충돌 검사
 bool collision_range(Model& a, Model& b) {
+	GLfloat distance = glm::length(a.retDistTo() - b.retDistTo()); // 월드 좌표 기준 거리 계산
+	GLfloat radius_a = a.getSphereCollider()->getRadius();
+	GLfloat radius_b = b.getSphereCollider()->getRadius();
+	if (distance <= (radius_a + radius_b)) {
+		return true;
+	}
+}
+
+// 바운딩 박스 충돌 검사
+bool collision_BB(Model& a, Model& b) {
+	// 바운딩 박스 매커니즘 생성 필요
 	GLfloat distance = glm::length(a.retDistTo() - b.retDistTo()); // 월드 좌표 기준 거리 계산
 	GLfloat radius_a = a.getSphereCollider()->getRadius();
 	GLfloat radius_b = b.getSphereCollider()->getRadius();
@@ -56,6 +71,13 @@ void add_collision_pair_range(const std::string& pair_name, Model* a, Model* b) 
 		collide_pair_range[pair_name].second.push_back(b);
 }
 
+void add_collision_pair_BB(const std::string& pair_name, Model* a, Model* b) {
+	if (a != nullptr)
+		collide_pair_BB[pair_name].first.push_back(a);
+	if (b != nullptr)
+		collide_pair_BB[pair_name].second.push_back(b);
+}
+
 void add_collision_pair_raycast(const std::string& pair_name, Ray* ray, TargetDefault* target) {
 	if (ray != nullptr)
 		collide_pair_raycast[pair_name].first.push_back(ray);
@@ -89,6 +111,7 @@ void delete_collision_pair_raycast(const std::string& pair_name, Ray* ray, Targe
 
 void handle_collisions() {
 	handle_collisions_range();
+	handle_collisions_BB();
 	handle_collisions_raycast();
 }
 
@@ -110,6 +133,31 @@ void handle_collisions_range() {
 						// 충돌 처리 로직
 						objA->HandleCollisionRange(group, objB);
 						objB->HandleCollisionRange(group, objA);
+					}
+				}
+			}
+		}
+	}
+}
+
+void handle_collisions_BB() {
+	// 충돌 그룹에 대하여
+	for (auto& pair : collide_pair_range) {
+
+		// 해당 그룹의 객체 리스트에 대하여
+		auto& group = pair.first;
+		auto& groupA = pair.second.first;
+		auto& groupB = pair.second.second;
+
+		// 리스트의 각 객체들 간 충돌 검사
+		for (auto& objA : groupA) {
+			for (auto& objB : groupB) {
+				if (objA != nullptr && objB != nullptr) {
+					if (objA == objB) continue; // 자기 자신과의 충돌 검사 제외. 포인터 주소 비교
+					if (collision_BB(*objA, *objB)) {
+						// 충돌 처리 로직
+						objA->HandleCollisionBB(group, objB);
+						objB->HandleCollisionBB(group, objA);
 					}
 				}
 			}
