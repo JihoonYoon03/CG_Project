@@ -159,6 +159,7 @@ void Player::stop(const Direction& dir) {
 
 // Control의 UpdateWorld에서 매 프레임 호출
 void Player::updateMovement(const GLfloat& deltaTime, Camera* camera) {
+	if (!move_onoff) return;
 	if (movement_input == glm::vec3(0.0f, 0.0f, 0.0f)) return; // 이동 입력이 없으면 종료
 
 	direction = glm::vec3(camera->getYaw() * glm::vec4(glm::normalize(movement_input), 0.0f));
@@ -166,4 +167,13 @@ void Player::updateMovement(const GLfloat& deltaTime, Camera* camera) {
 
 	eye = retDistTo() + glm::vec3(0.0f, 0.75f, -0.4f);
 	camera->updateCam();
+}
+
+void Player::HandleCollisionBB(const std::string& group, Model* other) {
+	if (group == "player:fance") {
+		move_onoff = false;
+	}
+	else if (group == "None") {
+		move_onoff = true;
+	}
 }

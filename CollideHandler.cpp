@@ -168,7 +168,7 @@ void handle_collisions_BB() {
 	for (auto& pair : collide_pair_range) {
 
 		// 해당 그룹의 객체 리스트에 대하여
-		auto& group = pair.first;
+		std::string group = pair.first;
 		auto& groupA = pair.second.first;
 		auto& groupB = pair.second.second;
 
@@ -181,6 +181,10 @@ void handle_collisions_BB() {
 						// 충돌 처리 로직
 						objA->HandleCollisionBB(group, objB);
 						objB->HandleCollisionBB(group, objA);
+					}
+					else {
+						group = "None";
+						objA->HandleCollisionBB(group, objB);
 					}
 				}
 			}

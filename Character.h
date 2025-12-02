@@ -61,6 +61,7 @@ private:
 
 	glm::vec3 movement_input = glm::vec3(0.0f, 0.0f, 0.0f); // 축별 이동방향 입력 벡터
 	glm::vec3 direction = glm::vec3(0.0f, 0.0f, 0.0f); // 실제 이동 방향 벡터
+	bool move_onoff = true;
 
 public:
 	// 기본 생성자
@@ -74,4 +75,5 @@ public:
 	void move(const Direction& dir);
 	void stop(const Direction& dir);
 	void updateMovement(const GLfloat& deltaTime, Camera* camera);
+	void HandleCollisionBB(const std::string& group, Model* other) override;
 };
