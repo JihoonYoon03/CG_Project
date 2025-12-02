@@ -116,6 +116,7 @@ public:
 	virtual void HandleCollisionRange(const std::string& group, Model* other) {};
 	virtual void HandleCollisionRaycast(const std::string& group, Model* other) {};
 	virtual void HandleCollisionBB(const std::string& group, Model* other) {};
+	virtual void change_xz() {};
 
 	void setEnabled(bool state) { enabled = state; }
 
@@ -141,6 +142,12 @@ public:
 	GLfloat getWidth() { return width; }
 	GLfloat getHeight() { return height; }
 	GLfloat getDepth() { return depth; }
+	void change_xz() override {
+		GLfloat temp;
+		temp = width;
+		width = depth;
+		depth = temp;
+	}
 	// 박스 충돌 체크는 SAT 알고리즘 사용 예정
 };
 
