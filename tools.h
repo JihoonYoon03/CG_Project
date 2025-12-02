@@ -134,6 +134,9 @@ class BoxCollider : protected Model {
 public:
 	BoxCollider(Model* origin, const GLfloat& w, const GLfloat& h, const GLfloat& d);
 	void Render() override;
+	GLfloat getWidth() { return width; }
+	GLfloat getHeight() { return height; }
+	GLfloat getDepth() { return depth; }
 	// 박스 충돌 체크는 SAT 알고리즘 사용 예정
 };
 

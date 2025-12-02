@@ -27,12 +27,16 @@ bool collision_range(Model& a, Model& b) {
 // 바운딩 박스 충돌 검사
 bool collision_BB(Model& a, Model& b) {
 	// 바운딩 박스 매커니즘 생성 필요
-	GLfloat distance = glm::length(a.retDistTo() - b.retDistTo()); // 월드 좌표 기준 거리 계산
-	GLfloat radius_a = a.getSphereCollider()->getRadius();
-	GLfloat radius_b = b.getSphereCollider()->getRadius();
-	if (distance <= (radius_a + radius_b)) {
-		return true;
-	}
+	GLfloat width_a = a.getBoxCollider()->getWidth();
+	GLfloat height_a = a.getBoxCollider()->getHeight();
+	GLfloat depth_a = a.getBoxCollider()->getDepth();
+
+	GLfloat width_b = a.getBoxCollider()->getWidth();
+	GLfloat height_b = a.getBoxCollider()->getHeight();
+	GLfloat depth_b = a.getBoxCollider()->getDepth();
+
+
+	return true;
 }
 
 // 광선 충돌 검사
