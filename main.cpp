@@ -60,14 +60,16 @@ int main(int argc, char** argv)
 	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX)); // 좌측 울타리
 	objects.back()->rotate(glm::vec3(0.0f, 90.0f, 0.0f), objects.back()->retDistTo());
 	objects.back()->translate(glm::vec3(-5.0f, 0.375f, 0.0f));
+	add_collision_pair_BB("player:fance", nullptr, objects.back());
 	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX)); // 뒤 울타리
 	objects.back()->translate(glm::vec3(0.0f, 0.375f, 5.0f));
+	add_collision_pair_BB("player:fance", nullptr, objects.back());
 	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX)); // 전방 울타리
 	objects.back()->translate(glm::vec3(0.0f, 0.375f, -5.0f));
+	add_collision_pair_BB("player:fance", nullptr, objects.back());
 
 	// 플레이어
 	player = new Player(glm::vec3(0.0f, 1.0f, 1.0f));
-	add_collision_pair_BB("player:floor", player, nullptr);
 	add_collision_pair_BB("player:fance", player, nullptr);
 
 	gun = new Gun();

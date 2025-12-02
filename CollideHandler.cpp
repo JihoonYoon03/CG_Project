@@ -31,9 +31,9 @@ bool collision_BB(Model& a, Model& b) {
 	GLfloat height_a = a.getBoxCollider()->getHeight();
 	GLfloat depth_a = a.getBoxCollider()->getDepth();
 
-	GLfloat width_b = a.getBoxCollider()->getWidth();
-	GLfloat height_b = a.getBoxCollider()->getHeight();
-	GLfloat depth_b = a.getBoxCollider()->getDepth();
+	GLfloat width_b = b.getBoxCollider()->getWidth();
+	GLfloat height_b = b.getBoxCollider()->getHeight();
+	GLfloat depth_b = b.getBoxCollider()->getDepth();
 
 	// 바운딩 박스 실체화
 	// 물체 a
@@ -52,10 +52,11 @@ bool collision_BB(Model& a, Model& b) {
 	GLfloat bu = b.return_pos().y - height_b * 0.5f; // 위
 	GLfloat bd = b.return_pos().y - height_b * 0.5f; // 아래
 
+	bool x = (al <= br && ar >= bl);
+	bool y = (ad <= bu && au >= bd);
+	bool z = (ab <= bf && af >= bb);
 
-
-
-	return true;
+	return x and z;
 }
 
 // 광선 충돌 검사
@@ -165,7 +166,7 @@ void handle_collisions_range() {
 
 void handle_collisions_BB() {
 	// 충돌 그룹에 대하여
-	for (auto& pair : collide_pair_range) {
+	for (auto& pair : collide_pair_BB) {
 
 		// 해당 그룹의 객체 리스트에 대하여
 		std::string group = pair.first;
@@ -181,10 +182,6 @@ void handle_collisions_BB() {
 						// 충돌 처리 로직
 						objA->HandleCollisionBB(group, objB);
 						objB->HandleCollisionBB(group, objA);
-					}
-					else {
-						group = "None";
-						objA->HandleCollisionBB(group, objB);
 					}
 				}
 			}
