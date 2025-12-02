@@ -51,8 +51,8 @@ int main(int argc, char** argv)
 	// 배경
 	objects.push_back(new Objects("models/Cube.obj", glm::vec3(5.0f, 0.0f, 5.0f), BOX)); // 바닥
 	add_collision_pair_BB("player:floor", nullptr, objects.back());
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(5.0f, 0.125f, 0.1f), BOX)); // 울타리
-	objects.back()->translate(glm::vec3(0.0f, 0.0625f, -2.5f));
+	objects.push_back(new Objects("models/Cube.obj", glm::vec3(5.0f, 0.75f, 0.05f), BOX)); // 울타리
+	objects.back()->translate(glm::vec3(0.0f, 0.375f, -0.25f));
 	add_collision_pair_BB("player:fance", nullptr, objects.back());
 
 	// 플레이어
