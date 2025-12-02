@@ -99,6 +99,7 @@ public:
 	virtual void Render();
 	void resetModelMatrix();
 	glm::vec3 retDistTo(const glm::vec3& origin = { 0.0f, 0.0f, 0.0f });
+	glm::vec3 return_pos() { return center; }
 
 	virtual glm::mat4 getModelMatrix();		// 리턴값 커스텀 가능
 	virtual glm::mat4 retParentMatrix();	// 리턴값 커스텀 가능

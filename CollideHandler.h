@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include "Targets.h"
+#include "Character.h"
+#include "Background.h"
 
 // 거리 충돌 검사 대상 쌍
 extern	std::map<	std::string,

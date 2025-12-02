@@ -35,6 +35,8 @@ bool collision_BB(Model& a, Model& b) {
 	GLfloat height_b = a.getBoxCollider()->getHeight();
 	GLfloat depth_b = a.getBoxCollider()->getDepth();
 
+	
+
 
 	return true;
 }
