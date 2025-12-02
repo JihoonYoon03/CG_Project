@@ -171,6 +171,6 @@ void Player::updateMovement(const GLfloat& deltaTime, Camera* camera) {
 void Player::HandleCollisionBB(const std::string& group, Model* other) {
 	if (group == "player:fance") {
 		translate(-direction * RUN_SPEED_MPS * d_Time);
-		std::cout << "aaaaaa" << std::endl;
+		std::cout << "collision with fance" << std::endl;
 	}
 }
