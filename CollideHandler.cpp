@@ -35,7 +35,24 @@ bool collision_BB(Model& a, Model& b) {
 	GLfloat height_b = a.getBoxCollider()->getHeight();
 	GLfloat depth_b = a.getBoxCollider()->getDepth();
 
-	
+	// 바운딩 박스 실체화
+	// 물체 a
+	GLfloat af = a.return_pos().z + depth_a * 0.5f; // 앞
+	GLfloat ab = a.return_pos().z - depth_a * 0.5f; // 뒤
+	GLfloat al = a.return_pos().x - width_a * 0.5f; // 좌
+	GLfloat ar = a.return_pos().x + width_a * 0.5f; // 우
+	GLfloat au = a.return_pos().y - height_a * 0.5f; // 위
+	GLfloat ad = a.return_pos().y - height_a * 0.5f; // 아래
+
+	// 물체 b
+	GLfloat bf = b.return_pos().z + depth_b * 0.5f; // 앞
+	GLfloat bb = b.return_pos().z - depth_b * 0.5f; // 뒤
+	GLfloat bl = b.return_pos().x - width_b * 0.5f; // 좌
+	GLfloat br = b.return_pos().x + width_b * 0.5f; // 우
+	GLfloat bu = b.return_pos().y - height_b * 0.5f; // 위
+	GLfloat bd = b.return_pos().y - height_b * 0.5f; // 아래
+
+
 
 
 	return true;
