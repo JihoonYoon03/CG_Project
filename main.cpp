@@ -50,23 +50,24 @@ int main(int argc, char** argv)
 
 	// 배경
 	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 0.0f, 5.0f), BOX)); // 바닥
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX)); // 울타리
+	glm::vec3 fance_color = glm::vec3(1.0f, 1.0f, 1.0f);
+	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX, fance_color)); // 울타리
 	objects.back()->translate(glm::vec3(0.0f, 0.375f, -0.25f));
 	add_collision_pair_BB("player:fance", nullptr, objects.back());
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX)); // 우측 울타리
+	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX, fance_color)); // 우측 울타리
 	objects.back()->rotate(glm::vec3(0.0f, 90.0f, 0.0f), objects.back()->retDistTo());
 	objects.back()->translate(glm::vec3(5.0f, 0.375f, 0.0f));
 	objects.back()->getBoxCollider()->change_xz();
 	add_collision_pair_BB("player:fance", nullptr, objects.back());
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX)); // 좌측 울타리
+	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX, fance_color)); // 좌측 울타리
 	objects.back()->rotate(glm::vec3(0.0f, 90.0f, 0.0f), objects.back()->retDistTo());
 	objects.back()->translate(glm::vec3(-5.0f, 0.375f, 0.0f));
 	objects.back()->getBoxCollider()->change_xz();
 	add_collision_pair_BB("player:fance", nullptr, objects.back());
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX)); // 뒤 울타리
+	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX, fance_color)); // 뒤 울타리
 	objects.back()->translate(glm::vec3(0.0f, 0.375f, 5.0f));
 	add_collision_pair_BB("player:fance", nullptr, objects.back());
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX)); // 전방 울타리
+	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX, fance_color)); // 전방 울타리
 	objects.back()->translate(glm::vec3(0.0f, 0.375f, -5.0f));
 	add_collision_pair_BB("player:fance", nullptr, objects.back());
 
