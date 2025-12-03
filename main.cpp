@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 	skydome = new Model("models/Sphere.obj", glm::vec3(150.0f), glm::vec3(1.0f, 1.0f, 1.0f), NONE, "models/SkydomeTex.png");
 
 	// 배경
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 0.0f, 5.0f), BOX)); // 바닥
+	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 0.0f, 5.0f), BOX, glm::vec3(0.55f, 0.27f, 0.07f), "models/GroundTex.png")); // 바닥
 	glm::vec3 fance_color = glm::vec3(1.0f, 1.0f, 1.0f);
 	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX, fance_color)); // 울타리
 	objects.back()->translate(glm::vec3(0.0f, 0.375f, -0.25f));
