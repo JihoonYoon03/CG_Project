@@ -27,7 +27,7 @@ glm::mat4 Camera::getYaw() {
 	return glm::translate(glm::mat4(1.0f), EYE) * glm::mat4_cast(qYaw) * glm::translate(glm::mat4(1.0f), -EYE);
 }
 
-Gun::Gun() : Model("models/Pistol.obj", { 0.025f, 0.025f, 0.025f }, { 0.8f, 0.8f, 0.8f }) {
+Gun::Gun() : Model("models/Pistol.obj", { 0.025f, 0.025f, 0.025f }, { 0.2f, 0.2f, 0.2f }) {
 	rotate({ 0.0f, 180.0f, 0.0f }, retDistTo());
 	translate({ 0.2f, 0.35f, -0.8f });
 }

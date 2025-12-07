@@ -47,10 +47,11 @@ int main(int argc, char** argv)
 	// https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
 
 	skydome = new Model("models/Sphere.obj", glm::vec3(150.0f), glm::vec3(1.0f, 1.0f, 1.0f), NONE, "models/SkydomeTex.png");
+	skydome->rotate(glm::vec3(0.0f, -90.0f, 0.0f), skydome->retDistTo());
 
 	// 배경
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 0.0f, 5.0f), BOX, glm::vec3(0.55f, 0.27f, 0.07f), "models/GroundTex.png")); // 바닥
-	glm::vec3 fance_color = glm::vec3(1.0f, 1.0f, 1.0f);
+	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 0.0f, 5.0f), BOX, glm::vec3(0.55f, 0.37f, 0.17f), "models/GroundTex.png")); // 바닥
+	glm::vec3 fance_color = glm::vec3(0.9f, 0.9f, 0.9f);
 	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX, fance_color)); // 울타리
 	objects.back()->translate(glm::vec3(0.0f, 0.375f, -0.25f));
 	add_collision_pair_BB("player:fance", nullptr, objects.back());

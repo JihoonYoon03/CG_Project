@@ -8,11 +8,11 @@ std::vector<TargetDefault*> targets;
 std::vector<Objects*> objects;
 
 glm::vec3 lightColor{ 1.0f, 1.0f, 1.0f };
-glm::vec3 lightPos{ 100.0f, 100.0f, -100.0f };
+glm::vec3 lightPos{ 100.0f, 150.0f, 110.0f };
 
 DebugCube* debugCube = nullptr;
 
-int stage_level = 1; // ½ºÅ×ÀÌÁö
-int point_count = 0; // Á¡¼ö
-int target_point = 0; // ¸ñÇ¥ Á¡¼ö
-int timer_count = 0; // ³²Àº ½Ã°£ Å¸ÀÌ¸Ó
+int stage_level = 1; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+int point_count = 0; // ï¿½ï¿½ï¿½ï¿½
+int target_point = 0; // ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½
+int timer_count = 0; // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ Å¸ï¿½Ì¸
