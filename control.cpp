@@ -15,6 +15,22 @@ void reset_values(int stage) {
 	stage_level = stage;
 	point_count = 0;
 	timer_count = 10;
+	for (auto t : targets)
+		t->turn_off();
+}
+
+void make_target() {
+	// 타깃 오브젝트 활성화
+	std::vector<TargetDefault*> offTargets; // 비활성화 된 타겟을 담을 자료구조
+
+	for (auto* t : targets)
+		if (!t->return_enabled())
+			offTargets.push_back(t); // 비활성화 된 타겟이라면 추가
+
+	if (offTargets.empty()) return; // 모두 활성화 되었다면 종료
+
+	std::uniform_int_distribution<int> rand_index(0, offTargets.size() - 1); // 비활성화된 것들 중 하나 선택
+	offTargets[rand_index(dre)]->turn_on(); // 활성화
 }
 
 void Keyboard(unsigned char key, int x, int y) {
@@ -163,6 +179,9 @@ void start_stage(int t) {
 			timer_value = 0.0f;
 			end_stage_onoff = true;
 			stage_onoff = false;
+			point_count = 0;
+			for (auto t : targets)
+				t->turn_off();
 			glutTimerFunc(frame_time * 1000, start_stage, 0);
 		}
 		return;
@@ -172,6 +191,7 @@ void start_stage(int t) {
 }
 void stage1(int t) {
 	if (timer_value >= 1) {
+		make_target();
 		timer_count--;
 		timer_value = 0;
 	}
@@ -186,6 +206,8 @@ void stage1(int t) {
 }
 void stage2(int t) {
 	if (timer_value >= 1) {
+		make_target();
+		make_target();
 		timer_count--;
 		timer_value = 0;
 	}
@@ -200,6 +222,9 @@ void stage2(int t) {
 }
 void stage3(int t) {
 	if (timer_value >= 1) {
+		make_target();
+		make_target();
+		make_target();
 		timer_count--;
 		timer_value = 0;
 	}

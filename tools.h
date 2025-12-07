@@ -103,6 +103,9 @@ public:
 		glm::mat4 world = getModelMatrix();           // 월드 공간 변환 행렬
 		return glm::vec3(world * glm::vec4(center, 1.0f));
 	}
+	void turn_off() { enabled = false; }
+	void turn_on() { enabled = true; }
+	bool return_enabled() { return enabled; }
 
 	virtual glm::mat4 getModelMatrix();		// 리턴값 커스텀 가능
 	virtual glm::mat4 retParentMatrix();	// 리턴값 커스텀 가능

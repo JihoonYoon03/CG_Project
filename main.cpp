@@ -81,14 +81,14 @@ int main(int argc, char** argv)
 	// 카메라
 	camera = new Camera(player);
 
-	// 타깃 오브젝트
-	std::uniform_real_distribution<float> rand_x(-5.0f, 5.0f);
-	std::uniform_real_distribution<float> rand_y(0.5f, 2.0f);
-	std::uniform_real_distribution<float> rand_z(-5.0f, -0.5f);
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 90; i++) {
+		std::uniform_real_distribution<float> rand_x(-5.0f, 5.0f);
+		std::uniform_real_distribution<float> rand_y(0.5f, 2.0f);
+		std::uniform_real_distribution<float> rand_z(-5.0f, -0.5f);
 		targets.push_back(new TargetDefault("models/Sphere.obj", glm::vec3(0.15f, 0.15f, 0.15f), SPHERE));
 		targets.back()->translate(glm::vec3(rand_x(dre), rand_y(dre), rand_z(dre)));
 		add_collision_pair_raycast("bullet:target", nullptr, targets.back());
+		targets.back()->turn_off();
 	}
 
 	glutMainLoop();

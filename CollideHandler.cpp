@@ -203,11 +203,12 @@ void handle_collisions_raycast() {
 			int penetration = ray->getPenetrationCount();
 			for (auto& target : groupTarget) {
 				if (ray != nullptr && target != nullptr) {
+					if (!target->return_enabled()) continue;
 					if (collision_raycast(*ray, *target)) {
 						penetration--;
 						ray->HandleCollisionRaycast<TargetDefault>(group, target);
 						target->HandleCollisionRaycast(group, ray);
-						delete_collision_pair_raycast(group, nullptr, target);
+						//delete_collision_pair_raycast(group, nullptr, target);
 						if (penetration <= 0) break; // 더 이상 검사하지 않음
 					}
 				}
