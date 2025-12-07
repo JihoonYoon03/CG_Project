@@ -2,6 +2,19 @@
 
 float mouse_sensitivity = 0.2f;
 
+bool stage_onoff = false;
+bool start_stage_onoff = false;
+float timer_value = 0.0f;
+
+void reset_values(int stage) {
+	stage_onoff = true;
+	start_stage_onoff = true;
+	timer_value = 0.0f;
+	stage_level = stage;
+	point_count = 0;
+	timer_count = 30;
+}
+
 void Keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 	// 이동
@@ -19,6 +32,12 @@ void Keyboard(unsigned char key, int x, int y) {
 	}
 	case 'd': {
 		player->move(RIGHT);
+		break;
+	}
+	case '1': {
+		if (stage_onoff) return;
+		reset_values(1);
+		glutTimerFunc(frame_time * 1000, start_stage, 1);
 		break;
 	}
 	case '/':
@@ -115,4 +134,38 @@ void PassiveMotion(int x, int y) {
 
 	glutWarpPointer(width / 2, height / 2); // 마우스 커서를 윈도우 중앙으로 이동
 	glutPostRedisplay();
+}
+
+
+void start_stage(int t) {
+	if (timer_value >= 2) {
+		start_stage_onoff = false; // 스테이지 시작을 알리는 텍스트를 끄고 오브젝트 생성 타이머 시작
+		timer_value = 0.0f;
+		if (t == 1)	glutTimerFunc(frame_time * 1000, stage1, 0);
+		else if (t == 2) glutTimerFunc(frame_time * 1000, stage2, 0);
+		else if (t == 3) glutTimerFunc(frame_time * 1000, stage3, 0);
+		return;
+	}
+	timer_value += frame_time;
+	glutTimerFunc(frame_time * 1000, start_stage, t);
+}
+void stage1(int t) {
+	if (timer_value >= 1) {
+		timer_count--;
+		timer_value = 0;
+	}
+	else timer_value += frame_time;
+
+	if (timer_count == 0) { // 다음 스테이지 준비
+		reset_values(2);
+		glutTimerFunc(frame_time * 1000, start_stage, 2);
+		return; 
+	}
+	glutTimerFunc(frame_time * 1000, stage1, 0);
+}
+void stage2(int t) {
+
+}
+void stage3(int t) {
+
 }

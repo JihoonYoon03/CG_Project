@@ -1,15 +1,29 @@
 #pragma once
 #include "Character.h"
+#include "Variables.h"
+#include "Control.h"
 
-void drawText(float x, float y, const char* text)
+//void drawText(float x, float y, const char* text)
+//{
+//    glRasterPos2f(x, y);  // 텍스트 시작 위치
+//
+//    // 문자열 문자 하나씩 그리기
+//    while (*text) {
+//        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *text);
+//        ++text;
+//    }
+//}
+
+void drawText(const char* s, float x, float y, float scale)
 {
-    glRasterPos2f(x, y);  // 텍스트 시작 위치
+    glPushMatrix();
+    glTranslatef(x, y, 0.0f);
+    glScalef(scale, scale, scale);
 
-    // 문자열 문자 하나씩 그리기
-    while (*text) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *text);
-        ++text;
-    }
+    for (const char* p = s; *p; ++p)
+        glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
+
+    glPopMatrix();
 }
 
 void draw_UI() {
@@ -44,19 +58,25 @@ void draw_UI() {
     // 셰이더 비활성화 (텍스트 출력을 위함)
     glUseProgram(0);
     // 텍스트
-    int stage_level = 1; // 나중에 스테이지 시스템 추가하면 해당 값 받아와서 넣으면 됨
     std::string stage = std::to_string(stage_level);
     stage = "stage: " + stage;
-    int point_count = 0; // 나중에 점수 시스템 추가하면 해당 값 받아와서 넣으면 됨
     std::string point = std::to_string(point_count);
     point = "point: " + point;
-    int timer_count = 0; // 나중에 타이머 시스템 추가하면 해당 값 받아와서 넣으면 됨
     std::string timer = std::to_string(timer_count);
     timer = "timer: " + timer;
     glColor3f(0.0f, 0.0f, 0.0f); // 글꼴 검정으로 변경
-    drawText(-0.99f, 0.9f, stage.c_str());
-    drawText(-0.99f, 0.8f, point.c_str());
-    drawText(+0.8f, 0.9f, timer.c_str());
+    float font_size = 0.0005f;
+    //drawText(-0.99f, 0.9f, stage.c_str());
+    drawText(stage.c_str(), -0.99f, 0.9f, font_size);
+    //drawText(-0.99f, 0.8f, point.c_str());
+    drawText(point.c_str(), -0.99f, 0.8f, font_size);
+    //drawText(+0.8f, 0.9f, timer.c_str());
+    drawText(timer.c_str(), +0.6f, 0.9f, font_size);
+
+    if (start_stage_onoff) {
+        stage = "stage" + std::to_string(stage_level);
+        drawText(stage.c_str(), -0.85f, -0.15f, 0.005f);
+    }
 
     // 깊이 검사 재활성화
     glEnable(GL_DEPTH_TEST);
