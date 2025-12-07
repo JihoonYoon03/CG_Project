@@ -62,6 +62,8 @@ void draw_UI() {
     stage = "stage: " + stage;
     std::string point = std::to_string(point_count);
     point = "point: " + point;
+    std::string t_point = std::to_string(target_point);
+    t_point = "target point: " + t_point;
     std::string timer = std::to_string(timer_count);
     timer = "timer: " + timer;
     glColor3f(0.0f, 0.0f, 0.0f); // 글꼴 검정으로 변경
@@ -72,10 +74,15 @@ void draw_UI() {
     drawText(point.c_str(), -0.99f, 0.8f, font_size);
     //drawText(+0.8f, 0.9f, timer.c_str());
     drawText(timer.c_str(), +0.6f, 0.9f, font_size);
+    drawText(t_point.c_str(), -0.3f, 0.9f, 0.0005f);
 
     if (start_stage_onoff) {
         stage = "stage" + std::to_string(stage_level);
         drawText(stage.c_str(), -0.6f, -0.15f, 0.0035f);
+    }
+    if (over_stage_onoff) {
+        std::string ending = "Game Over";
+        drawText(ending.c_str(), -0.6f, -0.15f, 0.0015f);
     }
     if (end_stage_onoff) {
         std::string ending = "Game Clear!";

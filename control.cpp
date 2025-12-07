@@ -4,6 +4,7 @@ float mouse_sensitivity = 0.2f;
 
 bool stage_onoff = false;
 bool start_stage_onoff = false;
+bool over_stage_onoff = false;
 bool end_stage_onoff = false;
 float timer_value = 0.0f;
 
@@ -14,7 +15,8 @@ void reset_values(int stage) {
 	timer_value = 0.0f;
 	stage_level = stage;
 	point_count = 0;
-	timer_count = 10;
+	target_point = stage * 20;
+	timer_count = 30;
 	for (auto t : targets)
 		t->turn_off();
 }
@@ -189,6 +191,15 @@ void start_stage(int t) {
 	timer_value += frame_time;
 	glutTimerFunc(frame_time * 1000, start_stage, t);
 }
+void over_stage(int t) {
+	if (timer_value >= 2) {
+		over_stage_onoff = false;
+		stage_onoff = false;
+		return;
+	}
+	timer_value += frame_time;
+	glutTimerFunc(frame_time * 1000, over_stage, t);
+}
 void stage1(int t) {
 	if (timer_value >= 1) {
 		make_target();
@@ -198,8 +209,17 @@ void stage1(int t) {
 	else timer_value += frame_time;
 
 	if (timer_count == 0) { // 다음 스테이지 준비
-		reset_values(2);
-		glutTimerFunc(frame_time * 1000, start_stage, 2);
+		if (point_count >= target_point) {
+			reset_values(2);
+			glutTimerFunc(frame_time * 1000, start_stage, 2);
+		}
+		else {
+			over_stage_onoff = true;
+			reset_values(1);
+			start_stage_onoff = false;
+			end_stage_onoff = false;
+			glutTimerFunc(frame_time * 1000, over_stage, t);
+		}
 		return; 
 	}
 	glutTimerFunc(frame_time * 1000, stage1, 0);
@@ -214,8 +234,17 @@ void stage2(int t) {
 	else timer_value += frame_time;
 
 	if (timer_count == 0) { // 다음 스테이지 준비
-		reset_values(3);
-		glutTimerFunc(frame_time * 1000, start_stage, 3);
+		if (point_count >= target_point) {
+			reset_values(3);
+			glutTimerFunc(frame_time * 1000, start_stage, 2);
+		}
+		else {
+			over_stage_onoff = true;
+			reset_values(1);
+			start_stage_onoff = false;
+			end_stage_onoff = false;
+			glutTimerFunc(frame_time * 1000, over_stage, t);
+		}
 		return;
 	}
 	glutTimerFunc(frame_time * 1000, stage2, 0);
@@ -231,7 +260,16 @@ void stage3(int t) {
 	else timer_value += frame_time;
 
 	if (timer_count == 0) { // 다음 스테이지 준비
-		glutTimerFunc(frame_time * 1000, start_stage, 4);
+		if (point_count >= target_point) {
+			glutTimerFunc(frame_time * 1000, start_stage, 4);
+		}
+		else {
+			over_stage_onoff = true;
+			reset_values(1);
+			start_stage_onoff = false;
+			end_stage_onoff = false;
+			glutTimerFunc(frame_time * 1000, over_stage, t);
+		}
 		return;
 	}
 	glutTimerFunc(frame_time * 1000, stage3, 0);

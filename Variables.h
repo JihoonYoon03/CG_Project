@@ -19,4 +19,5 @@ extern DebugCube* debugCube;
 
 extern int stage_level; // 스테이지
 extern int point_count; // 점수
+extern int target_point; // 목표 점수
 extern int timer_count; // 남은 시간 타이머
