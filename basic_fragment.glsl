@@ -15,6 +15,7 @@ uniform vec3 viewPos;
 uniform sampler2D tex;
 uniform bool useTexture;
 uniform bool isBackground;
+uniform bool isAim;
 
 void main() {
 	// 앰비언트 조명
@@ -44,6 +45,9 @@ void main() {
 		else{
 			FragColor = texture(tex, fTexCoord) * vec4(result, 1.0f);
 		}
+	}
+	else if (isAim){
+		FragColor = vec4(1.0, 1.0, 1.0, 1.0);
 	}
 	else {
 		FragColor = vec4(fColor * result, 1.0f);

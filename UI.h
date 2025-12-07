@@ -45,6 +45,7 @@ void draw_UI() {
 
     // ===================================
     // 레거시 함수 수정 필요!!!
+	glUniform1i(glGetUniformLocation(shaderProgramID, "isAim"), true);
     glBegin(GL_LINES);
     glVertex2f(+size, 0.0f);
     glVertex2f(-size, 0.0f);
@@ -53,6 +54,7 @@ void draw_UI() {
     glVertex2f(0.0f, +size);
     glVertex2f(0.0f, -size);
     glEnd();
+    glUniform1i(glGetUniformLocation(shaderProgramID, "isAim"), false);
 	// ===================================
 
     // 셰이더 비활성화 (텍스트 출력을 위함)
