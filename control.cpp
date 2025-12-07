@@ -4,15 +4,17 @@ float mouse_sensitivity = 0.2f;
 
 bool stage_onoff = false;
 bool start_stage_onoff = false;
+bool end_stage_onoff = false;
 float timer_value = 0.0f;
 
 void reset_values(int stage) {
 	stage_onoff = true;
 	start_stage_onoff = true;
+	end_stage_onoff = false;
 	timer_value = 0.0f;
 	stage_level = stage;
 	point_count = 0;
-	timer_count = 30;
+	timer_count = 10;
 }
 
 void Keyboard(unsigned char key, int x, int y) {
@@ -38,6 +40,18 @@ void Keyboard(unsigned char key, int x, int y) {
 		if (stage_onoff) return;
 		reset_values(1);
 		glutTimerFunc(frame_time * 1000, start_stage, 1);
+		break;
+	}
+	case '2': {
+		if (stage_onoff) return;
+		reset_values(2);
+		glutTimerFunc(frame_time * 1000, start_stage, 2);
+		break;
+	}
+	case '3': {
+		if (stage_onoff) return;
+		reset_values(3);
+		glutTimerFunc(frame_time * 1000, start_stage, 3);
 		break;
 	}
 	case '/':
@@ -140,10 +154,17 @@ void PassiveMotion(int x, int y) {
 void start_stage(int t) {
 	if (timer_value >= 2) {
 		start_stage_onoff = false; // 스테이지 시작을 알리는 텍스트를 끄고 오브젝트 생성 타이머 시작
+		end_stage_onoff = false;
 		timer_value = 0.0f;
 		if (t == 1)	glutTimerFunc(frame_time * 1000, stage1, 0);
 		else if (t == 2) glutTimerFunc(frame_time * 1000, stage2, 0);
 		else if (t == 3) glutTimerFunc(frame_time * 1000, stage3, 0);
+		else if (t == 4) {
+			timer_value = 0.0f;
+			end_stage_onoff = true;
+			stage_onoff = false;
+			glutTimerFunc(frame_time * 1000, start_stage, 0);
+		}
 		return;
 	}
 	timer_value += frame_time;
@@ -164,8 +185,29 @@ void stage1(int t) {
 	glutTimerFunc(frame_time * 1000, stage1, 0);
 }
 void stage2(int t) {
+	if (timer_value >= 1) {
+		timer_count--;
+		timer_value = 0;
+	}
+	else timer_value += frame_time;
 
+	if (timer_count == 0) { // 다음 스테이지 준비
+		reset_values(3);
+		glutTimerFunc(frame_time * 1000, start_stage, 3);
+		return;
+	}
+	glutTimerFunc(frame_time * 1000, stage2, 0);
 }
 void stage3(int t) {
+	if (timer_value >= 1) {
+		timer_count--;
+		timer_value = 0;
+	}
+	else timer_value += frame_time;
 
+	if (timer_count == 0) { // 다음 스테이지 준비
+		glutTimerFunc(frame_time * 1000, start_stage, 4);
+		return;
+	}
+	glutTimerFunc(frame_time * 1000, stage3, 0);
 }

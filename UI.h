@@ -75,7 +75,11 @@ void draw_UI() {
 
     if (start_stage_onoff) {
         stage = "stage" + std::to_string(stage_level);
-        drawText(stage.c_str(), -0.85f, -0.15f, 0.005f);
+        drawText(stage.c_str(), -0.6f, -0.15f, 0.0035f);
+    }
+    if (end_stage_onoff) {
+        std::string ending = "Game Clear!";
+        drawText(ending.c_str(), -0.6f, -0.15f, 0.0015f);
     }
 
     // 깊이 검사 재활성화

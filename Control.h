@@ -10,6 +10,7 @@ extern Camera* camera;
 
 extern bool stage_onoff;
 extern bool start_stage_onoff;
+extern bool end_stage_onoff;
 extern float timer_value;
 
 void Keyboard(unsigned char key, int x, int y);
