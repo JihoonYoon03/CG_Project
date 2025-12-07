@@ -53,7 +53,7 @@ void Gun::shoot(Camera* camera) {
 
 	// 디버그 큐브 생성
 	if (debugCube) delete debugCube;
-	debugCube = new DebugCube(origin, dir);
+	//debugCube = new DebugCube(origin, dir);
 }
 
 KeyFrame Gun::getKeyframe() {
