@@ -1,0 +1,15 @@
+root = true
+
+[*.md]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{h,cpp,vert,frag}]
+indent_style = space
+indent_size = 4
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+# EditorConfig has no CP949 charset value. Keep the source encoding as Korean (949).

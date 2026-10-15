@@ -1,109 +1,34 @@
-#include "basic.h"
-#include "Variables.h"
-#include "draw.h"
-#include "CollideHandler.h"
+#include "pch.h"
+#include "Engine/Framework.h"
+#include "Game/ShootingScene.h"
+#include "Tests/SelfTests.h"
+#include "Tests/RenderTests.h"
 
-#pragma comment(lib, "opengl32.lib")
-#pragma comment(lib, "glew32.lib")
-#pragma comment(lib, "freeglut.lib")
-#pragma warning(disable: 4711 4710 4100)
-
-//--- 메인 함수
 int main(int argc, char** argv)
 {
-	width = 800;
-	height = 600;
-	//--- 윈도우생성하기
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowPosition(100, 100);
-	glutInitWindowSize(width, height);
-	glutCreateWindow("Example1");
-	//--- GLEW 초기화하기
-	glewExperimental = GL_TRUE;
-	glewInit();
-	basic_make_vertexShaders();
-	basic_make_fragmentShaders();
-	shaderProgramID = basic_make_shaderProgram();
-
-	glutDisplayFunc(drawScene);
-	glutReshapeFunc(Reshape);
-	glutKeyboardFunc(Keyboard);
-	glutKeyboardUpFunc(KeyboardUp);
-	glutMouseFunc(Mouse);
-	glutMotionFunc(Motion);
-	glutPassiveMotionFunc(PassiveMotion);
-	glutSpecialFunc(Special);
-	glutTimerFunc(1000 / MAX_FPS, UpdateWorld, 0); // 월드 업데이트 (매 순간 호출)
-
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // 배경 흰색
-	glEnable(GL_DEPTH_TEST); // 기본 깊이 검사 활성화
-	glFrontFace(GL_CCW); // 시계 반대 방향을 앞면으로 설정
-	glEnable(GL_CULL_FACE); // 뒷면 제거 활성화
-	glutSetCursor(GLUT_CURSOR_NONE); // 마우스 커서 숨기기
-
-	// 배경
-	// 스카이돔 배경 이미지 출처
-	// https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
-
-	skydome = new Model("models/Sphere.obj", glm::vec3(150.0f), glm::vec3(1.0f, 1.0f, 1.0f), NONE, "models/SkydomeTex.png");
-	skydome->rotate(glm::vec3(0.0f, -90.0f, 0.0f), skydome->retDistTo());
-
-	// 배경
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 0.0f, 5.0f), BOX, glm::vec3(0.55f, 0.37f, 0.17f), "models/GroundTex.png")); // 바닥
-	glm::vec3 fance_color = glm::vec3(0.9f, 0.9f, 0.9f);
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX, fance_color)); // 울타리
-	objects.back()->translate(glm::vec3(0.0f, 0.375f, -0.25f));
-	add_collision_pair_BB("player:fance", nullptr, objects.back());
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX, fance_color)); // 우측 울타리
-	objects.back()->rotate(glm::vec3(0.0f, 90.0f, 0.0f), objects.back()->retDistTo());
-	objects.back()->translate(glm::vec3(5.0f, 0.375f, 0.0f));
-	objects.back()->getBoxCollider()->change_xz();
-	add_collision_pair_BB("player:fance", nullptr, objects.back());
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX, fance_color)); // 좌측 울타리
-	objects.back()->rotate(glm::vec3(0.0f, 90.0f, 0.0f), objects.back()->retDistTo());
-	objects.back()->translate(glm::vec3(-5.0f, 0.375f, 0.0f));
-	objects.back()->getBoxCollider()->change_xz();
-	add_collision_pair_BB("player:fance", nullptr, objects.back());
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX, fance_color)); // 뒤 울타리
-	objects.back()->translate(glm::vec3(0.0f, 0.375f, 5.0f));
-	add_collision_pair_BB("player:fance", nullptr, objects.back());
-	objects.push_back(new Objects("models/Cube.obj", glm::vec3(0.0f, 0.375f, -0.25f), glm::vec3(5.0f, 0.75f, 0.05f), BOX, fance_color)); // 전방 울타리
-	objects.back()->translate(glm::vec3(0.0f, 0.375f, -5.0f));
-	add_collision_pair_BB("player:fance", nullptr, objects.back());
-
-	// 플레이어
-	player = new Player(glm::vec3(0.0f, 1.0f, 1.0f));
-	add_collision_pair_BB("player:fance", player, nullptr);
-
-	gun = new Gun();
-	gun->setParent(player);
-
-	// 카메라
-	camera = new Camera(player);
-
-	for (int i = 0; i < 90; i++) {
-		std::uniform_real_distribution<float> rand_x(-5.0f, 5.0f);
-		std::uniform_real_distribution<float> rand_y(0.5f, 2.0f);
-		std::uniform_real_distribution<float> rand_z(-5.0f, -0.5f);
-		targets.push_back(new TargetDefault("models/Sphere.obj", glm::vec3(0.15f, 0.15f, 0.15f), SPHERE));
-		targets.back()->translate(glm::vec3(rand_x(dre), rand_y(dre), rand_z(dre)));
-		add_collision_pair_raycast("bullet:target", nullptr, targets.back());
-		targets.back()->turn_off();
-	}
-
-	glutMainLoop();
-
-	// new로 만든 오브젝트 delete로 초기화
-	for (auto obj : objects)
-		delete obj;
-	objects.clear();
-	for (auto t : targets)
-		delete t;
-	targets.clear();
-
-	delete player;
-	delete gun;
-	delete camera;
-	return 0;
+    try
+    {
+        if (argc > 1 && std::string(argv[1]) == "--self-test")
+        {
+            return RunSelfTests();
+        }
+        const bool smokeTest = argc > 1 && std::string(argv[1]) == "--smoke-test";
+        const std::string capture = smokeTest && argc > 2 ? std::filesystem::absolute(argv[2]).string() : "";
+        // Visual Studio�� Ž���⿡�� ������ �� ��� ���� ���� ���� ���ҽ��� ����մϴ�.
+        std::array<wchar_t, 32768> executable{};
+        const DWORD length = GetModuleFileNameW(nullptr, executable.data(), static_cast<DWORD>(executable.size()));
+        if (length == 0 || length >= executable.size())
+        {
+            throw std::runtime_error("Cannot locate executable");
+        }
+        std::filesystem::current_path(std::filesystem::path(executable.data()).parent_path());
+        Framework framework;
+        std::unique_ptr<Scene> scene = smokeTest ? CreateRenderTestScene() : std::make_unique<ShootingScene>();
+        return framework.Run(argc, argv, std::move(scene), smokeTest, capture);
+    }
+    catch (const std::exception& error)
+    {
+        std::cerr << error.what() << '\n';
+        return 1;
+    }
 }
