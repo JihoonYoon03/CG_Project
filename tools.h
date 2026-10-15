@@ -9,12 +9,12 @@
 #include <queue>
 #include <tuple>
 #include <chrono>
-#include <gl/glew.h>
-#include <gl/freeglut.h>
-#include <gl/freeglut_ext.h>
-#include <gl/glm/glm.hpp>
-#include <gl/glm/ext.hpp>
-#include <gl/glm/gtc/matrix_transform.hpp>
+#include <GL/glew.h>
+#include <GL/freeglut.h>
+#include <GL/freeglut_ext.h>
+#include <GL/glm/glm.hpp>
+#include <GL/glm/ext.hpp>
+#include <GL/glm/gtc/matrix_transform.hpp>
 
 extern bool debug_mode_collider;
 
@@ -35,54 +35,54 @@ enum CollideMode{
 };
 
 /*
-Model í´ë˜ìŠ¤ ì‚¬ìš©ë²•
+Model Å¬·¡½º »ç¿ë¹ı
 
-1.	ìƒì„±ì ì¸ì
-	(ëª¨ë¸ ë“¤ì–´ìˆëŠ” íŒŒì¼ ê²½ë¡œ, í¬ê¸°, ê¸°ë³¸ ìƒ‰ìƒ)
-	í¬ê¸°ì™€ ê¸°ë³¸ ìƒ‰ìƒì€ ìƒëµ ê°€ëŠ¥ (ê¸°ë³¸ê°’: (1,1,1), (0.8,0.8,0.8))
-	í¬ê¸° ì„¤ì •ì€ ì •ì  ë°ì´í„°ë¥¼ ë°”ê¾¸ëŠ” ê²ƒì´ê¸°ì— ì˜êµ¬ì ìœ¼ë¡œ ì ìš©ë¨
+1.	»ı¼ºÀÚ ÀÎÀÚ
+	(¸ğµ¨ µé¾îÀÖ´Â ÆÄÀÏ °æ·Î, Å©±â, ±âº» »ö»ó)
+	Å©±â¿Í ±âº» »ö»óÀº »ı·« °¡´É (±âº»°ª: (1,1,1), (0.8,0.8,0.8))
+	Å©±â ¼³Á¤Àº Á¤Á¡ µ¥ÀÌÅÍ¸¦ ¹Ù²Ù´Â °ÍÀÌ±â¿¡ ¿µ±¸ÀûÀ¸·Î Àû¿ëµÊ
 
-2.	ëª¨ë¸ ë³€í™˜ í•¨ìˆ˜ë“¤
-	setDef~(): modelMatrix(=ì›”ë“œ ë³€í™˜) ì ìš© ì´ì „ì— ë¨¼ì € ì ìš©í•  ë³€í™˜ ì„¤ì • (ë¬´ì¡°ê±´ SRT ìˆœì„œë¡œ ì ìš©ë¨)
-	scale(), rotate(), translate(): transformQueue(ë³€í™˜ í)ì— ë³€í™˜ í–‰ë ¬ ì¶”ê°€, ì¶”ê°€í•˜ëŠ” ìˆœì„œëŒ€ë¡œ ë³€í™˜ ì ìš©ë¨
-	setParent(): ë¶€ëª¨ ëª¨ë¸ì„ ì„¤ì •í•¨. ì‚¬ìš© ì•ˆí•  ì‹œì—ëŠ” ë³¸ì¸ì— ëŒ€í•œ ë³€í™˜ë§Œ, ì„¤ì • ì‹œì—” ë¶€ëª¨ ëª¨ë¸ì˜ ë³€í™˜ë„ í•¨ê»˜ ì ìš©ë¨
-	getModelMatrix(): modelMatrixì— ë³€í™˜ í ì•ˆì˜ ë³€í™˜ í–‰ë ¬ë“¤ì„ ëª¨ë‘ ì ìš©í•œ ë’¤ ë¶€ëª¨ ëª¨ë¸ì´ ìˆë‹¤ë©´ ë¶€ëª¨ ëª¨ë¸ ë³€í™˜ë„ ì ìš© í›„ ë°˜í™˜
+2.	¸ğµ¨ º¯È¯ ÇÔ¼öµé
+	setDef~(): modelMatrix(=¿ùµå º¯È¯) Àû¿ë ÀÌÀü¿¡ ¸ÕÀú Àû¿ëÇÒ º¯È¯ ¼³Á¤ (¹«Á¶°Ç SRT ¼ø¼­·Î Àû¿ëµÊ)
+	scale(), rotate(), translate(): transformQueue(º¯È¯ Å¥)¿¡ º¯È¯ Çà·Ä Ãß°¡, Ãß°¡ÇÏ´Â ¼ø¼­´ë·Î º¯È¯ Àû¿ëµÊ
+	setParent(): ºÎ¸ğ ¸ğµ¨À» ¼³Á¤ÇÔ. »ç¿ë ¾ÈÇÒ ½Ã¿¡´Â º»ÀÎ¿¡ ´ëÇÑ º¯È¯¸¸, ¼³Á¤ ½Ã¿£ ºÎ¸ğ ¸ğµ¨ÀÇ º¯È¯µµ ÇÔ²² Àû¿ëµÊ
+	getModelMatrix(): modelMatrix¿¡ º¯È¯ Å¥ ¾ÈÀÇ º¯È¯ Çà·ÄµéÀ» ¸ğµÎ Àû¿ëÇÑ µÚ ºÎ¸ğ ¸ğµ¨ÀÌ ÀÖ´Ù¸é ºÎ¸ğ ¸ğµ¨ º¯È¯µµ Àû¿ë ÈÄ ¹İÈ¯
 
-3.	í™œì„± ìƒíƒœ
-	enabled ìƒíƒœê°€ í™œì„± ì—¬ë¶€ì„. ë¹„í™œì„± ìƒíƒœì´ë©´ ë¹„í™œì„± ì´í›„ ë³€í™˜ê³¼ ë Œë”ë§ ëª¨ë‘ ì‘ë™ ì•ˆí•¨
+3.	È°¼º »óÅÂ
+	enabled »óÅÂ°¡ È°¼º ¿©ºÎÀÓ. ºñÈ°¼º »óÅÂÀÌ¸é ºñÈ°¼º ÀÌÈÄ º¯È¯°ú ·»´õ¸µ ¸ğµÎ ÀÛµ¿ ¾ÈÇÔ
 */
 
 class Model {
-// ì½œë¼ì´ë”ëŠ” í•´ë‹¹ ê°ì²´ì— ì¢…ì†ë˜ë¯€ë¡œ private
-// Modelì˜ ìì‹ í´ë˜ìŠ¤ì—ì„  ì ‘ê·¼ ë¶ˆê°€
+// Äİ¶óÀÌ´õ´Â ÇØ´ç °´Ã¼¿¡ Á¾¼ÓµÇ¹Ç·Î private
+// ModelÀÇ ÀÚ½Ä Å¬·¡½º¿¡¼± Á¢±Ù ºÒ°¡
 private:
 	BoxCollider* bounding_box = nullptr;
 	SphereCollider* bounding_sphere = nullptr;
 protected:
-	// ì •ì  ì†ì„±
-	std::vector<glm::uvec3> faces;		// ì‚¼ê°í˜•ì˜ ì •ì  ì¸ë±ìŠ¤ ìˆœì„œ
-	std::vector<glm::vec3>* color;		// ê¸°ë³¸ ì •ì  ìƒ‰ìƒ, í…ìŠ¤ì³ ì ìš© í•  ê²½ìš° ë¶ˆí•„ìš”
+	// Á¤Á¡ ¼Ó¼º
+	std::vector<glm::uvec3> faces;		// »ï°¢ÇüÀÇ Á¤Á¡ ÀÎµ¦½º ¼ø¼­
+	std::vector<glm::vec3>* color;		// ±âº» Á¤Á¡ »ö»ó, ÅØ½ºÃÄ Àû¿ë ÇÒ °æ¿ì ºÒÇÊ¿ä
 
-	std::vector<glm::vec3> renderVertices;  // ì‹¤ì œ ë Œë”ë§ì— ì‚¬ìš©í•  ì •ì 
-	std::vector<glm::vec2> renderTexCoords; // ì‹¤ì œ ë Œë”ë§ì— ì‚¬ìš©í•  í…ìŠ¤ì²˜ ì¢Œí‘œ
-	std::vector<glm::vec3> renderNormals;	// ì‹¤ì œ ë Œë”ë§ì— ì‚¬ìš©í•  ë²•ì„  ë²¡í„°
+	std::vector<glm::vec3> renderVertices;  // ½ÇÁ¦ ·»´õ¸µ¿¡ »ç¿ëÇÒ Á¤Á¡
+	std::vector<glm::vec2> renderTexCoords; // ½ÇÁ¦ ·»´õ¸µ¿¡ »ç¿ëÇÒ ÅØ½ºÃ³ ÁÂÇ¥
+	std::vector<glm::vec3> renderNormals;	// ½ÇÁ¦ ·»´õ¸µ¿¡ »ç¿ëÇÒ ¹ı¼± º¤ÅÍ
 
-	glm::vec3 center { 0, 0, 0 };		// ëª¨ë¸ ì¤‘ì‹¬ì  (ì •ì  ì¢Œí‘œê°’ì˜ ìµœëŒ€/ìµœì†Œê°’ ê¸°ì¤€ ì¤‘ì•™ì„). ì´ë™ ë³€í™˜ ìƒì‹œ ë°˜ì˜
+	glm::vec3 center { 0, 0, 0 };		// ¸ğµ¨ Áß½ÉÁ¡ (Á¤Á¡ ÁÂÇ¥°ªÀÇ ÃÖ´ë/ÃÖ¼Ò°ª ±âÁØ Áß¾ÓÀÓ). ÀÌµ¿ º¯È¯ »ó½Ã ¹İ¿µ
 
-	// ëª¨ë¸ ë³€í™˜
-	glm::mat4 defScaleMatrix = glm::mat4(1.0f);	// ëª¨ë¸ ê¸°ë³¸ í¬ê¸° ì¡°ì •
+	// ¸ğµ¨ º¯È¯
+	glm::mat4 defScaleMatrix = glm::mat4(1.0f);	// ¸ğµ¨ ±âº» Å©±â Á¶Á¤
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
 
-	// modelMatrixì— ì ìš©í•  ë³€í™˜ í–‰ë ¬ í
+	// modelMatrix¿¡ Àû¿ëÇÒ º¯È¯ Çà·Ä Å¥
 	std::queue<glm::mat4> transformQueue;
 
-	// ë³€í™˜ ê¸°ì¤€ì´ ë˜ëŠ” ë¶€ëª¨ ëª¨ë¸ (nullptrì´ë©´ ì ìš© X)
+	// º¯È¯ ±âÁØÀÌ µÇ´Â ºÎ¸ğ ¸ğµ¨ (nullptrÀÌ¸é Àû¿ë X)
 	Model* parent = nullptr;
 
-	// OpenGL ë²„í¼ ê°ì²´
+	// OpenGL ¹öÆÛ °´Ã¼
 	GLuint VAO, VERTEX, FACE, COLOR, NORMAL, TEXCOORD, TEXTURE_ID = -1;
 
-	// ë¹„í™œì„± ìƒíƒœì—ì„  ë™ì‘ X
+	// ºñÈ°¼º »óÅÂ¿¡¼± µ¿ÀÛ X
 	bool enabled = true;
 public:
 	Model(const std::string& filename, const glm::vec3& size = { 1.0f, 1.0f, 1.0f }, const glm::vec3& defColor = { 1.0f, 1.0f, 1.0f }, const CollideMode& collider = NONE,
@@ -90,32 +90,32 @@ public:
 
 	void setParent(Model* parent);
 
-	// origin ê¸°ì¤€ ë³€í™˜
-	// origin = retCenter()ë¡œ ì‚¬ìš©í•˜ë©´ ëª¨ë¸ ì¤‘ì‹¬ ê¸°ì¤€ ë³€í™˜
+	// origin ±âÁØ º¯È¯
+	// origin = retCenter()·Î »ç¿ëÇÏ¸é ¸ğµ¨ Áß½É ±âÁØ º¯È¯
 	void scale(const glm::vec3& ds, const glm::vec3& origin = {0, 0, 0});
 	void rotate(const glm::vec3& dr, const glm::vec3& origin = { 0, 0, 0 });
-	void translate(const glm::vec3& dt, const glm::vec3& offset = { 0.0f, 0.0f, 0.0f }); // offset: ë³€í™˜ ì ìš© ì´ì „, í˜„ì¬ ìœ„ì¹˜ ì¡°ì •. retDistTo() ì…ë ¥ ì‹œ ì¢Œí‘œ dtë¡œ ì´ˆê¸°í™” ê°€ëŠ¥
+	void translate(const glm::vec3& dt, const glm::vec3& offset = { 0.0f, 0.0f, 0.0f }); // offset: º¯È¯ Àû¿ë ÀÌÀü, ÇöÀç À§Ä¡ Á¶Á¤. retDistTo() ÀÔ·Â ½Ã ÁÂÇ¥ dt·Î ÃÊ±âÈ­ °¡´É
 
 	virtual void Render();
 	void resetModelMatrix();
 	glm::vec3 retDistTo(const glm::vec3& origin = { 0.0f, 0.0f, 0.0f });
 	glm::vec3 return_pos() { 
-		glm::mat4 world = getModelMatrix();           // ì›”ë“œ ê³µê°„ ë³€í™˜ í–‰ë ¬
+		glm::mat4 world = getModelMatrix();           // ¿ùµå °ø°£ º¯È¯ Çà·Ä
 		return glm::vec3(world * glm::vec4(center, 1.0f));
 	}
 	void turn_off() { enabled = false; }
 	void turn_on() { enabled = true; }
 	bool return_enabled() { return enabled; }
 
-	virtual glm::mat4 getModelMatrix();		// ë¦¬í„´ê°’ ì»¤ìŠ¤í…€ ê°€ëŠ¥
-	virtual glm::mat4 retParentMatrix();	// ë¦¬í„´ê°’ ì»¤ìŠ¤í…€ ê°€ëŠ¥
+	virtual glm::mat4 getModelMatrix();		// ¸®ÅÏ°ª Ä¿½ºÅÒ °¡´É
+	virtual glm::mat4 retParentMatrix();	// ¸®ÅÏ°ª Ä¿½ºÅÒ °¡´É
 
 	GLuint getTexture() { return TEXTURE_ID; }
 
 	BoxCollider* getBoxCollider() { if (bounding_box != nullptr) return bounding_box; }
 	SphereCollider* getSphereCollider() { if (bounding_sphere != nullptr) return bounding_sphere; }
 
-	// ì¶©ëŒ ì²˜ë¦¬ í•¨ìˆ˜
+	// Ãæµ¹ Ã³¸® ÇÔ¼ö
 	virtual void HandleCollisionRange(const std::string& group, Model* other) {};
 	virtual void HandleCollisionRaycast(const std::string& group, Model* other) {};
 	virtual void HandleCollisionBB(const std::string& group, Model* other) {};
@@ -136,7 +136,7 @@ public:
 	}
 };
 
-// protected ìƒì† => ì™¸ë¶€ì—ì„œ Model ê¸°ëŠ¥ ì ‘ê·¼ ë¶ˆê°€
+// protected »ó¼Ó => ¿ÜºÎ¿¡¼­ Model ±â´É Á¢±Ù ºÒ°¡
 class BoxCollider : protected Model {
 	GLfloat width, height, depth;
 public:
@@ -151,7 +151,7 @@ public:
 		width = depth;
 		depth = temp;
 	}
-	// ë°•ìŠ¤ ì¶©ëŒ ì²´í¬ëŠ” SAT ì•Œê³ ë¦¬ì¦˜ ì‚¬ìš© ì˜ˆì •
+	// ¹Ú½º Ãæµ¹ Ã¼Å©´Â SAT ¾Ë°í¸®Áò »ç¿ë ¿¹Á¤
 };
 
 class SphereCollider : protected Model {
@@ -163,11 +163,11 @@ public:
 };
 
 class Ray {
-	// RayëŠ” ì›”ë“œ ì¢Œí‘œ ê¸°ì¤€
+	// Ray´Â ¿ùµå ÁÂÇ¥ ±âÁØ
 	glm::vec3 origin;
 	glm::vec3 direction;
 
-	int penetrate_force = 1; // ìµœëŒ€ ê´€í†µ íšŸìˆ˜
+	int penetrate_force = 1; // ÃÖ´ë °üÅë È½¼ö
 
 public:
 	Ray(const glm::vec3& ori, const glm::vec3& dir);
