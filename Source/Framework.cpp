@@ -35,12 +35,16 @@ int Framework::Run(int argc, char** argv, std::unique_ptr<Scene> scene)
 
 	try
 	{
+		//[윤지훈]GLUT(창 생성, 화면 출력, 입력처리)시작
 		glutInit(&argc, argv);
+		//[윤지훈]OpenGL 3.3 ver
 		glutInitContextVersion(3, 3);
 		// 기존 GLUT 글꼴과 디버그 선은 호환 프로파일에서 그립니다.
 		// Compatibility context required by the legacy drawing paths below.
 		//LegacyGL
+		//[윤지훈]차후 GLUT_CORE_PROFILE로 전환 후 LegacyGL API 다 교체?
 		glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
+		//[윤지훈]더블버퍼링|RGBA색상모드|깊이테스트사용
 		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 		glutInitWindowSize(width_, height_);
 		glutInitWindowPosition(100, 100);
@@ -51,9 +55,11 @@ int Framework::Run(int argc, char** argv, std::unique_ptr<Scene> scene)
 			throw std::runtime_error("Cannot create OpenGL window");
 		}
 
+		//[윤지훈]창이 닫힐 때 메인루프 함수가 리턴되어 프로그램 즉시 종료하지 않고 다음 코드 실행
 		glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
 		glewExperimental = GL_TRUE;
 
+		//[윤지훈]GLEW(최신 그래픽 기능)시작
 		if (glewInit() != GLEW_OK)
 		{
 			throw std::runtime_error("GLEW initialization failed");
@@ -70,10 +76,14 @@ int Framework::Run(int argc, char** argv, std::unique_ptr<Scene> scene)
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
+		//[윤지훈]배경 기본색
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		//[윤지훈]포인터 소유권 이전
 		scene_ = std::move(scene);
+		//[윤지훈]씬 구성하는 모든 요소 생성
 		scene_->Initialize();
 
+		//[윤지훈]콜백 함수들 등록하기
 		glutDisplayFunc(DisplayCallback);
 		glutReshapeFunc(ReshapeCallback);
 		glutKeyboardFunc(KeyDownCallback);
