@@ -29,6 +29,9 @@ README를 열 때는 UTF-8을 사용합니다.
 
 ## 처음 읽을 순서
 
+파일을 하나씩 분석할 때는 [코드 분석 가이드](CODE_ANALYSIS_GUIDE.md)를 따라갑니다.
+파일별 읽기 순서, 실행 흐름, 핵심 수식, 확인 질문과 디버거 연습을 정리했습니다.
+
 `main.cpp -> Engine/Framework.cpp -> Game/ShootingScene.cpp -> Engine/Object.h`
 
 | 위치 | 책임 |
