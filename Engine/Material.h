@@ -15,6 +15,8 @@ public:
     std::shared_ptr<Texture> texture;
     glm::vec3 color{1.0f};
     float shininess = 32.0f;
+    bool useTexture = true;
     bool unlit = false;
+    bool ambientOnly = false;
     bool doubleSided = false;
 };

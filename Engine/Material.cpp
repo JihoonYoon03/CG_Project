@@ -7,7 +7,8 @@ void Material::Apply() const
     shader->Set("materialColor", color);
     shader->Set("shininess", shininess);
     shader->Set("unlit", static_cast<int>(unlit));
-    shader->Set("useTexture", static_cast<int>(texture != nullptr));
+    shader->Set("ambientOnly", static_cast<int>(ambientOnly));
+    shader->Set("useTexture", static_cast<int>(useTexture && texture != nullptr));
     shader->Set("colorTexture", 0);
     if (texture)
     {

@@ -20,6 +20,7 @@ uniform vec3 viewPosition;
 uniform vec3 materialColor;
 uniform float shininess;
 uniform bool unlit;
+uniform bool ambientOnly;
 uniform bool useTexture;
 uniform sampler2D colorTexture;
 in vec3 worldPosition;
@@ -29,7 +30,7 @@ out vec4 fragColor;
 
 vec3 SafeNormalize(vec3 value)
 {
-    return value / max(length(value), 0.00001);
+    return dot(value, value) > 0.0 ? normalize(value) : vec3(0.0);
 }
 
 void main()
@@ -37,16 +38,21 @@ void main()
     vec4 base = vec4(materialColor, 1.0);
     if (useTexture)
     {
-        base *= texture(colorTexture, uv);
+        base = texture(colorTexture, uv);
     }
     if (unlit)
     {
         fragColor = base;
         return;
     }
+    if (ambientOnly)
+    {
+        fragColor = vec4(ambientLight * base.rgb, base.a);
+        return;
+    }
     vec3 n = SafeNormalize(worldNormal);
     vec3 viewDirection = SafeNormalize(viewPosition - worldPosition);
-    vec3 result = ambientLight * base.rgb;
+    vec3 result = ambientLight;
     for (int i = 0; i < lightCount; ++i)
     {
         vec3 toLight;
@@ -60,8 +66,11 @@ void main()
             vec3 offset = lights[i].position - worldPosition;
             float distance = length(offset);
             toLight = SafeNormalize(offset);
-            float falloff = max(1.0 - distance / max(lights[i].range, 0.001), 0.0);
-            attenuation = falloff * falloff;
+            if (lights[i].range > 0.0)
+            {
+                float falloff = max(1.0 - distance / lights[i].range, 0.0);
+                attenuation = falloff * falloff;
+            }
             if (lights[i].type == 2)
             {
                 float angleCos = dot(-toLight, SafeNormalize(lights[i].direction));
@@ -69,12 +78,10 @@ void main()
             }
         }
         float diffuse = max(dot(n, toLight), 0.0);
-        float specular = 0.0;
-        if (diffuse > 0.0)
-        {
-            specular = pow(max(dot(viewDirection, reflect(-toLight, n)), 0.0), max(shininess, 1.0));
-        }
-        result += lights[i].color * lights[i].intensity * attenuation * (base.rgb * diffuse + vec3(specular * 0.25));
+        float specular = pow(max(dot(viewDirection, reflect(-toLight, n)), 0.0), max(shininess, 1.0));
+        vec3 lightColor = lights[i].color * lights[i].intensity * attenuation;
+        result += lightColor * diffuse;
+        result += lightColor * specular;
     }
-    fragColor = vec4(result, base.a);
+    fragColor = vec4(base.rgb * result, base.a);
 }

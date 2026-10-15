@@ -5,7 +5,7 @@ Framework* Framework::current_ = nullptr;
 
 namespace
 {
-    constexpr float FixedStep = 1.0f / 120.0f;
+    constexpr int UpdateIntervalMs = 1000 / 240;
 
     void DrawText(const std::string& text, float x, float y, float scale)
     {
@@ -34,7 +34,8 @@ int Framework::Run(int, char** argv, std::unique_ptr<Scene> scene, bool smokeTes
         glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
         glutInitWindowSize(width_, height_);
-        window_ = glutCreateWindow("Shooting Game");
+        glutInitWindowPosition(100, 100);
+        window_ = glutCreateWindow("Example1");
         if (window_ <= 0)
         {
             throw std::runtime_error("Cannot create OpenGL window");
@@ -58,7 +59,7 @@ int Framework::Run(int, char** argv, std::unique_ptr<Scene> scene, bool smokeTes
         }
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
-        glClearColor(0.65f, 0.8f, 0.95f, 1.0f);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         scene_ = std::move(scene);
         scene_->Initialize();
 
@@ -69,19 +70,13 @@ int Framework::Run(int, char** argv, std::unique_ptr<Scene> scene, bool smokeTes
         glutMouseFunc(MouseCallback);
         glutMotionFunc(MotionCallback);
         glutPassiveMotionFunc(MotionCallback);
-        glutEntryFunc(EntryCallback);
         glutCloseFunc(CloseCallback);
-        glutIgnoreKeyRepeat(1);
         if (!smokeTest_)
         {
-            SetMouseCaptured(true);
-        }
-        else
-        {
-            input_.SetKey('1', true);
+            glutSetCursor(GLUT_CURSOR_NONE);
         }
         previousTime_ = std::chrono::steady_clock::now();
-        glutTimerFunc(0, TimerCallback, 0);
+        glutTimerFunc(UpdateIntervalMs, TimerCallback, 0);
         glutMainLoop();
     }
     catch (const std::exception& error)
@@ -106,12 +101,12 @@ void Framework::Tick()
     const auto now = std::chrono::steady_clock::now();
     const float elapsed = std::chrono::duration<float>(now - previousTime_).count();
     previousTime_ = now;
-    accumulator_ += smokeTest_ ? 0.1f : std::min(elapsed, 0.25f);
-    while (accumulator_ >= FixedStep)
+    const float deltaTime = smokeTest_ ? 0.1f : elapsed;
+    scene_->Update(deltaTime, input_);
+    input_.EndFrame();
+    if (!smokeTest_ && elapsed > 0.0f)
     {
-        scene_->Update(FixedStep, input_);
-        input_.EndFrame();
-        accumulator_ -= FixedStep;
+        glutSetWindowTitle(("FPS: " + std::to_string(static_cast<int>(1.0f / elapsed))).c_str());
     }
     if (smokeTest_)
     {
@@ -143,7 +138,7 @@ void Framework::UploadLights(const Shader& shader) const
         shader.Set(prefix + "intensity", std::max(light.intensity, 0.0f));
         shader.Set(prefix + "position", light.position);
         shader.Set(prefix + "direction", light.direction);
-        shader.Set(prefix + "range", std::max(light.range, 0.001f));
+        shader.Set(prefix + "range", std::max(light.range, 0.0f));
         const float outer = std::clamp(light.outerAngle, 0.1f, 89.0f);
         const float inner = std::clamp(light.innerAngle, 0.0f, outer - 0.1f);
         shader.Set(prefix + "innerCos", std::cos(glm::radians(inner)));
@@ -184,7 +179,7 @@ void Framework::DrawObjects()
             UploadLights(shader);
             previousShader = &shader;
         }
-        shader.Set("model", object->transform.GetMatrix());
+        shader.Set("model", object->GetModelMatrix());
         mesh->Draw();
     }
 }
@@ -203,7 +198,7 @@ void Framework::DrawColliders()
     glMatrixMode(GL_MODELVIEW);
     const auto view = scene_->GetCamera().GetView();
     glLoadMatrixf(glm::value_ptr(view));
-    glColor3f(0, 1, 0);
+    glColor3f(1, 0, 0);
     for (const auto& object : scene_->GetObjects())
     {
         if (!object->active || object->collider == ColliderType::None)
@@ -239,41 +234,30 @@ void Framework::DrawOverlay()
     glDisable(GL_CULL_FACE);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, width_, 0, height_, -1, 1);
+    glOrtho(-1, 1, -1, 1, -1, 1);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glColor3f(0.05f, 0.05f, 0.05f);
-    float y = static_cast<float>(height_) - 25.0f;
-    for (const auto& line : hud.lines)
-    {
-        DrawText(line, 12, y, 0.12f);
-        y -= 22;
-    }
-    if (!mouseCaptured_ && !smokeTest_)
-    {
-        DrawText("Click to capture mouse", 12, y, 0.12f);
-    }
-    if (!hud.message.empty())
-    {
-        float length = 0.0f;
-        for (unsigned char character : hud.message)
-        {
-            length += static_cast<float>(glutStrokeWidth(GLUT_STROKE_ROMAN, character));
-        }
-        DrawText(hud.message, (width_ - length * 0.24f) * 0.5f, height_ * 0.55f, 0.24f);
-    }
     if (hud.crosshair)
     {
-        const float x = width_ * 0.5f, centerY = height_ * 0.5f;
         glColor3f(1, 1, 1);
         glLineWidth(2.0f);
         glBegin(GL_LINES);
-        glVertex2f(x - 9, centerY);
-        glVertex2f(x + 9, centerY);
-        glVertex2f(x, centerY - 9);
-        glVertex2f(x, centerY + 9);
+        glVertex2f(0.025f, 0);
+        glVertex2f(-0.025f, 0);
+        glVertex2f(0, 0.025f);
+        glVertex2f(0, -0.025f);
         glEnd();
-        glLineWidth(1.0f);
+        // 원본은 이후 HUD에도 선 두께 2를 유지합니다.
+    }
+    glColor3f(0, 0, 0);
+    const std::array<glm::vec2, 4> positions{{{-0.99f, 0.9f}, {-0.99f, 0.8f}, {-0.3f, 0.9f}, {0.6f, 0.9f}}};
+    for (size_t i = 0; i < hud.lines.size() && i < positions.size(); ++i)
+    {
+        DrawText(hud.lines[i], positions[i].x, positions[i].y, 0.0005f);
+    }
+    if (!hud.message.empty())
+    {
+        DrawText(hud.message, -0.6f, -0.15f, hud.messageScale);
     }
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -337,17 +321,6 @@ void Framework::CaptureFrame() const
     }
 }
 
-void Framework::SetMouseCaptured(bool captured)
-{
-    mouseCaptured_ = captured;
-    input_.Reset();
-    glutSetCursor(captured ? GLUT_CURSOR_NONE : GLUT_CURSOR_LEFT_ARROW);
-    if (captured)
-    {
-        glutWarpPointer(width_ / 2, height_ / 2);
-    }
-}
-
 void Framework::Close()
 {
     glutLeaveMainLoop();
@@ -386,7 +359,7 @@ void Framework::TimerCallback(int)
     {
         current_->Fail(e);
     }
-    glutTimerFunc(8, TimerCallback, 0);
+    glutTimerFunc(UpdateIntervalMs, TimerCallback, 0);
 }
 
 void Framework::ReshapeCallback(int width, int height)
@@ -397,14 +370,9 @@ void Framework::ReshapeCallback(int width, int height)
 
 void Framework::KeyDownCallback(unsigned char key, int, int)
 {
-    if (key == 'q' || key == 'Q')
+    if (key == 'q')
     {
         current_->Close();
-        return;
-    }
-    if (key == 27)
-    {
-        current_->SetMouseCaptured(!current_->mouseCaptured_);
         return;
     }
     current_->input_.SetKey(key, true);
@@ -421,19 +389,12 @@ void Framework::MouseCallback(int button, int state, int, int)
     {
         return;
     }
-    if (!current_->mouseCaptured_)
-    {
-        current_->SetMouseCaptured(true);
-    }
-    else
-    {
-        current_->input_.firePressed = true;
-    }
+    current_->input_.firePressed = true;
 }
 
 void Framework::MotionCallback(int x, int y)
 {
-    if (!current_->mouseCaptured_)
+    if (current_->smokeTest_)
     {
         return;
     }
@@ -444,14 +405,6 @@ void Framework::MotionCallback(int x, int y)
     }
     current_->input_.mouseDelta += glm::vec2(dx, dy);
     glutWarpPointer(current_->width_ / 2, current_->height_ / 2);
-}
-
-void Framework::EntryCallback(int state)
-{
-    if (state == GLUT_LEFT && current_->mouseCaptured_)
-    {
-        current_->SetMouseCaptured(false);
-    }
 }
 
 void Framework::CloseCallback()

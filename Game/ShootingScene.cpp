@@ -28,12 +28,29 @@ void ShootingScene::Initialize()
 
     auto ground = std::make_shared<Material>(shader);
     ground->texture = assets_.LoadTexture("models/GroundTex.png");
-    AddProp("Ground", cube, ground, {0, -0.05f, 0}, {5, 0.05f, 5});
+    ground->color = {0.55f, 0.37f, 0.17f};
+    // 원본 draw.h는 바닥 텍스처를 활성화하지 않고 기본색으로 그렸습니다.
+    ground->useTexture = false;
+    // 원본 0 스케일 바닥의 환경광 외형을 유지하면서 특이 노멀 행렬은 제거합니다.
+    ground->ambientOnly = true;
+    std::vector<Vertex> floorVertices;
+    for (auto vertex : cube->GetVertices())
+    {
+        if (std::abs(vertex.normal.y) > 0.5f)
+        {
+            vertex.position.y = 0.0f;
+            floorVertices.push_back(vertex);
+        }
+    }
+    auto* floor = AddProp("Ground", std::make_shared<Mesh>(std::move(floorVertices)), ground, {0, 0, 0}, {5, 1, 5});
+    floor->collider = ColliderType::Box;
     auto fence = std::make_shared<Material>(shader);
     fence->color = glm::vec3(0.9f);
     AddProp("Shooting line", cube, fence, {0, 0.375f, -0.25f}, {5, 0.75f, 0.05f}, true);
-    AddProp("Right fence", cube, fence, {5, 0.375f, 0}, {0.05f, 0.75f, 5}, true);
-    AddProp("Left fence", cube, fence, {-5, 0.375f, 0}, {0.05f, 0.75f, 5}, true);
+    auto* right = AddProp("Right fence", cube, fence, {5, 0.375f, 0}, {5, 0.75f, 0.05f}, true);
+    right->transform.rotation.y = 90.0f;
+    auto* left = AddProp("Left fence", cube, fence, {-5, 0.375f, 0}, {5, 0.75f, 0.05f}, true);
+    left->transform.rotation.y = 90.0f;
     AddProp("Back fence", cube, fence, {0, 0.375f, 5}, {5, 0.75f, 0.05f}, true);
     AddProp("Front fence", cube, fence, {0, 0.375f, -5}, {5, 0.75f, 0.05f}, true);
 
@@ -45,7 +62,6 @@ void ShootingScene::Initialize()
     player->transform.position = {0, 1, 1};
     player->transform.scale = glm::vec3(0.25f);
     player->collider = ColliderType::Box;
-    player->visible = false;
     AddObject(std::move(player));
     player_->UpdateCamera(camera_);
 
@@ -55,12 +71,12 @@ void ShootingScene::Initialize()
     gun_ = gun.get();
     gun->name = "Pistol";
     gun->transform.scale = glm::vec3(0.025f);
-    gun->FollowCamera(camera_);
+    gun->FollowCamera(camera_, player_->transform.position);
     AddObject(std::move(gun));
 
     auto targetMaterial = std::make_shared<Material>(shader);
     targetMaterial->color = {1.0f, 0.1f, 0.1f};
-    std::uniform_real_distribution<float> x(-4.7f, 4.7f), y(0.5f, 2.0f), z(-4.7f, -0.6f);
+    std::uniform_real_distribution<float> x(-5.0f, 5.0f), y(0.5f, 2.0f), z(-5.0f, -0.5f);
     for (int i = 0; i < 90; ++i)
     {
         auto target = std::make_unique<Target>(sphere, targetMaterial);
@@ -73,9 +89,7 @@ void ShootingScene::Initialize()
         AddObject(std::move(target));
     }
 
-    lights_.push_back(Light::Directional({-0.5f, -1.0f, -0.3f}, {1.0f, 0.96f, 0.9f}, 0.8f));
-    lights_.push_back(Light::Point({-3, 2, -2}, {0.4f, 0.65f, 1.0f}, 0.7f, 6.0f));
-    lights_.push_back(Light::Spot(camera_.position, camera_.GetForward(), glm::vec3(1), 0.8f, 12.0f, 12.0f, 22.0f));
+    lights_.push_back(Light::Point({100, 150, 110}, glm::vec3(1), 1.0f, 0.0f));
 }
 
 void ShootingScene::Update(float deltaTime, const Input& input)
@@ -93,16 +107,16 @@ void ShootingScene::Update(float deltaTime, const Input& input)
     }
 
     const StageEvents events = stages_.Update(deltaTime);
+    for (int i = 0; i < events.spawnCount; ++i)
+    {
+        SpawnTarget();
+    }
     if (events.clearTargets)
     {
         for (auto* target : targets_)
         {
             target->active = false;
         }
-    }
-    for (int i = 0; i < events.spawnCount; ++i)
-    {
-        SpawnTarget();
     }
 
     PlayerCommand command;
@@ -111,15 +125,9 @@ void ShootingScene::Update(float deltaTime, const Input& input)
     command.lookDelta = input.mouseDelta;
     command.fire = input.firePressed;
     ApplyPlayerCommand(command, deltaTime);
+    Shoot();
     Scene::Update(deltaTime, input);
-    gun_->FollowCamera(camera_);
-    // 장면이 소유한 손전등을 카메라에 맞춥니다. F 키로 켜고 끌 수 있습니다.
-    if (input.WasPressed('f'))
-    {
-        lights_[2].enabled = !lights_[2].enabled;
-    }
-    lights_[2].position = camera_.position;
-    lights_[2].direction = camera_.GetForward();
+    gun_->FollowCamera(camera_, player_->transform.position);
 }
 
 void ShootingScene::ApplyPlayerCommand(const PlayerCommand& command, float deltaTime)
@@ -129,10 +137,8 @@ void ShootingScene::ApplyPlayerCommand(const PlayerCommand& command, float delta
     if (command.fire)
     {
         gun_->Fire();
-        if (stages_.GetState() == StageState::Playing)
-        {
-            Shoot();
-        }
+        shot_ = {camera_.position, camera_.GetForward()};
+        hasShot_ = true;
     }
 }
 
@@ -156,46 +162,39 @@ void ShootingScene::SpawnTarget()
 
 void ShootingScene::Shoot()
 {
-    const Ray ray{camera_.position, camera_.GetForward()};
-    Target* nearest = nullptr;
-    float nearestDistance = std::numeric_limits<float>::max();
-    // 광선을 저장하지 않습니다. 한 번의 발사는 가장 가까운 표적 하나만 처리합니다.
+    if (!hasShot_)
+    {
+        return;
+    }
+    // 원본은 마지막 광선을 유지하고 매 업데이트마다 등록 순서의 첫 표적을 검사합니다.
     for (auto* target : targets_)
     {
         float distance = 0.0f;
-        if (target->active && Collision::Raycast(ray, target->GetWorldSphere(), distance) && distance < nearestDistance)
+        if (target->active && Collision::Raycast(shot_, target->GetWorldSphere(), distance) && target->Hit())
         {
-            nearest = target;
-            nearestDistance = distance;
+            stages_.AddScore();
+            break;
         }
-    }
-    if (nearest && nearest->Hit())
-    {
-        stages_.AddScore();
     }
 }
 
 Hud ShootingScene::GetHud() const
 {
     Hud hud;
-    hud.lines = {
-        "Stage: " + std::to_string(stages_.GetStageNumber()) + "   Score: " + std::to_string(stages_.GetScore()) +
-            " / " + std::to_string(stages_.GetRequiredScore()) +
-            "   Time: " + std::to_string(stages_.GetRemainingSeconds()),
-        "WASD: move | Mouse: aim | Click: shoot | 1-3: start | F: flashlight | /: colliders | Esc: cursor | Q: quit"};
+    hud.lines = {"stage: " + std::to_string(stages_.GetStageNumber()), "point: " + std::to_string(stages_.GetScore()),
+                 "target point: " + std::to_string(stages_.GetRequiredScore()),
+                 "timer: " + std::to_string(stages_.GetRemainingSeconds())};
     switch (stages_.GetState())
     {
-        case StageState::Idle:
-            hud.message = "Press 1, 2 or 3 to start";
-            break;
         case StageState::Ready:
-            hud.message = "Stage " + std::to_string(stages_.GetStageNumber());
+            hud.message = "stage" + std::to_string(stages_.GetStageNumber());
+            hud.messageScale = 0.0035f;
             break;
         case StageState::GameOver:
-            hud.message = "Game Over - Press 1, 2 or 3";
+            hud.message = "Game Over";
             break;
         case StageState::Clear:
-            hud.message = "Game Clear! - Press 1 to restart";
+            hud.message = "Game Clear!";
             break;
         default:
             break;

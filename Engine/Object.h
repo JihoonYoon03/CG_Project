@@ -40,6 +40,11 @@ public:
         return material_;
     }
 
+    virtual glm::mat4 GetModelMatrix() const
+    {
+        return transform.GetMatrix();
+    }
+
     Box GetWorldBox() const;
     Sphere GetWorldSphere() const;
 

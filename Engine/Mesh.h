@@ -14,6 +14,7 @@ class Mesh
 {
 public:
     explicit Mesh(const std::string& filename);
+    explicit Mesh(std::vector<Vertex> vertices);
     ~Mesh();
     Mesh(const Mesh&) = delete;
     Mesh& operator=(const Mesh&) = delete;
@@ -30,6 +31,7 @@ public:
     }
 
 private:
+    void Upload();
     std::vector<Vertex> vertices_;
     Box bounds_;
     GLuint vao_ = 0;

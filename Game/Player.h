@@ -20,11 +20,14 @@ public:
     using Object::Object;
     void ApplyCommand(const PlayerCommand& command, float deltaTime, const Scene& scene);
     void UpdateCamera(Camera& camera) const;
+    glm::mat4 GetModelMatrix() const override;
     float yaw = 0.0f;
     float pitch = 0.0f;
     float moveSpeed = 10.0f / 3.6f;
     float sensitivity = 0.2f;
 
 private:
-    void MoveAxis(int axis, float distance, const Scene& scene);
+    glm::vec3 eyePosition_{0.0f};
+    glm::vec3 lastDisplacement_{0.0f};
+    bool eyeInitialized_ = false;
 };

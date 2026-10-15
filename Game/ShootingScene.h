@@ -26,5 +26,7 @@ private:
     Gun* gun_ = nullptr;
     std::vector<Target*> targets_;
     StageController stages_;
+    Ray shot_;
+    bool hasShot_ = false;
     std::mt19937 random_{std::random_device{}()};
 };

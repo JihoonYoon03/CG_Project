@@ -30,6 +30,8 @@ enum class ColliderType
 namespace Collision
 {
     bool Overlaps(const Box& a, const Box& b);
+    // 원본 사격장의 이동 판정: 높이를 비교하지 않으며 경계 접촉도 충돌입니다.
+    bool OverlapsXZ(const Box& a, const Box& b);
     bool Raycast(const Ray& ray, const Sphere& sphere, float& distance);
     bool Raycast(const Ray& ray, const Box& box, float& distance);
 } // namespace Collision

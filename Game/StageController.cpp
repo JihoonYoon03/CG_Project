@@ -3,7 +3,7 @@
 
 bool StageController::Start(int stageNumber)
 {
-    if (state_ == StageState::Ready || state_ == StageState::Playing)
+    if (state_ != StageState::Idle && state_ != StageState::Clear)
     {
         return false;
     }
@@ -11,18 +11,19 @@ bool StageController::Start(int stageNumber)
     {
         return false;
     }
-    stageIndex_ = stageNumber - 1;
-    BeginStage();
+    ResetValues(stageNumber);
+    ruleIndex_ = stageIndex_;
+    state_ = StageState::Ready;
     return true;
 }
 
-void StageController::BeginStage()
+void StageController::ResetValues(int stageNumber)
 {
-    state_ = StageState::Ready;
-    stateTime_ = 0.0f;
-    spawnTime_ = 0.0f;
-    remaining_ = stages_[stageIndex_].duration;
+    stageIndex_ = stageNumber - 1;
     score_ = 0;
+    requiredScore_ = stages_[stageIndex_].requiredScore;
+    remaining_ = stages_[stageIndex_].duration;
+    stateTime_ = 0.0f;
     resetPending_ = true;
 }
 
@@ -31,58 +32,63 @@ StageEvents StageController::Update(float deltaTime)
     StageEvents events;
     events.clearTargets = resetPending_;
     resetPending_ = false;
-    if (deltaTime <= 0.0f)
+    if (deltaTime <= 0.0f || state_ == StageState::Idle)
     {
         return events;
     }
-
-    if (state_ == StageState::Ready)
+    // control.cpp와 같이 임계값을 먼저 확인하고, 미달일 때만 시간을 누적합니다.
+    // 큰 지연을 임의로 따라잡아 여러 번 생성하지 않습니다.
+    const float interval = state_ == StageState::Playing ? 1.0f : 2.0f;
+    if (stateTime_ < interval)
     {
         stateTime_ += deltaTime;
-        if (stateTime_ >= 2.0f)
-        {
+        return events;
+    }
+    stateTime_ = 0.0f;
+    switch (state_)
+    {
+        case StageState::Ready:
             state_ = StageState::Playing;
-            stateTime_ = 0.0f;
-        }
+            break;
+        case StageState::Playing:
+            events.spawnCount = stages_[ruleIndex_].targetsPerSecond;
+            --remaining_; // 마지막 초에도 먼저 표적을 생성합니다.
+            if (remaining_ == 0)
+            {
+                if (score_ < requiredScore_)
+                {
+                    ResetValues(1);
+                    state_ = StageState::GameOver;
+                }
+                else if (ruleIndex_ == 2)
+                {
+                    state_ = StageState::Finishing;
+                }
+                else
+                {
+                    // 원본 stage2는 stage3 표시로 초기화한 후 stage2 콜백을 다시 예약합니다.
+                    // 이번 작업은 구조 리팩토링이므로 이 기존 버그를 별도로 고치지 않습니다.
+                    ResetValues(ruleIndex_ + 2);
+                    ruleIndex_ = 1;
+                    state_ = StageState::Ready;
+                }
+            }
+            break;
+        case StageState::GameOver:
+            state_ = StageState::Idle;
+            break;
+        case StageState::Finishing:
+            score_ = 0;
+            state_ = StageState::Clear;
+            resetPending_ = true;
+            break;
+        case StageState::Clear:
+            state_ = StageState::Idle;
+            break;
+        default:
+            break;
     }
-    else if (state_ == StageState::Playing)
-    {
-        remaining_ = std::max(0.0f, remaining_ - deltaTime);
-        spawnTime_ += deltaTime;
-        if (remaining_ > 0.0f)
-        {
-            while (spawnTime_ >= 1.0f)
-            {
-                spawnTime_ -= 1.0f;
-                events.spawnCount += stages_[stageIndex_].targetsPerSecond;
-            }
-        }
-        else
-        {
-            events.clearTargets = true;
-            if (score_ < stages_[stageIndex_].requiredScore)
-            {
-                state_ = StageState::GameOver;
-            }
-            else if (stageIndex_ + 1 == static_cast<int>(stages_.size()))
-            {
-                state_ = StageState::Clear;
-            }
-            else
-            {
-                ++stageIndex_;
-                BeginStage();
-                resetPending_ = false; // 이번 이벤트로 이미 초기화 요청을 전달합니다.
-            }
-        }
-    }
+    events.clearTargets = events.clearTargets || resetPending_;
+    resetPending_ = false;
     return events;
-}
-
-void StageController::AddScore()
-{
-    if (state_ == StageState::Playing)
-    {
-        ++score_;
-    }
 }

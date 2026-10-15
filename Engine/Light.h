@@ -17,8 +17,8 @@ struct Light
     float intensity = 1.0f;
     glm::vec3 position{0.0f};
     glm::vec3 direction{0.0f, -1.0f, 0.0f}; // 빛이 진행하는 방향
-    float range = 10.0f;
-    float innerAngle = 15.0f; // Spot 중심각의 절반, 도 단위
+    float range = 10.0f;                    // 0이면 거리 감쇠 없음 (원본 흰색 광원)
+    float innerAngle = 15.0f;               // Spot 중심각의 절반, 도 단위
     float outerAngle = 25.0f;
     bool enabled = true;
 

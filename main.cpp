@@ -23,7 +23,17 @@ int main(int argc, char** argv)
         }
         std::filesystem::current_path(std::filesystem::path(executable.data()).parent_path());
         Framework framework;
-        std::unique_ptr<Scene> scene = smokeTest ? CreateRenderTestScene() : std::make_unique<ShootingScene>();
+        std::unique_ptr<Scene> scene;
+        if (smokeTest)
+        {
+            // 캡처 재현용 값입니다. 일반 실행의 콘텐츠나 조작에는 영향을 주지 않습니다.
+            scene = CreateRenderTestScene(argc > 3 ? std::stof(argv[3]) : 0, argc > 4 ? std::stof(argv[4]) : 0,
+                                          argc > 5 ? std::stof(argv[5]) : -1, argc > 6 ? std::stof(argv[6]) : 0);
+        }
+        else
+        {
+            scene = std::make_unique<ShootingScene>();
+        }
         return framework.Run(argc, argv, std::move(scene), smokeTest, capture);
     }
     catch (const std::exception& error)

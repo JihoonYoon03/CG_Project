@@ -7,6 +7,11 @@ bool Collision::Overlaps(const Box& a, const Box& b)
            a.max.z > b.min.z;
 }
 
+bool Collision::OverlapsXZ(const Box& a, const Box& b)
+{
+    return a.min.x <= b.max.x && a.max.x >= b.min.x && a.min.z <= b.max.z && a.max.z >= b.min.z;
+}
+
 bool Collision::Raycast(const Ray& ray, const Sphere& sphere, float& distance)
 {
     const float length = glm::length(ray.direction);
@@ -18,17 +23,16 @@ bool Collision::Raycast(const Ray& ray, const Sphere& sphere, float& distance)
     const glm::vec3 offset = ray.origin - sphere.center;
     const float b = glm::dot(offset, direction);
     const float c = glm::dot(offset, offset) - sphere.radius * sphere.radius;
-    if (c <= 0.0f)
-    {
-        distance = 0.0f;
-        return true;
-    }
     const float discriminant = b * b - c;
-    if (discriminant < 0.0f)
+    if (discriminant <= 0.0f)
     {
         return false;
     }
-    const float hit = -b - std::sqrt(discriminant);
+    float hit = -b - std::sqrt(discriminant);
+    if (hit < 0.0f)
+    {
+        hit = -b + std::sqrt(discriminant);
+    }
     if (hit < 0.0f)
     {
         return false;

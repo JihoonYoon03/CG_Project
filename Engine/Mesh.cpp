@@ -115,6 +115,20 @@ Mesh::Mesh(const std::string& filename)
     {
         throw std::runtime_error("Empty mesh: " + filename);
     }
+    Upload();
+}
+
+Mesh::Mesh(std::vector<Vertex> vertices) : vertices_(std::move(vertices))
+{
+    if (vertices_.empty())
+    {
+        throw std::runtime_error("Empty mesh");
+    }
+    Upload();
+}
+
+void Mesh::Upload()
+{
     bounds_.min = bounds_.max = vertices_.front().position;
     for (const auto& vertex : vertices_)
     {

@@ -7,11 +7,7 @@ class Input
 public:
     void SetKey(unsigned char key, bool down)
     {
-        if (key >= 'A' && key <= 'Z')
-        {
-            key = static_cast<unsigned char>(key - 'A' + 'a');
-        }
-        if (down && !keys_[key])
+        if (down)
         {
             pressed_[key] = true;
         }

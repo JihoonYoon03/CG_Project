@@ -8,8 +8,8 @@ public:
     float yaw = 0.0f;
     float pitch = 0.0f;
     float fieldOfView = 60.0f;
-    float nearPlane = 0.05f;
-    float farPlane = 250.0f;
+    float nearPlane = 0.1f;
+    float farPlane = 200.0f;
     glm::mat4 GetRotation() const;
     glm::vec3 GetForward() const;
     glm::mat4 GetView() const;

@@ -11,6 +11,7 @@ struct Hud
     std::vector<std::string> lines;
     std::string message;
     bool crosshair = true;
+    float messageScale = 0.0015f;
 };
 
 class Scene
@@ -50,7 +51,7 @@ public:
     }
 
     bool debugColliders = false;
-    glm::vec3 ambientLight{0.22f};
+    glm::vec3 ambientLight{0.3f};
 
 protected:
     // Scene가 파괴될 때 Object, 캐시 순으로 소멸합니다.
