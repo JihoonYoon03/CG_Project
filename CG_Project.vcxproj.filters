@@ -1,133 +1,157 @@
 <?xml version='1.0' encoding='utf-8'?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
+    <Filter Include="Application" />
     <Filter Include="Engine" />
     <Filter Include="Game" />
-    <Filter Include="Tests" />
+    <Filter Include="External" />
     <Filter Include="Shaders" />
+    <Filter Include="Resources" />
+    <Filter Include="Resources\Meshes" />
+    <Filter Include="Resources\Textures" />
+    <Filter Include="Guide" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="pch.cpp" />
-    <ClCompile Include="Engine\Assets.cpp">
+    <ClCompile Include="Source\Assets.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Camera.cpp">
+    <ClCompile Include="Source\Camera.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Collision.cpp">
+    <ClCompile Include="Source\Collision.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Framework.cpp">
+    <ClCompile Include="Source\Framework.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Light.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Material.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Mesh.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Object.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Scene.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Shader.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Texture.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\Gun.cpp">
+    <ClCompile Include="Source\Gun.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Player.cpp">
+    <ClCompile Include="Source\Light.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\main.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Material.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Mesh.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\pch.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Player.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Game\ShootingScene.cpp">
+    <ClCompile Include="Source\Scene.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Shader.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ShootingScene.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Game\StageController.cpp">
+    <ClCompile Include="Source\StageController.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Tests\SelfTests.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
-    <ClCompile Include="Tests\RenderTests.cpp">
-      <Filter>Tests</Filter>
+    <ClCompile Include="Source\Texture.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="Engine\Assets.h">
+    <ClInclude Include="Source\Assets.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Camera.h">
+    <ClInclude Include="Source\Camera.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Collision.h">
+    <ClInclude Include="Source\Collision.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Framework.h">
+    <ClInclude Include="Source\Framework.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Input.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Light.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Material.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Mesh.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Object.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Scene.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Shader.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Texture.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Gun.h">
+    <ClInclude Include="Source\Gun.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Player.h">
+    <ClInclude Include="Source\Input.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Light.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Material.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Mesh.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Object.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\pch.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Player.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Game\ShootingScene.h">
+    <ClInclude Include="Source\Scene.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Shader.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ShootingScene.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Game\StageController.h">
+    <ClInclude Include="Source\StageController.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Target.h">
+    <ClInclude Include="Source\stb_image.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Target.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Tests\SelfTests.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
-    <ClInclude Include="Tests\RenderTests.h">
-      <Filter>Tests</Filter>
+    <ClInclude Include="Source\Texture.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Lit.vert">
+    <None Include="Source\Shaders\Lit.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\Lit.frag">
+    <None Include="Source\Shaders\Lit.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="README.md" />
+    <None Include="Resources\Meshes\Cube.obj">
+      <Filter>Resources\Meshes</Filter>
+    </None>
+    <None Include="Resources\Meshes\K1.obj">
+      <Filter>Resources\Meshes</Filter>
+    </None>
+    <None Include="Resources\Meshes\Pistol.obj">
+      <Filter>Resources\Meshes</Filter>
+    </None>
+    <None Include="Resources\Meshes\Sphere.obj">
+      <Filter>Resources\Meshes</Filter>
+    </None>
+    <None Include="CODE_ANALYSIS_GUIDE.md">
+      <Filter>Guide</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Textures\GroundTex.png">
+      <Filter>Resources\Textures</Filter>
+    </Image>
+    <Image Include="Resources\Textures\SkydomeTex.png">
+      <Filter>Resources\Textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

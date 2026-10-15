@@ -143,7 +143,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/source-charset:.949 /execution-charset:.949 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -154,65 +154,72 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="Source\Assets.cpp" />
+    <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\Collision.cpp" />
+    <ClCompile Include="Source\Framework.cpp" />
+    <ClCompile Include="Source\Gun.cpp" />
+    <ClCompile Include="Source\Light.cpp" />
+    <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Material.cpp" />
+    <ClCompile Include="Source\Mesh.cpp" />
+    <ClCompile Include="Source\Object.cpp" />
+    <ClCompile Include="Source\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Engine\Assets.cpp" />
-    <ClCompile Include="Engine\Camera.cpp" />
-    <ClCompile Include="Engine\Collision.cpp" />
-    <ClCompile Include="Engine\Framework.cpp" />
-    <ClCompile Include="Engine\Light.cpp" />
-    <ClCompile Include="Engine\Material.cpp" />
-    <ClCompile Include="Engine\Mesh.cpp" />
-    <ClCompile Include="Engine\Object.cpp" />
-    <ClCompile Include="Engine\Scene.cpp" />
-    <ClCompile Include="Engine\Shader.cpp" />
-    <ClCompile Include="Engine\Texture.cpp" />
-    <ClCompile Include="Game\Gun.cpp" />
-    <ClCompile Include="Game\Player.cpp" />
-    <ClCompile Include="Game\ShootingScene.cpp" />
-    <ClCompile Include="Game\StageController.cpp" />
-    <ClCompile Include="Tests\SelfTests.cpp" />
-    <ClCompile Include="Tests\RenderTests.cpp" />
+    <ClCompile Include="Source\Player.cpp" />
+    <ClCompile Include="Source\Scene.cpp" />
+    <ClCompile Include="Source\Shader.cpp" />
+    <ClCompile Include="Source\ShootingScene.cpp" />
+    <ClCompile Include="Source\StageController.cpp" />
+    <ClCompile Include="Source\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="Engine\Assets.h" />
-    <ClInclude Include="Engine\Camera.h" />
-    <ClInclude Include="Engine\Collision.h" />
-    <ClInclude Include="Engine\Framework.h" />
-    <ClInclude Include="Engine\Input.h" />
-    <ClInclude Include="Engine\Light.h" />
-    <ClInclude Include="Engine\Material.h" />
-    <ClInclude Include="Engine\Mesh.h" />
-    <ClInclude Include="Engine\Object.h" />
-    <ClInclude Include="Engine\Scene.h" />
-    <ClInclude Include="Engine\Shader.h" />
-    <ClInclude Include="Engine\Texture.h" />
-    <ClInclude Include="Game\Gun.h" />
-    <ClInclude Include="Game\Player.h" />
-    <ClInclude Include="Game\ShootingScene.h" />
-    <ClInclude Include="Game\StageController.h" />
-    <ClInclude Include="Game\Target.h" />
-    <ClInclude Include="Tests\SelfTests.h" />
-    <ClInclude Include="Tests\RenderTests.h" />
+    <ClInclude Include="Source\Assets.h" />
+    <ClInclude Include="Source\Camera.h" />
+    <ClInclude Include="Source\Collision.h" />
+    <ClInclude Include="Source\Framework.h" />
+    <ClInclude Include="Source\Gun.h" />
+    <ClInclude Include="Source\Input.h" />
+    <ClInclude Include="Source\Light.h" />
+    <ClInclude Include="Source\Material.h" />
+    <ClInclude Include="Source\Mesh.h" />
+    <ClInclude Include="Source\Object.h" />
+    <ClInclude Include="Source\pch.h" />
+    <ClInclude Include="Source\Player.h" />
+    <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\Shader.h" />
+    <ClInclude Include="Source\ShootingScene.h" />
+    <ClInclude Include="Source\StageController.h" />
+    <ClInclude Include="Source\stb_image.h" />
+    <ClInclude Include="Source\Target.h" />
+    <ClInclude Include="Source\Texture.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Lit.vert" />
-    <None Include="Shaders\Lit.frag" />
-    <None Include="README.md" />
+    <None Include="Source\Shaders\Lit.frag" />
+    <None Include="Source\Shaders\Lit.vert" />
+    <None Include="Resources\Meshes\Cube.obj" />
+    <None Include="Resources\Meshes\K1.obj" />
+    <None Include="Resources\Meshes\Pistol.obj" />
+    <None Include="Resources\Meshes\Sphere.obj" />
+    <None Include="CODE_ANALYSIS_GUIDE.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Textures\GroundTex.png" />
+    <Image Include="Resources\Textures\SkydomeTex.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <Target Name="CopyGameAssets" AfterTargets="Build">
     <ItemGroup>
-      <ModelAsset Include="$(ProjectDir)models\**\*" />
-      <ShaderAsset Include="$(ProjectDir)Shaders\**\*" />
+      <MeshAsset Include="$(ProjectDir)Resources\Meshes\**\*" />
+      <TextureAsset Include="$(ProjectDir)Resources\Textures\**\*" />
+      <ShaderAsset Include="$(ProjectDir)Source\Shaders\**\*" />
       <RuntimeDll Include="$(ProjectDir)lib\*.dll" />
     </ItemGroup>
-    <Copy SourceFiles="@(ModelAsset)" DestinationFiles="@(ModelAsset-&gt;'$(OutDir)models\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(MeshAsset)" DestinationFiles="@(MeshAsset-&gt;'$(OutDir)Resources\Meshes\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(TextureAsset)" DestinationFiles="@(TextureAsset-&gt;'$(OutDir)Resources\Textures\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(ShaderAsset)" DestinationFiles="@(ShaderAsset-&gt;'$(OutDir)Shaders\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(RuntimeDll)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" Condition="'@(RuntimeDll)' != ''" />
   </Target>

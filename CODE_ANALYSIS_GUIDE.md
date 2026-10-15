@@ -1,13 +1,13 @@
 # 사격 게임 코드 분석 가이드
 
-작성일: 2026-10-15 · 분석 기준: `474567e` (콘텐츠 복구)
+수정일: 2026-10-15 · 콘텐츠 기준: `474567e` (콘텐츠 복구) · 파일 구성과 실행 경로는 현재 정리본 기준
 
 이 자료는 현재 코드를 파일과 함수 단위로 읽기 위한 학습 안내서다. C++의 기본 문법을 알고 있지만
 프로젝트 전체 구조와 OpenGL 실행 흐름에는 익숙하지 않은 팀원을 기준으로 작성했다.
 각 절의 **읽는 순서 → 핵심 해석 → 확인 질문**을 따라가며, 질문에 자신의 말로 답할 수 있으면 다음 절로 넘어간다.
 
 현재 코드에는 원본 게임 동작을 보존하기 위해 남겨둔 기존 문제가 있다. 따라서 이 문서의 “현재 동작”이
-항상 권장 설계를 뜻하지는 않는다. 복구 이력과 검증 한계는 `HANDOFF_REFACTOR.md`의 0절을 함께 읽는다.
+항상 권장 설계를 뜻하지는 않는다. 콘텐츠와 기존 동작을 임의로 수정하지 않고 코드 구조를 분석한다.
 소스가 바뀌어도 찾기 쉽도록 줄 번호 대신 파일명과 함수명을 기준으로 안내한다.
 
 ## 1. 분석을 시작하는 방법
@@ -24,11 +24,11 @@
 
 권장 진행 방식은 다음과 같다.
 
-1. **전체 흐름 훑기:** 아래 2~4절과 `main.cpp`, `Framework::Run/Tick/Render`를 읽는다.
+1. **전체 흐름 훑기:** 아래 2~4절과 `Source/main.cpp`, `Framework::Run/Tick/Render`를 읽는다.
 2. **데이터 이해:** Object·Scene·Mesh·Material이 무엇을 보관하는지 확인한다.
 3. **행동 추적:** 입력, 이동, 충돌, 사격, 스테이지를 하나씩 따라간다.
 4. **출력 추적:** CPU의 값이 셰이더에 전달되어 픽셀이 되는 과정을 읽는다.
-5. **검사와 대조:** 테스트가 어떤 동작을 기대하는지 확인하고 설명과 일치하는지 점검한다.
+5. **실행과 대조:** 일반 게임을 실행하고 디버거로 관찰한 결과가 설명과 일치하는지 점검한다.
 
 처음에는 `GL/`, `stb_image.h`, OBJ 파일 전체를 정독할 필요가 없다. 외부 라이브러리는 호출의 입출력과
 프로젝트에서 사용하는 역할을 먼저 이해하고, 실제 구현을 조사할 필요가 생겼을 때 들어간다.
@@ -39,24 +39,59 @@
 
 | 순서 | 파일 | 이번 단계에서 설명할 수 있어야 하는 것 |
 | --- | --- | --- |
-| 1 | `main.cpp` | 실행 모드 선택, 실행 폴더 결정, Scene 전달 |
-| 2 | `pch.h`, `pch.cpp`, `CG_Project.vcxproj` | 공통 헤더, 빌드와 링크, 자원 복사 |
-| 3 | `Engine/Framework.h/.cpp` 중 Run·Tick·Render·콜백 | 이벤트 루프와 게임 코드가 만나는 위치 |
-| 4 | `Engine/Object.h/.cpp` | Transform, 공유 자원, 충돌체 계산 |
-| 5 | `Engine/Scene.h/.cpp` | 객체 소유와 ID, 공통 업데이트 |
-| 6 | `Game/ShootingScene.h/.cpp` 중 Initialize·AddProp | 실제 게임이 어떤 데이터로 구성되는지 |
-| 7 | `Engine/Input.h`, ShootingScene::Update | 물리 입력을 게임 명령으로 바꾸는 과정 |
-| 8 | `Game/Player.h/.cpp`, `Engine/Camera.h/.cpp` | 이동 방향, 눈 위치, view/projection |
-| 9 | `Engine/Collision.h/.cpp` | 게임 이동 판정과 광선 교차 계산의 차이 |
-| 10 | `Game/Gun.h/.cpp` | 반동 시간과 최종 렌더링 행렬 |
-| 11 | ShootingScene::ApplyPlayerCommand·Shoot·SpawnTarget, `Game/Target.h` | 발사, 지속 광선, 피격과 재사용 |
-| 12 | `Game/StageController.h/.cpp` | 시간·점수·상태 전이와 표적 생성 요청 |
-| 13 | `Engine/Assets.h/.cpp`, `Engine/Mesh.h/.cpp` | 파일 공유, 정점, CPU/GPU 버퍼 |
-| 14 | `Engine/Material.h/.cpp`, `Engine/Shader.h/.cpp`, `Engine/Texture.h/.cpp` | 재질 적용, 셰이더 생성, 이미지 업로드 |
-| 15 | Framework::DrawObjects·UploadLights, `Engine/Light.h/.cpp`, `Shaders/Lit.vert`, `Shaders/Lit.frag` | 변환과 조명 계산의 연결 |
-| 16 | ShootingScene::GetHud, Framework::DrawOverlay·DrawColliders·CaptureFrame | HUD 내용과 표시 책임, 검사 화면 |
-| 17 | `Tests/SelfTests.h/.cpp`, `Tests/RenderTests.h/.cpp` | 보존할 동작과 검증 범위 |
-| 18 | `.clang-format`, `.editorconfig`, `scripts/format_code.py`, `CG_Project.vcxproj.filters` | 인코딩·정렬·프로젝트 표시 규칙 |
+| 1 | `Source/main.cpp` | 실행 폴더 결정, 기본 ShootingScene 생성과 Framework 전달 |
+| 2 | `Source/pch.h`, `Source/pch.cpp`, `CG_Project.vcxproj` | 공통 헤더, 빌드와 링크, 자원 복사 |
+| 3 | `Source/Framework.h/.cpp` 중 Run·Tick·Render·콜백 | 이벤트 루프와 게임 코드가 만나는 위치 |
+| 4 | `Source/Object.h/.cpp` | Transform, 공유 자원, 충돌체 계산 |
+| 5 | `Source/Scene.h/.cpp` | 객체 소유와 ID, 공통 업데이트 |
+| 6 | `Source/ShootingScene.h/.cpp` 중 Initialize·AddProp | 실제 게임이 어떤 데이터로 구성되는지 |
+| 7 | `Source/Input.h`, ShootingScene::Update | 물리 입력을 게임 명령으로 바꾸는 과정 |
+| 8 | `Source/Player.h/.cpp`, `Source/Camera.h/.cpp` | 이동 방향, 눈 위치, view/projection |
+| 9 | `Source/Collision.h/.cpp` | 게임 이동 판정과 광선 교차 계산의 차이 |
+| 10 | `Source/Gun.h/.cpp` | 반동 시간과 최종 렌더링 행렬 |
+| 11 | ShootingScene::ApplyPlayerCommand·Shoot·SpawnTarget, `Source/Target.h` | 발사, 지속 광선, 피격과 재사용 |
+| 12 | `Source/StageController.h/.cpp` | 시간·점수·상태 전이와 표적 생성 요청 |
+| 13 | `Source/Assets.h/.cpp`, `Source/Mesh.h/.cpp` | 파일 공유, 정점, CPU/GPU 버퍼 |
+| 14 | `Source/Material.h/.cpp`, `Source/Shader.h/.cpp`, `Source/Texture.h/.cpp` | 재질 적용, 셰이더 생성, 이미지 업로드 |
+| 15 | Framework::DrawObjects·UploadLights, `Source/Light.h/.cpp`, `Source/Shaders/Lit.vert`, `Source/Shaders/Lit.frag` | 변환과 조명 계산의 연결 |
+| 16 | ShootingScene::GetHud, Framework::DrawOverlay·DrawColliders | HUD 내용과 표시 책임 |
+| 17 | `CG_Project.vcxproj`, `CG_Project.vcxproj.filters`, `Resources/` | 빌드 대상, 자원 복사, VS 필터와 실제 파일 위치 |
+
+
+### 2.1 실제 폴더와 Visual Studio 필터
+
+```text
+CG_Project/                         솔루션 폴더
+├─ CG_Project.sln
+├─ CG_Project.vcxproj
+├─ CG_Project.vcxproj.filters
+├─ CODE_ANALYSIS_GUIDE.md            이 문서만 유지 (UTF-8)
+├─ Source/                          자체 C++ 소스를 모두 같은 폴더에 보관 (CP949/CRLF)
+│  ├─ main.cpp, pch.h, pch.cpp
+│  ├─ Framework.*, Scene.*, Object.*
+│  ├─ Mesh.*, Material.*, Shader.*, Texture.*, Assets.*
+│  ├─ Camera.*, Light.*, Collision.*, Input.h
+│  ├─ ShootingScene.*, Player.*, Gun.*, Target.h, StageController.*
+│  ├─ stb_image.h                    기존 외부 이미지 로더
+│  └─ Shaders/                       셰이더 소스
+│     ├─ Lit.vert
+│     └─ Lit.frag
+├─ Resources/
+│  ├─ Meshes/                        Cube/Sphere/Pistol/K1.obj
+│  └─ Textures/                      GroundTex/SkydomeTex.png
+├─ GL/                              기존 외부 OpenGL/GLM 헤더
+├─ lib/                             기존 외부 링크 라이브러리
+└─ documents/                       기존 과제 보고서/발표 자료
+```
+
+Engine/Game은 이제 디스크 폴더가 아니라 **Visual Studio 내부 필터**다.
+Application, Engine, Game, External, Shaders, Resources/Meshes, Resources/Textures, Guide 필터로 분류한다.
+파일을 찾을 때는 필터 이름을 실제 include 경로로 사용하지 않는다. 자체 헤더는 `#include "Object.h"`처럼 포함한다.
+
+소스 위치와 실행 중 자원 경로도 구분한다. 빌드가 실행 폴더에 `Resources/Meshes`,
+`Resources/Textures`, `Shaders`를 복사하므로 런타임 경로는 `Resources/Meshes/Cube.obj`,
+`Resources/Textures/SkydomeTex.png`, `Shaders/Lit.vert` 형식이다.
+셰이더의 저장 위치는 `Source/Shaders`지만 실행 경로에 `Source/`를 붙이지 않는다.
 
 ## 3. 전체 구조와 소유권
 
@@ -95,13 +130,14 @@ flowchart TD
 
 ### 4.1 시작: main → Framework::Run
 
-`main.cpp`는 다음 순서로 읽는다.
+`Source/main.cpp`는 다음 순서로 읽는다.
 
-1. `--self-test`면 창을 만들지 않고 로직 검사를 실행한 뒤 반환한다.
-2. 캡처 경로를 받았다면 작업 폴더를 바꾸기 전에 절대 경로로 만든다.
-3. `GetModuleFileNameW`로 실행 파일 위치를 찾고, 자원 검색 기준을 실행 파일 폴더로 맞춘다.
-4. 일반 실행은 ShootingScene, 검사 실행은 RenderTestScene을 만든다.
-5. `std::move(scene)`으로 Framework에 소유권을 전달한다.
+1. `GetModuleFileNameW`로 실행 파일 위치를 찾는다.
+2. 작업 폴더를 실행 파일 폴더로 맞춰 빌드 시 복사된 자원을 읽는다.
+3. 기본 ShootingScene를 생성한다.
+4. Framework::Run에 Scene의 소유권을 전달하고 일반 게임을 실행한다.
+
+main과 Framework에는 별도의 테스트 실행 모드, 캡처 모드, 자동 종료 분기가 없다.
 
 `Framework::Run`은 **GLUT 초기화 → 창/컨텍스트 생성 → GLEW 초기화 → Scene 초기화 → 콜백 등록 →
 타이머 등록 → glutMainLoop** 순서다. Scene 객체를 생성하는 것과 `Initialize()`로 GPU 자원을 만드는 것은
@@ -125,13 +161,10 @@ flowchart LR
     Display --> Render["Render"]
 ```
 
-일반 실행에서 `Tick()`은 실제 경과 시간(초)을 구해 업데이트에 전달한다.
+`Tick()`은 실제 경과 시간(초)을 구해 업데이트에 전달한다.
 `1000 / 240`은 정수 연산으로 **4ms**이며, 이를 실제 240 FPS 보장이나 고정 1/240초 시뮬레이션으로
 해석하면 안 된다. 콜백 예약과 처리 시간에 따라 실제 `deltaTime`이 달라진다.
 업데이트 한 번과 렌더링 한 번이 항상 일대일로 실행된다고 가정하지 않는다.
-
-검사 모드는 `deltaTime=0.1`을 전달하고 Tick에서 Render를 직접 부르는 별도 경로다.
-더구나 RenderTestScene은 Update를 재정의하므로 일반 게임의 시간이 그대로 진행되는 것도 아니다.
 
 ### 4.3 종료와 자원 해제
 
@@ -283,7 +316,7 @@ Player::GetModelMatrix는 눈을 중심으로 yaw 회전을 추가하므로, 이
 
 | 함수 | 계산 기준 | 현재 기본 게임의 사용 |
 | --- | --- | --- |
-| Overlaps(Box,Box) | X/Y/Z 모두, 엄격 부등호 | 일반 검사·테스트용. Player의 이동 판정은 아님 |
+| Overlaps(Box,Box) | X/Y/Z 모두, 엄격 부등호 | 공통 계산 함수. Player의 이동 판정은 아님 |
 | OverlapsXZ(Box,Box) | X/Z만, 경계 포함 부등호 | Player 이동 차단 |
 | Raycast(Ray,Sphere,distance) | 앞쪽 구 교점, 접선 제외 | 표적 피격 |
 | Raycast(Ray,Box,distance) | 축별 구간의 공통 범위 | 지원 함수. 기본 총알이 울타리를 막는 데 쓰지는 않음 |
@@ -304,7 +337,7 @@ distance를 반환한다고 해서 호출자가 반드시 가장 가까운 표�
 
 ## 11. Gun: 반동 값과 행렬 합성을 따로 읽기
 
-**읽는 순서:** Fire → Update → FollowCamera의 두 오버로드 → GetModelMatrix → TestGun/OriginalGunMatrix.
+**읽는 순서:** Fire → Update → FollowCamera의 두 오버로드 → GetModelMatrix.
 
 Fire는 반동을 처음으로 되돌린다. Update는 현재 시간의 반동량을 먼저 평가한 뒤 시간을 증가시킨다.
 현재 매개변수 t와 반동량 a의 관계는 다음과 같다.
@@ -509,7 +542,7 @@ Lit.frag는 기본색 결정 → unlit 조기 반환 → ambientOnly 조기 반�
 **확인 질문:** Material.color를 바꿔도 텍스처 사용 물체의 색이 그대로일 수 있는 이유는 무엇인가?
 바닥은 Point의 위치를 바꾸면 직접광 밝기가 달라지는가? disabled Light는 GPU 목록에서 어떻게 처리되는가?
 
-## 17. HUD·충돌체 표시·캡처
+## 17. HUD와 충돌체 표시
 
 ShootingScene::GetHud는 “무엇을 표시할지” 문자열과 옵션을 만든다.
 Framework::DrawOverlay는 “어디에 어떤 크기로 그릴지” 결정한다. 게임 점수 계산을 DrawOverlay에서 찾지 않는다.
@@ -520,48 +553,35 @@ DrawColliders는 / 토글 값과 collider 종류를 보고 월드 충돌체를 �
 선으로 표시하는 것과 충돌을 실제 판정하는 것은 별도 경로다.
 HUD·디버그 표시에 레거시 OpenGL 호출이 남아 있어 compatibility profile을 사용한다.
 
-CaptureFrame은 GL_BACK의 RGB를 읽고 PPM으로 저장한다.
-OpenGL 프레임버퍼와 파일의 행 방향이 달라 y를 역순으로 저장하는 부분,
-픽셀 정렬을 1로 바꾼 뒤 기존 값으로 복구하는 부분을 확인한다.
-
 **확인 질문:** / 키로 충돌체를 숨기면 이동 충돌도 꺼지는가?
-캡처 시 버퍼 교환 전후에 따라 어떤 화면을 읽는지가 왜 달라질 수 있는가?
+HUD에 깊이 검사를 적용하면 어떤 표시 문제가 생길 수 있는가?
 
-## 18. 테스트를 분석 자료로 활용하기
+## 18. 코드 작성 규칙과 빌드 확인
 
-SelfTests는 창 없이 실행되며, Mesh/Material이 없는 테스트 Object 등을 사용해 GPU 자원 생성을 피한다.
-그렇다고 현재 프로젝트에서 OpenGL 헤더/링크 의존성까지 분리된 것은 아니다.
+참고 코드의 탭 들여쓰기와 논리 단위 구분을 따른다.
 
-| 검사 함수/파일 | 함께 대조할 구현 |
-| --- | --- |
-| TestCollision | Overlaps, 구/박스 Raycast, 접선·내부 시작 |
-| TestObjectsAndInput | ID·삭제·회전 박스, 키 반복과 대소문자, Target::Hit |
-| TestMovement | 이동 전체 취소, 눈 위치 갱신 순서, pitch 제한 |
-| TestStages | 시작 가능 조건, 마지막 생성, 단계 전이, 실패/완료 메시지 |
-| OriginalGunMatrix / TestGun | 원본 변환식과 현재 행렬, 각도·키프레임·이동·재클릭·시간 곡선 |
-| CheckOriginalScene / RenderTestScene | 실제 자원 공유, 콘텐츠, 지속 광선, 검사 전용 조명과 고정 캡처 |
+- 탭 너비 4를 기준으로 들여쓴다. 함수/제어문 블록의 중괄호는 다음 줄에 둔다.
+- 초기화, 자원 생성, GPU 설정, 후처리처럼 역할이 바뀌는 곳에 빈 줄을 둔다.
+- 함수 선언과 일반 호출의 인자는 한 줄에 유지한다. 자동 글자 수 제한으로 중간에서 끊지 않는다.
+- 같은 함수의 호출을 어떤 곳에서는 한 줄, 다른 곳에서는 불필요한 여러 줄로 섞지 않는다.
+- 짧은 반환/실패 가드와 단순 헤더 접근 함수는 참고 코드처럼 간결하게 작성한다.
+- 자체 cpp의 첫 include는 `#include "pch.h"`를 유지한다.
+- C++/셰이더는 CP949/CRLF, 이 Markdown 문서는 UTF-8로 저장한다.
 
-분석 기준 버전에서 기록된 로직 검사 수는 571개다. 이는 독립된 테스트 함수가 571개라는 뜻이 아니라
-여러 입력 조합을 반복하며 Check가 실행된 횟수다. RenderTests는 임시로 장면을 조작하므로 일반 플레이
-자체와 같은 시뮬레이션으로 해석하지 않는다. 자세한 빌드/캡처 비교 기록은 인수인계서 0절을 따른다.
+Visual Studio의 C++ 개발자 터미널에서 솔루션 폴더를 열고 다음처럼 빌드한다.
 
-프로젝트 루트에서 사용할 수 있는 검사 명령 예시:
-
-```powershell
-.\x64\Debug\CG_Project.exe --self-test
-.\x64\Debug\CG_Project.exe --smoke-test .\out\study.ppm
-python scripts/format_code.py --check
+```text
+msbuild CG_Project.sln /p:Configuration=Debug /p:Platform=x64 /m
+msbuild CG_Project.sln /p:Configuration=Release /p:Platform=x64 /m
 ```
 
-캡처 경로의 부모 폴더는 미리 존재해야 한다. x64/Release 바이너리를 사용할 때는 해당 경로로 바꾼다.
-일반 게임을 디버깅할 때는 실행 인수에 --smoke-test가 들어 있지 않은지 먼저 확인한다.
-기본 PDB 빌드의 설치 오류와 검증 시 사용한 임시 옵션도 인수인계서에 기록되어 있다.
+Visual Studio에서는 x64 Debug 또는 Release를 선택해 빌드하고 일반 게임을 실행한다.
+확인은 별도의 게임 내 테스트 모드 대신 실제 게임의 입력/렌더링 경로와 디버거를 사용한다.
+현재 저장소에는 검사 전용 소스/실행 분기, 포맷 스크립트, 인수인계 문서를 두지 않는다.
 
 ## 19. 디버거로 따라갈 세 가지 연습
 
-소스 중단점 연습에는 정상적으로 PDB가 생성되는 Debug 빌드가 필요하다.
-인수인계서에 기록된 링크 PDB 생성을 끄는 우회 바이너리는 실행 검증용이므로, 그 상태에서
-소스 디버깅이 되지 않는 현상을 게임 코드 문제로 해석하지 않는다.
+소스 중단점 연습에는 PDB가 생성되는 x64 Debug 빌드를 사용한다.
 
 아래 연습은 값을 임의로 수정하기보다 중단점과 조사식으로 관찰하는 데 초점을 둔다.
 타이머는 디버거로 멈춘 시간이 다음 deltaTime에 포함될 수 있으므로, 재개 직후 큰 이동/시간 변화도 주의해서 읽는다.
@@ -581,7 +601,7 @@ python scripts/format_code.py --check
 조사할 값: `firePressed`, `command.fire`, `hasShot_`, `shot_`, `target->active`, `distance`, `score_`.
 첫 업데이트가 끝나면 firePressed가 사라져도 hasShot_이 남는 것을 확인한다.
 단, 현재 광선 경로에 두 활성 표적이 없으면 다음 프레임에 추가 피격이 생긴다고 기대하지 않는다.
-제어된 표적 배치 사례는 CheckOriginalScene에서 읽는다.
+자연스럽게 생성된 활성 표적과 광선 방향을 조사식으로 확인한다. 분석을 위해 기본 배치를 수정하지 않는다.
 
 ### 연습 C: 스테이지의 한 초와 종료 추적하기
 
@@ -590,7 +610,7 @@ python scripts/format_code.py --check
 조사할 값: `state_`, `stageIndex_`, `ruleIndex_`, `remaining_`, `stateTime_`,
 `resetPending_`, 반환된 `spawnCount/clearTargets`.
 스테이지 종료에서 생성 요청과 초기화 요청이 같이 나올 수 있는지 확인한다.
-실제 30초를 반복해서 기다리지 않고 논리 전이를 공부하려면 TestStages의 호출 순서부터 따라간다.
+상태별 분기와 ResetValues의 호출 순서를 따라 실제 상태 전이를 설명해 본다.
 
 ## 20. 증상에서 코드로 찾아가는 표
 
@@ -599,10 +619,10 @@ python scripts/format_code.py --check
 | 창/자원을 열지 못함 | main의 작업 폴더, Framework::Run | CopyGameAssets, Shader/Mesh/Texture 생성자 |
 | 키를 눌러도 이동하지 않음 | 콜백 → Input → PlayerCommand | 대소문자, EndFrame, Player 충돌 조건 |
 | 벽 근처에서 시점이 어긋남 | Player의 eyePosition_ 저장 시점 | UpdateCamera, 실제 부모 위치를 받는 Gun::FollowCamera |
-| 총 반동의 방향/중심이 이상함 | Gun::GetModelMatrix | Camera::GetRotation, 기본 스케일, OriginalGunMatrix |
+| 총 반동의 방향/중심이 이상함 | Gun::GetModelMatrix | Camera::GetRotation, 기본 스케일, 11절의 행렬 합성식 |
 | 클릭하지 않았는데 표적이 다시 맞음 | hasShot_, shot_, Shoot | SpawnTarget, Target::Hit |
 | 가까운 표적보다 먼 표적이 맞음 | Shoot의 목록 순회와 break | Raycast의 distance 사용 여부 |
-| 3단계 표시인데 초당 2개가 생성됨 | stageIndex_와 ruleIndex_ | 원본 보존 분기, TestStages |
+| 3단계 표시인데 초당 2개가 생성됨 | stageIndex_와 ruleIndex_ | 원본 보존 분기, StageController::Update |
 | 텍스처가 있는데 단색으로 보임 | useTexture/unlit/ambientOnly | Material::Apply, Lit.frag |
 | 특정 오브젝트가 보이지 않음 | active/visible, Mesh/Material 유무 | model/view/projection, culling, scale |
 | 조명 종류가 늘었는데 화면에는 하나만 보임 | ShootingScene::Initialize의 lights_ | 지원 타입과 기본 배치의 차이, enabled/MaxCount |
@@ -615,11 +635,14 @@ python scripts/format_code.py --check
 PCH는 실행 중 게임 객체를 관리하는 클래스가 아니라 컴파일 설정이다.
 
 프로젝트 설정에서는 컴파일 옵션과 링크 옵션을 구분한다. `.lib`는 Link의 의존성/검색 경로에 들어가며
-C++ 소스처럼 컴파일하는 옵션이 아니다. CopyGameAssets가 models·Shaders·lib의 DLL을 실행 폴더로 복사한다.
+C++ 소스처럼 컴파일하는 옵션이 아니다. 동봉된 라이브러리는 x64용이다.
+CopyGameAssets가 Resources/Meshes·Resources/Textures·Source/Shaders의 파일을
+실행 폴더의 Resources/Meshes·Resources/Textures·Shaders로 복사한다. lib에 DLL을 두면 함께 복사한다.
 vcxproj.filters는 Visual Studio의 표시 분류이고, 실제 빌드 대상 등록은 vcxproj에서 확인한다.
 
-자체 C++/셰이더는 CP949·CRLF, Markdown은 UTF-8이다. format_code.py는 포맷터에 전달할 때만
-UTF-8로 바꾼 후 CP949로 되돌린다. `.editorconfig`에 CP949를 직접 표시하는 표준 charset 값은 없다.
+자체 C++/셰이더는 CP949·CRLF, Markdown은 UTF-8이다. 새 cpp/h는 Source에 추가하고
+Visual Studio 필터만 역할에 맞게 지정한다. 추가한 cpp가 PCH를 사용하도록 vcxproj 등록도 확인한다.
+실행 시 대응되는 x64 freeglut.dll과 glew32.dll이 필요하다. DLL은 저장소에 포함되어 있지 않다.
 
 멀티플레이를 검토할 때는 현재 구현과 앞으로 필요한 기능을 구분한다.
 
@@ -652,7 +675,7 @@ PlayerCommand의 구조체 메모리나 shared_ptr를 그대로 네트워크로 
 생성 위치 / 해제 위치:
 
 입력 한 가지를 넣었을 때의 예상 계산:
-디버거·테스트에서 관찰한 실제 결과:
+디버거에서 관찰한 실제 결과:
 원본 동작을 보존하기 위해 특이하게 처리한 부분:
 
 아직 이해하지 못한 표현이나 개념:

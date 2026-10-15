@@ -76,6 +76,8 @@ StyleCopReport.xml
 *.ilk
 *.meta
 *.obj
+# Wavefront mesh assets are game resources, not compiler object files.
+!/Resources/Meshes/**/*.obj
 *.iobj
 *.pch
 *.pdb
