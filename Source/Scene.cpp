@@ -43,6 +43,7 @@ bool Scene::RemoveObject(uint32_t id)
 	const auto found = std::find_if(objects_.begin(), objects_.end(), [id](const auto& object)
 		{ return object->GetId() == id; });
 
+	//[윤지훈] 못 찾았으면 리턴
 	if (found == objects_.end()) return false;
 
 	objects_.erase(found);

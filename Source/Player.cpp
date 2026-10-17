@@ -13,7 +13,9 @@ void Player::ApplyCommand(const PlayerCommand& command, float deltaTime, const S
 		movement = glm::normalize(movement);
 	}
 
+	//[윤지훈] yaw값을 통한 회전을 쿼터니언으로 변환, 그걸 행렬로 만듦
 	const auto rotation = glm::mat4_cast(glm::angleAxis(glm::radians(yaw), glm::vec3(0, 1, 0)));
+	//[윤지훈] 이동량 계산
 	const glm::vec3 displacement =
 		glm::vec3(rotation * glm::vec4(movement.x, 0, movement.y, 0)) * moveSpeed * deltaTime;
 	// 원본은 X/Z 중심 판정 후 이번 이동 전체를 취소합니다.
@@ -28,6 +30,7 @@ void Player::ApplyCommand(const PlayerCommand& command, float deltaTime, const S
 
 	for (const auto& object : scene.GetObjects())
 	{
+		//[윤지훈] 충돌 시 이동을 취소함. 개선 필요
 		if (object.get() != this && object->active && object->blocksMovement && object->collider == ColliderType::Box && Collision::OverlapsXZ(GetWorldBox(), object->GetWorldBox()))
 		{
 			transform.position -= lastDisplacement_;

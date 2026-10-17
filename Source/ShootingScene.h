@@ -12,6 +12,7 @@ public:
 	void Initialize() override;
 	void Update(float deltaTime, const Input& input) override;
 	Hud GetHud() const override;
+	//[윤지훈] PlayerCommand에 입력을 통한 이동 정보가 저장되어있음
 	void ApplyPlayerCommand(const PlayerCommand& command, float deltaTime);
 
 private:

@@ -6,6 +6,7 @@
 #include "Light.h"
 #include "Input.h"
 
+//[윤지훈] HUD 클래스 다른 소스코드에 분리 필요?
 struct Hud
 {
 	std::vector<std::string> lines;
@@ -23,6 +24,7 @@ public:
 
 	virtual Hud GetHud() const { return {}; }
 
+	//[윤지훈] AddObject시 해당 오브젝트는 씬에 귀속됨(unique_ptr 벡터에 std::move됨)
 	Object* AddObject(std::unique_ptr<Object> object);
 	Object* FindObject(uint32_t id) const;
 	bool RemoveObject(uint32_t id);
