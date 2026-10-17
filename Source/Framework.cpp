@@ -8,6 +8,7 @@ namespace
 	constexpr int UpdateIntervalMs = 1000 / 240;
 
 	//LegacyGL
+	//[윤지훈] 구형 gl함수로 문자열 -> 텍스트 렌더링 해주는 매크로
 	void DrawText(const std::string& text, float x, float y, float scale)
 	{
 		//LegacyGL
@@ -120,11 +121,14 @@ int Framework::Run(int argc, char** argv, std::unique_ptr<Scene> scene)
 
 void Framework::Tick()
 {
+	//[윤지훈]deltatime 구하기
 	const auto now = std::chrono::steady_clock::now();
 	const float elapsed = std::chrono::duration<float>(now - previousTime_).count();
 	previousTime_ = now;
 
+	//[윤지훈]씬 업데이트 -> 오브젝트 업데이트
 	scene_->Update(elapsed, input_);
+	//[윤지훈]input은 array로, 키 타입을 인덱스로서 갖고 입력 여부를 조사함. 그걸 전부 false로 초기화
 	input_.EndFrame();
 
 	if (elapsed > 0.0f)
@@ -135,8 +139,10 @@ void Framework::Tick()
 	glutPostRedisplay();
 }
 
+//[윤지훈] 빛 관련 Uniform 변수 설정 함수
 void Framework::UploadLights(const Shader& shader) const
 {
+	//[윤지훈] 앰비언트 라이트(환경광) 설정
 	shader.Set("ambientLight", scene_->ambientLight);
 	int count = 0;
 
@@ -147,11 +153,13 @@ void Framework::UploadLights(const Shader& shader) const
 			continue;
 		}
 
+		//[윤지훈] 빛 개수 제한하여 셰이더의 계산 횟수 제한
 		if (count == Light::MaxCount)
 		{
 			break;
 		}
 
+		//[윤지훈] 각 라이트별 정보 설정. 라이트는 셰이더에서 배열로 관리됨
 		const std::string prefix = "lights[" + std::to_string(count++) + "].";
 		shader.Set(prefix + "type", static_cast<int>(light.type));
 		shader.Set(prefix + "color", light.color);
@@ -170,13 +178,16 @@ void Framework::UploadLights(const Shader& shader) const
 
 void Framework::DrawObjects()
 {
+	//[윤지훈] 카메라 객체로 행렬 2개 구하기
 	const auto& camera = scene_->GetCamera();
 	const glm::mat4 projection = camera.GetProjection(static_cast<float>(width_) / height_);
 	const glm::mat4 view = camera.GetView();
 	const Shader* previousShader = nullptr;
 
+	//[윤지훈] 각 오브젝트마다 수행
 	for (const auto& object : scene_->GetObjects())
 	{
+		//[윤지훈] 비활성 or 투명 객체 스킵
 		if (!object->active || !object->visible)
 		{
 			continue;
@@ -190,16 +201,19 @@ void Framework::DrawObjects()
 			continue;
 		}
 
+		//[윤지훈] 스케일벡터의 요소 중 하나라도 절댓값이 0.000001보다 작다면 에러. 필요?
 		if (glm::any(glm::lessThan(glm::abs(object->transform.scale), glm::vec3(0.000001f))))
 		{
 			throw std::runtime_error("Object scale must be nonzero: " + object->name);
 		}
 
+		//[윤지훈] 머터리얼에 저장된 셰이더 렌더 옵션대로 설정 및 텍스처 바인딩
 		material->Apply();
 		const Shader& shader = *material->shader;
 
 		if (previousShader != &shader)
 		{
+			//[윤지훈] 변환행렬 2가지와 빛 계산을 위한 카메라 위치 Uniform 변수 세팅
 			shader.Set("view", view);
 			shader.Set("projection", projection);
 			shader.Set("viewPosition", camera.position);
@@ -213,6 +227,7 @@ void Framework::DrawObjects()
 }
 
 //LegacyGL
+//[윤지훈] 디버깅용 콜라이더 그리는 함수
 void Framework::DrawColliders()
 {
 	if (!scene_->debugColliders) return;
@@ -220,6 +235,7 @@ void Framework::DrawColliders()
 	// Program 0 selects the fixed-function pipeline in this compatibility context.
 	//LegacyGL
 	glUseProgram(0);
+	//[윤지훈] 컬링 끄고 투영/뷰/월드행렬 설정
 	glDisable(GL_CULL_FACE);
 	//LegacyGL
 	glMatrixMode(GL_PROJECTION);
@@ -242,6 +258,7 @@ void Framework::DrawColliders()
 		}
 
 		//LegacyGL
+		//[윤지훈] 행렬 정보 투입
 		glPushMatrix();
 
 		if (object->collider == ColliderType::Box)
@@ -250,11 +267,13 @@ void Framework::DrawColliders()
 			const auto center = (box.min + box.max) * 0.5f;
 			const auto size = box.max - box.min;
 			//LegacyGL
+			//[윤지훈] 이동/스케일 정보 설정
 			glTranslatef(center.x, center.y, center.z);
 			//LegacyGL
 			glScalef(size.x, size.y, size.z);
 			// GLUT drawing helper used with the legacy fixed-function pipeline here.
 			//LegacyGL
+			//[윤지훈] 와이어프레임 큐브 그리기
 			glutWireCube(1.0);
 		}
 		else
@@ -264,10 +283,12 @@ void Framework::DrawColliders()
 			glTranslatef(sphere.center.x, sphere.center.y, sphere.center.z);
 			// GLUT drawing helper used with the legacy fixed-function pipeline here.
 			//LegacyGL
+			//[윤지훈] 와이어프레임 구체 그리기
 			glutWireSphere(sphere.radius, 12, 8);
 		}
 
 		//LegacyGL
+		//[윤지훈] 현재 행렬 제거
 		glPopMatrix();
 	}
 
@@ -275,6 +296,7 @@ void Framework::DrawColliders()
 }
 
 //LegacyGL
+//[윤지훈] HUD 그리는 함수
 void Framework::DrawOverlay()
 {
 	const Hud hud = scene_->GetHud();
@@ -320,6 +342,7 @@ void Framework::DrawOverlay()
 
 	for (size_t i = 0; i < hud.lines.size() && i < positions.size(); ++i)
 	{
+		//[윤지훈] 구형 gl함수로 문자열 -> 텍스트 렌더링 해주는 매크로
 		DrawText(hud.lines[i], positions[i].x, positions[i].y, 0.0005f);
 	}
 
@@ -336,6 +359,7 @@ void Framework::Render()
 {
 	if (!scene_) return;
 
+	//[윤지훈] 분류별로 렌더링 후 렌더링 버퍼 스왑
 	glViewport(0, 0, width_, height_);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	DrawObjects();
@@ -370,6 +394,7 @@ void Framework::DisplayCallback()
 
 void Framework::TimerCallback(int)
 {
+	//[윤지훈] 현재 프레임워크 및 씬이 있을 때에만, 즉 초기화 성공 시에만 타이머 작동
 	if (!current_ || !current_->scene_) return;
 
 	try
@@ -381,15 +406,19 @@ void Framework::TimerCallback(int)
 		current_->Fail(e);
 	}
 
+	//[윤지훈] 재귀적으로 본인 호출
 	glutTimerFunc(UpdateIntervalMs, TimerCallback, 0);
 }
 
+//[윤지훈] 창 크기 재구성 함수
 void Framework::ReshapeCallback(int width, int height)
 {
 	current_->width_ = std::max(width, 1);
 	current_->height_ = std::max(height, 1);
 }
 
+//[윤지훈] 키 입력 받으면 아스키코드 값을 인덱스로 사용해서 입력여부 배열에 저장함.
+//F1, 방향키 등 입력 받으려면 glutSpecialFunc에 콜백 등록해서 따로 관리해야함
 void Framework::KeyDownCallback(unsigned char key, int, int)
 {
 	if (key == 'q')
@@ -406,6 +435,7 @@ void Framework::KeyUpCallback(unsigned char key, int, int)
 	current_->input_.SetKey(key, false);
 }
 
+//[윤지훈] 마우스 입력. 현재는 좌클릭만 받음
 void Framework::MouseCallback(int button, int state, int, int)
 {
 	if (button != GLUT_LEFT_BUTTON || state != GLUT_DOWN) return;
@@ -413,6 +443,8 @@ void Framework::MouseCallback(int button, int state, int, int)
 	current_->input_.firePressed = true;
 }
 
+//[윤지훈] 마우스 움직임
+//커서 좌표는 좌상단이 원점. 현재 창의 폭과 높이 절반만큼 빼서 화면 중심 기준으로 좌표 변환
 void Framework::MotionCallback(int x, int y)
 {
 	const int dx = x - current_->width_ / 2, dy = y - current_->height_ / 2;
@@ -420,9 +452,11 @@ void Framework::MotionCallback(int x, int y)
 	if (dx == 0 && dy == 0) return;
 
 	current_->input_.mouseDelta += glm::vec2(dx, dy);
+	//[윤지훈] 움직이고 난 뒤 화면 중앙에 커서 복구. UI 구현시 이 부분 조정해야함
 	glutWarpPointer(current_->width_ / 2, current_->height_ / 2);
 }
 
+//[윤지훈] 시스템 종료 시 콜백
 void Framework::CloseCallback()
 {
 	// 창 X 버튼과 glutLeaveMainLoop 모두 컨텍스트 삭제 전에 이 콜백을 거칩니다.

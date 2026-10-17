@@ -81,12 +81,15 @@ void Shader::Use() const
 	glUseProgram(program_);
 }
 
+//[윤지훈] Uniform 변수의 정수 위치값을 이름으로 찾아주는 함수
 GLint Shader::Location(const std::string& name) const
 {
 	const auto found = locations_.find(name);
 
+	//[윤지훈] 맵 컨테이너에서 찾은 위치의 정수값 리턴
 	if (found != locations_.end()) return found->second;
 
+	//[윤지훈] 맵 컨테이너에 없는 경우, name에 해당하는 정수값을 얻어와 저장한다.
 	const GLint location = glGetUniformLocation(program_, name.c_str());
 	locations_[name] = location;
 
