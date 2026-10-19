@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 
+//[윤지훈] 충돌 관련 정보를 담는 구조체
 struct Box
 {
 	glm::vec3 min{0.0f};
@@ -26,6 +27,7 @@ enum class ColliderType
 	Sphere
 };
 
+//[윤지훈] 수학 공식 그대로 옮겨놓은 충돌 판정 함수들
 // 그래픽 API와 무관한 순수 계산입니다. 서버에서도 같은 판정을 사용할 수 있습니다.
 namespace Collision
 {

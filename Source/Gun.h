@@ -6,6 +6,7 @@
 class Gun : public Object
 {
 public:
+	//[윤지훈] 오브젝트 생성자를 Gun 생성자로 사용
 	using Object::Object;
 	void Fire();
 	void Update(float deltaTime) override;
