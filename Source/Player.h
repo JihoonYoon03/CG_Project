@@ -5,6 +5,8 @@
 
 class Scene;
 
+//[윤지훈] 입력값을 통해 실제 이동량, 조작을 계산해서 저장해둔 구조체
+// 서버 통신 데이터로 사용. pragma pack 적용 필요
 // 로컬 입력을 게임 명령으로 바꾼 값입니다. 소켓 메시지를 해석한 뒤에도 이 경로를 사용합니다.
 // 패킷으로 구조체 메모리를 그대로 전송하지 말고 필드별 직렬화와 서버 검증을 추가해야 합니다.
 struct PlayerCommand
@@ -17,6 +19,7 @@ struct PlayerCommand
 class Player : public Object
 {
 public:
+	//[윤지훈] 오브젝트 생성자를 Player 생성자로 그대로 사용함
 	using Object::Object;
 	void ApplyCommand(const PlayerCommand& command, float deltaTime, const Scene& scene);
 	void UpdateCamera(Camera& camera) const;

@@ -16,6 +16,7 @@ public:
 	void ApplyPlayerCommand(const PlayerCommand& command, float deltaTime);
 
 private:
+	//[윤지훈] 오브젝트 생성 및 씬에 추가하는 함수
 	Object* AddProp(const std::string& name, const std::shared_ptr<Mesh>& mesh, const std::shared_ptr<Material>& material, const glm::vec3& position, const glm::vec3& scale, bool solid = false);
 	void SpawnTarget();
 	void Shoot();
@@ -26,6 +27,8 @@ private:
 	std::vector<Target*> targets_;
 	StageController		 stages_;
 	Ray					 shot_;
+	//[윤지훈] 현재 hasShot은 단일 플레이어 특화 기능임.
 	bool				 hasShot_ = false;
+	//[윤지훈] 엔진 분리 필요
 	std::mt19937		 random_{std::random_device{}()};
 };

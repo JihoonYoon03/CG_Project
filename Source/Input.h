@@ -1,6 +1,9 @@
 #pragma once
 #include "pch.h"
 
+//[윤지훈] 키 입력여부 기록하는 클래스
+// 매 Tick마다 EndFrame 호출되어 pressed 초기화됨
+// key는 키를 누를 때/뗄 때에만 상태가 바뀜. pressed는 입력 여부 한 번만 기록하고 초기화됨
 // Framework가 채우고 Scene가 읽습니다. pressed와 mouseDelta는 업데이트 후 초기화합니다.
 class Input
 {

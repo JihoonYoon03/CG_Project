@@ -156,8 +156,10 @@ void ShootingScene::ApplyPlayerCommand(const PlayerCommand& command, float delta
 	}
 }
 
+//[윤지훈] 아직 나타나지 않은 표적 중 랜덤하게 하나를 등장시키는 함수
 void ShootingScene::SpawnTarget()
 {
+	//[윤지훈] 매 호출 시 마다 나타나지 않은 표적 벡터를 다시 만들고, 그 중 하나를 선택
 	std::vector<Target*> available;
 
 	for (auto* target : targets_)
@@ -171,9 +173,11 @@ void ShootingScene::SpawnTarget()
 	if (available.empty()) return;
 
 	std::uniform_int_distribution<size_t> pick(0, available.size() - 1);
+	//[윤지훈] 정수 정규분포에 랜덤엔진 사용해서 랜덤 타깃 등장
 	available[pick(random_)]->active = true;
 }
 
+//[윤지훈] 사격 입력이 있을때만 작동. 
 void ShootingScene::Shoot()
 {
 	if (!hasShot_) return;
@@ -183,7 +187,7 @@ void ShootingScene::Shoot()
 	for (auto* target : targets_)
 	{
 		float distance = 0.0f;
-
+		//[윤지훈] 타깃 명중 시 점수 추가. 겹친 타깃 동시에 맞는 문제 있음
 		if (target->active && Collision::Raycast(shot_, target->GetWorldSphere(), distance) && target->Hit())
 		{
 			stages_.AddScore();
@@ -192,6 +196,7 @@ void ShootingScene::Shoot()
 	}
 }
 
+//[윤지훈] HUD 정보 반환 함수
 Hud ShootingScene::GetHud() const
 {
 	Hud hud;
