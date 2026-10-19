@@ -3,8 +3,11 @@
 
 namespace
 {
+	//[윤지훈] 파일 경로로 찾은 셰이더 컴파일 및 저장해주는 함수
+	//인자는 셰이더 종류/파일 경로
 	GLuint Compile(GLenum type, const std::string& filename)
 	{
+		//[윤지훈] 파일 오픈. 바이너리로 변경해도 될 듯?
 		std::ifstream file(filename);
 
 		if (!file)
@@ -12,16 +15,25 @@ namespace
 			throw std::runtime_error("Cannot open shader: " + filename);
 		}
 
+		//[윤지훈] stringstream: 문자열 기반 입출력 클래스. iostream이나 ifstream/ofstream같은 거
 		std::stringstream buffer;
+		//[윤지훈] rdbuf로 버퍼 포인터 반환하고 buffer에 입력시킴
 		buffer << file.rdbuf();
+		//[윤지훈] std::string에 버퍼 내용을 문자열로 저장
 		const std::string text = buffer.str();
+		//[윤지훈] char*로 문자열 시작 저장
 		const char* source = text.c_str();
+		//[윤지훈] type에 맞는 셰이더 객체 생성하고 ID 리턴받기
 		const GLuint shader = glCreateShader(type);
+		//[윤지훈] 순서대로 셰이더 ID/문자열 개수(=소스코드 조각 수)/문자열 배열/문자열 길이(null시 문자열이 null로 끝난다 보고 자동 계산)
 		glShaderSource(shader, 1, &source, nullptr);
+		//[윤지훈] 셰이더를 컴파일
 		glCompileShader(shader);
 		GLint success = GL_FALSE;
+		//[윤지훈] 셰이더 컴파일 성공 여부 확인
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 
+		//[윤지훈] 실패 시, 로그 출력 후 종료
 		if (!success)
 		{
 			char log[4096]{};
@@ -49,13 +61,16 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 		throw;
 	}
 
+	//[윤지훈] 현재 프로그램 객체에 셰이더 연결 및 각종 세팅
 	program_ = glCreateProgram();
 	glAttachShader(program_, vertex);
 	glAttachShader(program_, fragment);
 	glLinkProgram(program_);
+	//[윤지훈] 연결 끝나면 삭제해도 됨
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
 	GLint success = GL_FALSE;
+	//[윤지훈] 성공 여부 조사
 	glGetProgramiv(program_, GL_LINK_STATUS, &success);
 
 	if (!success)

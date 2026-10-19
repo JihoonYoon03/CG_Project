@@ -1,6 +1,8 @@
 #pragma once
 #include "pch.h"
 
+//[윤지훈] 현재 에임랩 스테이지의 남은시간/목표점수/초당 타깃 생성
+// 아래 기본값은 1스테이지 기준
 struct StageDefinition
 {
 	int duration = 30;
@@ -8,6 +10,7 @@ struct StageDefinition
 	int targetsPerSecond = 1;
 };
 
+//[윤지훈] 스테이지 현재 상태를 나타냄
 enum class StageState
 {
 	Idle,
@@ -18,6 +21,8 @@ enum class StageState
 	Clear
 };
 
+//[윤지훈] 현재 ShootingScene이 처리해야 할 이벤트를 나타냄.
+//clearTargets = 표적 전체 리셋, spawnCount = 남은 표적 스폰 수
 struct StageEvents
 {
 	bool clearTargets = false;
@@ -29,6 +34,7 @@ class StageController
 {
 public:
 	bool Start(int stageNumber);
+	//[윤지훈] 반환값은 ShootingScene에서 받아서 표적 생성 or 전체 리셋 여부를 결정함
 	StageEvents Update(float deltaTime);
 
 	void AddScore() { ++score_; }
