@@ -8,20 +8,28 @@ enum class LightType
 	Spot = 2
 };
 
+//[윤지훈] 아래 라이트 타입은 점/스팟/방향성 광원 통합인데, 따로 분리하는 편이 나을 수 있을듯?
 // 세 종류의 공통 데이터입니다. 상속 없이 type으로 셰이더 계산을 선택합니다.
 struct Light
 {
 	static constexpr int MaxCount = 8; // Shaders/Lit.frag의 MAX_LIGHTS와 일치
 	LightType			 type = LightType::Directional;
 	glm::vec3			 color{1.0f};
+
+	//[윤지훈] 빛 강도
 	float				 intensity = 1.0f;
 	glm::vec3			 position{0.0f};
 	glm::vec3			 direction{0.0f, -1.0f, 0.0f}; // 빛이 진행하는 방향
+
+	//[윤지훈] 빛 범위
 	float				 range = 10.0f;				   // 0이면 거리 감쇠 없음 (원본 흰색 광원)
+
+	//[윤지훈] 스포트라이트에서 가장 밝은 안쪽 부분 각도와 최대 빛 각도
 	float				 innerAngle = 15.0f;		   // Spot 중심각의 절반, 도 단위
 	float				 outerAngle = 25.0f;
 	bool				 enabled = true;
 
+	//[윤지훈] 입력에 맞게 라이트 구조체를 반환해주는 함수
 	static Light Directional(const glm::vec3& direction, const glm::vec3& color, float intensity);
 	static Light Point(const glm::vec3& position, const glm::vec3& color, float intensity, float range);
 	static Light Spot(const glm::vec3& position, const glm::vec3& direction, const glm::vec3& color, float intensity, float range, float innerAngle, float outerAngle);
