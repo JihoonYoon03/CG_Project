@@ -1,13 +1,13 @@
 # 사격 게임 코드 분석 가이드
 
-수정일: 2026-10-15 · 콘텐츠 기준: `474567e` (콘텐츠 복구) · 파일 구성과 실행 경로는 현재 정리본 기준
+수정일: 2026-11-02 · 표적 동적 생성·수명 관리 반영
 
 이 자료는 현재 코드를 파일과 함수 단위로 읽기 위한 학습 안내서다. C++의 기본 문법을 알고 있지만
 프로젝트 전체 구조와 OpenGL 실행 흐름에는 익숙하지 않은 팀원을 기준으로 작성했다.
 각 절의 **읽는 순서 → 핵심 해석 → 확인 질문**을 따라가며, 질문에 자신의 말로 답할 수 있으면 다음 절로 넘어간다.
 
 현재 코드에는 원본 게임 동작을 보존하기 위해 남겨둔 기존 문제가 있다. 따라서 이 문서의 “현재 동작”이
-항상 권장 설계를 뜻하지는 않는다. 콘텐츠와 기존 동작을 임의로 수정하지 않고 코드 구조를 분석한다.
+항상 권장 설계를 뜻하지는 않는다. 표적은 동적 생성·삭제 방식으로 변경했으며, 그 밖의 기존 동작은 코드와 함께 확인한다.
 소스가 바뀌어도 찾기 쉽도록 줄 번호 대신 파일명과 함수명을 기준으로 안내한다.
 
 ## 1. 분석을 시작하는 방법
@@ -49,8 +49,8 @@
 | 8 | `Source/Player.h/.cpp`, `Source/Camera.h/.cpp` | 이동 방향, 눈 위치, view/projection |
 | 9 | `Source/Collision.h/.cpp` | 게임 이동 판정과 광선 교차 계산의 차이 |
 | 10 | `Source/Gun.h/.cpp` | 반동 시간과 최종 렌더링 행렬 |
-| 11 | ShootingScene::ApplyPlayerCommand·Shoot·SpawnTarget, `Source/Target.h` | 발사, 지속 광선, 피격과 재사용 |
-| 12 | `Source/StageController.h/.cpp` | 시간·점수·상태 전이와 표적 생성 요청 |
+| 11 | ShootingScene::ApplyPlayerCommand·Shoot·SpawnTargets, `Source/Target.h` | 발사, 지속 광선, 동적 생성과 수명·삭제 |
+| 12 | `Source/StageController.h/.cpp` | 시간·점수·상태 전이와 표적 초기화 요청 |
 | 13 | `Source/Assets.h/.cpp`, `Source/Mesh.h/.cpp` | 파일 공유, 정점, CPU/GPU 버퍼 |
 | 14 | `Source/Material.h/.cpp`, `Source/Shader.h/.cpp`, `Source/Texture.h/.cpp` | 재질 적용, 셰이더 생성, 이미지 업로드 |
 | 15 | Framework::DrawObjects·UploadLights, `Source/Light.h/.cpp`, `Source/Shaders/Lit.vert`, `Source/Shaders/Lit.frag` | 변환과 조명 계산의 연결 |
@@ -123,7 +123,7 @@ flowchart TD
 따라서 `player.get()`을 저장한 후 `AddObject(std::move(player))`해도 그 관찰 포인터는 유효하다.
 다만 객체를 삭제하면 관찰 포인터는 자동으로 비워지지 않는다.
 
-**확인 질문:** 표적 하나를 비활성화하면 Sphere Mesh도 사라지는가? 같은 Material의 색을 바꾸면
+**확인 질문:** 표적 하나를 삭제하면 Sphere Mesh도 사라지는가? 같은 Material의 색을 바꾸면
 그 Material을 공유하는 표적들은 어떻게 되는가? `RemoveObject()` 뒤 기존 관찰 포인터를 써도 되는가?
 
 ## 4. 시작·업데이트·렌더링·종료 경로
@@ -239,11 +239,11 @@ scale.x가 5라면 실제 폭은 5인가, 10인가? 기본 Transform과 최종 �
 | 울타리 | 5 | 공유 Cube/Material, 위치·회전, 이동 차단 |
 | 플레이어 | 1 | Cube, 위치 (0,1,1), 스케일 0.25, Box |
 | 권총 | 1 | Pistol Mesh, 스케일 0.025, 카메라/플레이어에 따른 표시 행렬 |
-| 표적 | 90 | 공유 Sphere/Material, 초기 비활성, 스케일 0.15, Sphere |
+| 표적 | 초기 0 | 공유 Sphere/Material만 준비, 스케일 0.15, Sphere로 동적 생성 |
 | 광원 | 1 | Object 목록과 별도인 Light 데이터, 흰색 Point (100,150,110), range=0 |
 
-Object는 총 99개지만 처음부터 99개를 모두 그리지는 않는다. 초기 표적 90개가 비활성이므로
-기본 DrawObjects의 표시 대상은 9개다. 같은 Sphere Mesh는 하늘과 표적 사이에서도 공유된다.
+초기 Object는 9개이며 표적은 미리 생성하지 않는다. Playing 상태에서 2초마다 새 Target 2개를
+추가한다. 같은 Sphere Mesh는 하늘과 표적 사이에서도 공유된다.
 조명은 이 객체 수에 포함되지 않는다.
 
 바닥은 y 스케일을 0으로 만들지 않고 정점의 y를 0으로 만든다. 노멀 행렬에서 역행렬을 구할 수 있도록
@@ -251,9 +251,12 @@ Transform의 스케일은 0을 피한다. 원본 외형을 보존하기 위해 �
 일반 조명 대신 환경광만 적용한다. 이를 새 바닥 효과로 해석하지 않는다.
 
 표적 위치는 생성 시 X [-5,5], Y [0.5,2], Z [-5,-0.5] 범위에서 정해진다.
-`SpawnTarget()`은 새 객체를 만들거나 다시 배치하지 않고, 비활성 표적 중 하나를 골라 켠다.
+`SpawnTargets()`는 호출할 때마다 이 범위에서 새 위치를 정해 Target 2개를 생성한다.
+Target은 `elapsedTime_`으로 자신의 수명을 세며, `lifetime_`의 기본값은 3초다.
+수명 만료나 피격 시 `pendingDestroy_`를 설정한다. ShootingScene은 객체 순회와 피격 검사가
+끝난 뒤 `RemoveDestroyedTargets()`에서 관찰 포인터와 소유 객체를 제거한다. 표적을 재사용하지 않는다.
 
-**확인 질문:** 90개의 Target 객체와 90개의 Sphere Mesh가 필요한가? 바닥의
+**확인 질문:** Target 여러 개를 생성할 때 Sphere Mesh도 여러 개가 필요한가? 바닥의
 `texture != nullptr`인데도 이미지가 보이지 않는 이유는 무엇인가? AddProp의 solid는 무엇을 설정하는가?
 
 ## 8. 입력: 이벤트를 한 번의 PlayerCommand로 묶기
@@ -387,8 +390,9 @@ sequenceDiagram
     S->>G: ApplyPlayerCommand에서 Fire
     S->>S: 카메라 원점/방향을 shot_에 저장
     S->>S: Shoot에서 등록 순서로 광선 검사
-    S->>T: Hit: active=false
+    S->>T: Hit: pendingDestroy_=true
     S->>C: AddScore
+    S->>S: RemoveDestroyedTargets: 포인터·소유 객체 제거
     F->>I: EndFrame: firePressed=false
     F->>S: 이후 Tick에서 Update
     S->>S: 남아 있는 shot_으로 다시 Shoot
@@ -399,44 +403,47 @@ sequenceDiagram
 - `Gun::Fire()`는 반동을 시작한다. 광선의 보관과 표적 선택은 담당하지 않는다.
 - `ApplyPlayerCommand()`는 이동/카메라를 처리하고, fire가 있으면 반동 시작과 shot_ 저장을 수행한다.
 - `Shoot()`는 이름과 달리 클릭 순간만 실행되는 함수가 아니라 매 업데이트의 피격 검사다.
-- `Target::Hit()`는 활성 상태만 바꾸고 성공 여부를 반환한다. 점수는 ShootingScene에서 올린다.
+- `Target::Hit()`는 삭제를 요청하고 성공 여부를 반환한다. 점수는 ShootingScene에서 올린다.
 
 shot_은 발사 후 지워지지 않으며 hasShot_도 유지된다. 목록 순서의 첫 활성 교차 표적 하나를 처리하고
 break하므로 가까운 표적보다 먼 표적이 먼저 맞을 수도 있다. 다음 업데이트에는 같은 광선이 다른 표적이나
-다시 활성화된 표적에 맞을 수 있다. 점수도 Playing 여부로 제한하지 않는다. 모두 현재 보존 범위다.
+새로 생성된 표적에 맞을 수 있다. 점수도 Playing 여부로 제한하지 않는다. 모두 현재 보존 범위다.
 
-**확인 질문:** Fire 호출만으로 Target이 꺼지는가? EndFrame이 광선까지 지우는가?
-표적이 꺼지면 목록에서 삭제되는가? 거리 비교 없이 가까운 표적 우선 판정이 가능한가?
+**확인 질문:** Fire 호출만으로 Target이 삭제되는가? EndFrame이 광선까지 지우는가?
+Target의 삭제 요청은 언제 실제 객체 제거로 이어지는가? 거리 비교 없이 가까운 표적 우선 판정이 가능한가?
 
 ## 13. StageController: 상태·데이터·이벤트를 분리하기
 
 **읽는 순서:** StageDefinition/StageState/StageEvents → 초기 멤버 값 → Start → ResetValues → Update → AddScore.
 
-StageController는 숫자와 상태만 관리한다. Mesh를 생성하거나 Target을 직접 켜지 않고,
-`spawnCount`, `clearTargets`라는 이벤트 값을 반환한다. ShootingScene이 이를 실제 객체에 적용한다.
-현재 적용 순서는 **생성 요청 처리 → 표적 초기화 요청 처리 → 플레이어 명령 → 피격 검사 → 객체 업데이트**다.
-한 이벤트에 생성과 초기화가 함께 있으면 생성한 표적도 그 업데이트에서 꺼진다.
+StageController는 숫자와 상태만 관리하며, `clearTargets` 이벤트로 표적 초기화를 요청한다.
+표적 생성은 ShootingScene의 `targetSpawnTime_`으로 따로 관리한다. Playing에 진입한 뒤부터
+2초를 누적할 때마다 `SpawnTargets()`를 호출하며, 남은 누적 시간은 다음 생성에 이어 쓴다.
+현재 순서는 **표적 초기화 → 플레이어 명령 → 기존 객체 업데이트·만료 표적 삭제 → 새 표적 생성 →
+피격 검사·피격 표적 삭제**다. 새 표적은 다음 업데이트부터 수명을 누적한다.
+준비·종료 상태와 표적 초기화 시에는 생성 타이머를 0으로 돌린다.
 
 | 상태 | 다음 전이와 관찰할 값 |
 | --- | --- |
 | Idle | 시작 키가 유효하면 Ready. 최초 HUD는 1단계/0점/목표 0/시간 0 |
 | Ready | 약 2초 후 Playing. 단계 시작 문구 표시 |
-| Playing | 약 1초 간격으로 생성 요청, 남은 초 감소. 마지막 초에도 생성 요청을 먼저 만듦 |
+| Playing | 약 1초 간격으로 남은 초 감소. 표적은 별도 타이머로 2초마다 2개 생성 |
 | GameOver | 진입 시 1단계/0점/목표 20/30초로 초기화. 약 2초 후 Idle |
 | Finishing | 직접 시작한 3단계 성공 후 약 2초 대기. 성공 직후부터 Clear 문구가 뜨는 상태는 아님 |
 | Clear | 진입 시 점수·표적 초기화. 시작 키를 받을 수 있고, 약 2초 뒤 Idle |
 
 stateTime_은 임계값 확인 후 부족할 때만 증가한다. 예를 들어 처음 Update(2)로 2가 되어도
 그 호출에서는 Ready에 남고, 다음 양수 시간 Update에서 Playing으로 바뀐다.
-큰 deltaTime이 들어와도 while로 여러 초의 생성을 따라잡지 않는다.
+StageController는 큰 deltaTime에도 여러 초의 경기 시간을 한 번에 처리하지 않는다.
+표적 생성 타이머는 이와 별개로 while을 사용해 누적된 2초 간격을 처리한다.
 
-| 표시 단계 | 제한 시간 | 목표 점수 | 직접 시작할 때 초당 생성 수 |
+| 표시 단계 | 제한 시간 | 목표 점수 | 표적 생성 |
 | --- | --- | --- | --- |
-| 1 | 30초 | 20 | 1 |
-| 2 | 30초 | 40 | 2 |
-| 3 | 30초 | 60 | 3 |
+| 1 | 30초 | 20 | 2초마다 2개 |
+| 2 | 30초 | 40 | 2초마다 2개 |
+| 3 | 30초 | 60 | 2초마다 2개 |
 
-`stageIndex_`는 표시/목표 단계, `ruleIndex_`는 실제 생성 규칙을 구분한다.
+`stageIndex_`는 표시/목표 단계, `ruleIndex_`는 기존 자동 진행·완료 분기를 구분한다.
 자동으로 2단계를 통과하면 표시와 목표는 3단계지만 ruleIndex_는 1, 즉 2단계 규칙이다.
 이 경로에서는 성공해도 같은 규칙으로 다시 준비 상태에 들어갈 수 있다. 정상적인 자동 3단계 완료로
 단순화해서 읽으면 안 된다. 원본의 stage2 콜백 예약 문제를 보존한 결과다.
@@ -598,18 +605,19 @@ Visual Studio에서는 x64 Debug 또는 Release를 선택해 빌드하고 일반
 
 중단점: MouseCallback → ApplyPlayerCommand → Gun::Fire → Shoot → Target::Hit → AddScore.
 
-조사할 값: `firePressed`, `command.fire`, `hasShot_`, `shot_`, `target->active`, `distance`, `score_`.
+조사할 값: `firePressed`, `command.fire`, `hasShot_`, `shot_`, `pendingDestroy_`, `distance`, `score_`.
+삭제 뒤에는 기존 Target 포인터를 조사식에서 다시 역참조하지 않는다.
 첫 업데이트가 끝나면 firePressed가 사라져도 hasShot_이 남는 것을 확인한다.
 단, 현재 광선 경로에 두 활성 표적이 없으면 다음 프레임에 추가 피격이 생긴다고 기대하지 않는다.
 자연스럽게 생성된 활성 표적과 광선 방향을 조사식으로 확인한다. 분석을 위해 기본 배치를 수정하지 않는다.
 
 ### 연습 C: 스테이지의 한 초와 종료 추적하기
 
-중단점: StageController::Start → ResetValues → Update의 상태별 분기 → SpawnTarget.
+중단점: StageController::Start → ResetValues → Update의 상태별 분기 → ShootingScene::SpawnTargets.
 
 조사할 값: `state_`, `stageIndex_`, `ruleIndex_`, `remaining_`, `stateTime_`,
-`resetPending_`, 반환된 `spawnCount/clearTargets`.
-스테이지 종료에서 생성 요청과 초기화 요청이 같이 나올 수 있는지 확인한다.
+`resetPending_`, 반환된 `clearTargets`, ShootingScene의 `targetSpawnTime_`.
+표적 초기화와 Playing 진입 시 생성 타이머가 언제 리셋되는지 확인한다.
 상태별 분기와 ResetValues의 호출 순서를 따라 실제 상태 전이를 설명해 본다.
 
 ## 20. 증상에서 코드로 찾아가는 표
@@ -620,9 +628,9 @@ Visual Studio에서는 x64 Debug 또는 Release를 선택해 빌드하고 일반
 | 키를 눌러도 이동하지 않음 | 콜백 → Input → PlayerCommand | 대소문자, EndFrame, Player 충돌 조건 |
 | 벽 근처에서 시점이 어긋남 | Player의 eyePosition_ 저장 시점 | UpdateCamera, 실제 부모 위치를 받는 Gun::FollowCamera |
 | 총 반동의 방향/중심이 이상함 | Gun::GetModelMatrix | Camera::GetRotation, 기본 스케일, 11절의 행렬 합성식 |
-| 클릭하지 않았는데 표적이 다시 맞음 | hasShot_, shot_, Shoot | SpawnTarget, Target::Hit |
+| 클릭하지 않았는데 표적이 다시 맞음 | hasShot_, shot_, Shoot | SpawnTargets, Target::Hit |
 | 가까운 표적보다 먼 표적이 맞음 | Shoot의 목록 순회와 break | Raycast의 distance 사용 여부 |
-| 3단계 표시인데 초당 2개가 생성됨 | stageIndex_와 ruleIndex_ | 원본 보존 분기, StageController::Update |
+| 표적이 3초 뒤에도 남아 있음 | Target::Update의 수명 누적 | RemoveDestroyedTargets, Scene::RemoveObject |
 | 텍스처가 있는데 단색으로 보임 | useTexture/unlit/ambientOnly | Material::Apply, Lit.frag |
 | 특정 오브젝트가 보이지 않음 | active/visible, Mesh/Material 유무 | model/view/projection, culling, scale |
 | 조명 종류가 늘었는데 화면에는 하나만 보임 | ShootingScene::Initialize의 lights_ | 지원 타입과 기본 배치의 차이, enabled/MaxCount |
